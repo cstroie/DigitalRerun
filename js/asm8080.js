@@ -1,7 +1,7 @@
 /*
- * asm8080.js: a two-pass Intel 8080 assembler.
+ * asm8080.js: a two-pass 8080 assembler.
  *
- * It reads the dialect of DRI's ASM.COM and of Macro Assembler AS in 8080
+ * It reads the dialect of CP/M's ASM.COM and of Macro Assembler AS in 8080
  * mode, enough to build the original CCP and BDOS sources and the BIOS:
  *
  *   label:  mnemonic operands   ; comment

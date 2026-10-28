@@ -28,7 +28,7 @@ test('labels, forward references, expressions and $', () => {
     assert.equal(r.symbols.get('LAST'), 0x10);
 });
 
-test('strings: DRI single quotes, doubled quotes, AS double quotes', () => {
+test('strings: ASM single quotes, doubled quotes, AS double quotes', () => {
     assert.deepEqual(bytes(" db 'It''s',0\n db \"OK$\""), [73, 116, 39, 115, 0, 79, 75, 36]);
 });
 
@@ -44,13 +44,13 @@ test('errors name the line', () => {
     assert.throws(() => assemble('x: nop\nx: nop'), /defined twice/);
 });
 
-test("the DRI CCP and BDOS assemble to Digital Research's own binaries", () => {
-    // Assembled at the origins of the CP/M 2.2 distribution's CPM.SYS (Xerox
-    // 1800, CCP 0DC00h, BDOS 0E400h), the images hash as that file's do with
+test('the original CCP and BDOS sources assemble to the original binaries', () => {
+    // Assembled at the origins of the CPM.SYS of a CP/M 2.2 distribution
+    // disk (CCP 0DC00h, BDOS 0E400h), the images hash as that file's do with
     // its six serial number bytes zeroed: byte for byte the original system.
     const sha = b => crypto.createHash('sha256').update(b).digest('hex');
     const build = (file, origin, length) => {
-        const src = fs.readFileSync(path.join(__dirname, '../system/dri', file), 'latin1');
+        const src = fs.readFileSync(path.join(__dirname, '../system/cpm22', file), 'latin1');
         return assemble(src, { defines: { origin } }).image(origin, origin + length - 1);
     };
     assert.equal(sha(build('ccp.asm', 0xDC00, 0x800)), '17e0926a26784c69afaf9342f3f58779eb97ca5be79526fc03a9b2ff7f3922a5');

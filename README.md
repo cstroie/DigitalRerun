@@ -146,4 +146,7 @@ The code of this project is under the MIT licence ([LICENSE](LICENSE)).
 - **Zork I**: Infocom. Microsoft released it under the MIT licence in 2025 ([historicalsource/zork1](https://github.com/historicalsource/zork1)); `disks/zork1/ZORK1.Z3` is that repository's compiled story file. ZORK is a trademark, which the licence does not cover.
 - **Vezza**: Shawn Sijnstra's Z-machine interpreter for CP/M, GPL-2.0-or-later ([gitlab.com/sijnstra1/vezza](https://gitlab.com/sijnstra1/vezza)). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
 - **ZEXDOC/ZEXALL**: Frank Cringle (GPL). They are downloaded by the test and not shipped.
-- The I/O port layout and the disk formats follow Udo Munk's [z80pack](https://github.com/udo-munk/z80pack).
+- The I/O port layout and the disk formats follow Udo Munk's [z80pack](https://github.com/udo-munk/z80pack). The 8" format is the IBM 3740 single-sided, single-density layout (cpmtools' `ibm-3740`).
+- The printer emulates the Epson FX-80 from its published command set. Its 9-pin font is drawn for this project and is not copied from Epson's character ROM.
+
+**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. ZORK is a trademark of its owner; Zork was written by Infocom, Inc., and released as open source by Microsoft in 2025. IBM is a trademark of International Business Machines Corporation. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.

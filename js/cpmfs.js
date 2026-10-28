@@ -17,7 +17,7 @@
 
     /** The DPBs of system/bios.asm, one per format. */
     const DPB = {
-        'ibm-3740': { spt: 26, bsh: 3, exm: 0, dsm: 242, drm: 63, dirBlocks: 2, off: 2, skew: SKEW6 },
+        'sssd8': { spt: 26, bsh: 3, exm: 0, dsm: 242, drm: 63, dirBlocks: 2, off: 2, skew: SKEW6 },
         'hd4mb': { spt: 128, bsh: 4, exm: 0, dsm: 2039, drm: 1023, dirBlocks: 16, off: 0, skew: null }
     };
 
@@ -263,7 +263,7 @@
     }
 
     /** A new, empty disk of `format` with a file system on it. */
-    function blankDisk(format = 'ibm-3740', options) {
+    function blankDisk(format = 'sssd8', options) {
         return new Disk(format, null, options);
     }
 

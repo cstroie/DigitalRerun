@@ -6,7 +6,7 @@ const { CpmFs, toCpmText, fromCpmText, splitName, isTextName } = require('../js/
 
 const random = (n, seed = 1) => Uint8Array.from({ length: n }, () => (seed = (seed * 1103515245 + 12345) >>> 0) >>> 24);
 
-for (const format of ['ibm-3740', 'hd4mb']) {
+for (const format of ['sssd8', 'hd4mb']) {
     test(`${format}: write, list, read back, erase`, () => {
         const fsys = new CpmFs(new Disk(format));
         const free = fsys.freeBytes();
@@ -29,7 +29,7 @@ for (const format of ['ibm-3740', 'hd4mb']) {
 }
 
 test('a full disk and a full directory are refused', () => {
-    const fsys = new CpmFs(new Disk('ibm-3740'));
+    const fsys = new CpmFs(new Disk('sssd8'));
     assert.throws(() => fsys.write('HUGE.DAT', new Uint8Array(300000)), /disk full/);
     for (let i = 0; i < 64; i++) fsys.write(`F${i}.TXT`, new Uint8Array(1));
     assert.throws(() => fsys.write('ONEMORE.TXT', new Uint8Array(1)), /directory full/);
@@ -46,7 +46,7 @@ test('names and text', () => {
 });
 
 test('system tracks', () => {
-    const fsys = new CpmFs(new Disk('ibm-3740'));
+    const fsys = new CpmFs(new Disk('sssd8'));
     fsys.writeSystem(Uint8Array.of(1, 2, 3));
     assert.deepEqual([...fsys.readSystem().subarray(0, 3)], [1, 2, 3]);
     assert.equal(fsys.readSystem().length, 6656);

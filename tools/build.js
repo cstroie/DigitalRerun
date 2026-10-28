@@ -4,7 +4,7 @@
  *
  *   node tools/build.js
  *
- * system/boot.asm, system/dri/ccp.asm, system/dri/bdos.asm and
+ * system/boot.asm, system/cpm22/ccp.asm, system/cpm22/bdos.asm and
  * system/bios.asm are assembled with js/asm8080.js into
  *   system/boot.bin   the loader (track 0, sector 1)
  *   system/cpm22.bin  the system tracks: loader + CCP + BDOS + BIOS
@@ -32,7 +32,7 @@ const SYSTEM_BYTES = 2 * 26 * 128;   // two 8" tracks
 function build(file, origin, length) {
     const src = fs.readFileSync(path.join(ROOT, 'system', file), 'latin1');
     const r = assemble(src, origin === null ? {} : { defines: { origin } });
-    fs.writeFileSync(path.join(ROOT, 'system', file.replace(/\.asm$/, '.lst').replace(/^dri\//, '')), formatListing(r) + '\n');
+    fs.writeFileSync(path.join(ROOT, 'system', file.replace(/\.asm$/, '.lst').replace(/^cpm22\//, '')), formatListing(r) + '\n');
     const lo = origin === null ? 0 : origin;
     const hi = length ? lo + length - 1 : r.high;
     return { result: r, image: r.image(lo, hi) };
@@ -40,8 +40,8 @@ function build(file, origin, length) {
 
 function main() {
     const boot = build('boot.asm', null, 128);
-    const ccp = build('dri/ccp.asm', CCP, 0x800);
-    const bdos = build('dri/bdos.asm', BDOS, 0xE00);
+    const ccp = build('cpm22/ccp.asm', CCP, 0x800);
+    const bdos = build('cpm22/bdos.asm', BDOS, 0xE00);
     const bios = build('bios.asm', null);
     const biosEnd = bios.result.symbols.get('BIOSEND');
     const biosLoaded = biosEnd - BIOS;
@@ -60,7 +60,7 @@ function main() {
     fs.writeFileSync(path.join(ROOT, 'system/boot.bin'), boot.image);
     fs.writeFileSync(path.join(ROOT, 'system/cpm22.bin'), system);
 
-    const disk = new Disk('ibm-3740');
+    const disk = new Disk('sssd8');
     const fsys = new CpmFs(disk);
     fsys.writeSystem(system);
     const dir = path.join(ROOT, 'disks/cpm22');
@@ -72,7 +72,7 @@ function main() {
     fs.writeFileSync(path.join(ROOT, 'disks/cpm22.dsk'), disk.data);
 
     // The Zork I game disk: an 8" data disk (no system), text files with CP/M line ends.
-    const zork = new Disk('ibm-3740');
+    const zork = new Disk('sssd8');
     const zfs = new CpmFs(zork);
     const zdir = path.join(ROOT, 'disks/zork1');
     for (const f of fs.readdirSync(zdir).sort()) {

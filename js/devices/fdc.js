@@ -21,8 +21,8 @@
 
     /** Formats the machine knows; matched by image size. */
     const FORMATS = {
-        // 8" IBM 3740 single sided, single density: CP/M's distribution format.
-        'ibm-3740': { name: '8" SSSD 250K', tracks: 77, spt: 26, size: 77 * 26 * SECTOR },
+        // 8" single sided, single density: CP/M's distribution format.
+        'sssd8': { name: '8" SSSD 250K', tracks: 77, spt: 26, size: 77 * 26 * SECTOR },
         // z80pack's 4 MB hard disk.
         'hd4mb': { name: '4 MB hard disk', tracks: 255, spt: 128, size: 255 * 128 * SECTOR }
     };

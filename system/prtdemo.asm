@@ -1,4 +1,4 @@
-;	PRTDEMO: show what the Epson FX-80 can do
+;	PRTDEMO: show what the FX-80 printer can do
 ;
 ;	Sends a page of print modes and a bit image to LST: through
 ;	BDOS function 5. A>PRTDEMO
@@ -60,7 +60,7 @@ send:	mov	a,m
 
 text:	db	esc,'@'
 	db	esc,'E',esc,'W',1,'DigitalRerun  FX-80',esc,'W',0,esc,'F',cr,lf
-	db	'CP/M 2.2 printing on an emulated Epson FX-80',cr,lf,lf
+	db	'CP/M 2.2 printing on an emulated FX-80',cr,lf,lf
 	db	'Pica, 10 characters to the inch.',cr,lf
 	db	esc,'M','Elite, 12 characters to the inch.',esc,'P',cr,lf
 	db	15,'Condensed, about 17 characters to the inch, for wide listings.',18,cr,lf

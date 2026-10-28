@@ -1,5 +1,5 @@
 /*
- * fx80.js: an Epson FX-80 dot matrix printer.
+ * fx80.js: an FX-80 compatible dot matrix printer.
  *
  * FX80 interprets the bytes CP/M sends to LST: and strikes dots on a
  * continuous strip of fanfold paper: x is inches from the left edge of the

@@ -2,8 +2,8 @@
 ;
 ;	A small BIOS for the DigitalRerun machine: console, printer and disk
 ;	controller on I/O ports (the disk ports are z80pack's). Drives
-;	A: to D: are 8" IBM 3740 single density disks, I: a 4 MB hard
-;	disk. 8080 code in the syntax of DRI's ASM.COM, so it can be
+;	A: to D: are 8" single density disks, I: a 4 MB hard
+;	disk. 8080 code in the syntax of CP/M's ASM.COM, so it can be
 ;	changed and assembled inside CP/M as well as by tools/build.js.
 ;
 ;	Copyright (c) 2026 Costin Stroie, MIT licence.
@@ -14,7 +14,7 @@ bdos	equ	ccp+806h	;BDOS entry
 bios	equ	ccp+1600h	;base of this BIOS
 nsects	equ	44		;CCP + BDOS: 16 + 28 sectors
 
-iobyte	equ	0003h		;Intel I/O byte
+iobyte	equ	0003h		;I/O byte
 cdisk	equ	0004h		;current user (high nibble) and disk
 buff	equ	0080h		;default DMA buffer
 
@@ -60,7 +60,7 @@ dpbase:	dw	trans,0,0,0,dirbuf,dpb8,csv0,alv0
 	dw	trans,0,0,0,dirbuf,dpb8,csv3,alv3
 dphi:	dw	0,0,0,0,dirbuf,dpbhd,0,alvi
 
-;	8" IBM 3740 SSSD: 77 tracks of 26 sectors, 1K blocks, 2 system tracks
+;	8" SSSD: 77 tracks of 26 sectors, 1K blocks, 2 system tracks
 dpb8:	dw	26		;sectors per track
 	db	3		;block shift: 1K blocks
 	db	7		;block mask

@@ -12,7 +12,7 @@
     const $ = id => document.getElementById(id);
     const DRIVES = [0, 1, 2, 3, 8];                 // A: B: C: D: I:
     const LETTER = d => String.fromCharCode(65 + d);
-    const FLOPPY = 'ibm-3740', HARD = 'hd4mb';
+    const FLOPPY = 'sssd8', HARD = 'hd4mb';
     const formatFor = d => (d === 8 ? HARD : FLOPPY);
 
     const machine = new Machine();

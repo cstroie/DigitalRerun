@@ -167,7 +167,7 @@
             } catch (e) { /* refused or not allowed: the menu item stays */ }
             updateInstallButton();
         } else if (isIos()) {
-            toast('In Safari: Share, then Add to Home Screen.');
+            toast('Tap Share, then Add to Home Screen.');
         } else {
             toast('Use the install icon in the address bar, or the browser menu, Install.');
         }

@@ -1,8 +1,8 @@
 ;	SYSGEN for DigitalRerun: copy the system tracks
 ;
 ;	Reads the two system tracks of a drive into memory and writes
-;	them to another, the way DRI's SYSGEN did. The image sits where
-;	DRI put it, so the usual recipes work:
+;	them to another, the way CP/M's own SYSGEN did. The image sits
+;	where CP/M 2.2 put it, so the usual recipes work:
 ;
 ;	  0900h  loader (track 0, sector 1)
 ;	  0980h  CCP    (runs at 0E400h)

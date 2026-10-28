@@ -22,7 +22,7 @@ SOFTWARE.
 
 -------------------------------------------------------------------------------
 Not covered by this licence (see LICENSE-DRI and the file headers):
-  system/dri/          CP/M 2.2 CCP and BDOS sources, Digital Research
+  system/cpm22/          CP/M 2.2 CCP and BDOS sources, Digital Research
   disks/cpm22/*.COM    CP/M 2.2 utilities, and DUMP.ASM, CBIOS.ASM,
   disks/cpm22/*.ASM    DEBLOCK.ASM, DISKDEF.LIB: Digital Research
   disks/cpm22/*.LIB

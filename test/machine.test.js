@@ -13,7 +13,7 @@ function boot() {
     m.out = '';
     m.console.output = b => { m.out += String.fromCharCode(b); };
     m.fdc.mount(0, Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(__dirname, '../disks/cpm22.dsk')))));
-    m.fdc.mount(1, new Disk('ibm-3740'));
+    m.fdc.mount(1, new Disk('sssd8'));
     assert.ok(m.reset());
     settle(m);
     return m;
@@ -73,7 +73,7 @@ test('the printer port receives LST: output', () => {
     assert.match(printed, /DigitalRerun cold-start loader/);
 });
 
-test('DRI ASM assembles inside CP/M', () => {
+test('ASM assembles inside CP/M', () => {
     const m = boot();
     const out = command(m, 'ASM BOOT');
     assert.match(out, /END OF ASSEMBLY/);
