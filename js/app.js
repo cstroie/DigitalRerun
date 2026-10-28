@@ -781,6 +781,12 @@
         const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) * 2;
         const width = phone.matches ? screen.clientWidth : wrap.clientWidth - padX;
         if (!width) return;
+        // the key row and the front strip stand under the screen, inside the wrap
+        let below = 0;
+        if (!phone.matches) for (const el of [$('keyrow'), document.querySelector('.front')]) {
+            if (el.offsetParent) below += el.offsetHeight + parseFloat(getComputedStyle(el).marginTop);
+        }
+        wrap.style.setProperty('--below', `${below}px`);
         const probe = document.createElement('span');
         probe.textContent = 'M'.repeat(COLS);
         probe.style.cssText = 'position:absolute;visibility:hidden;font-size:100px;white-space:pre';
@@ -789,7 +795,7 @@
         probe.remove();
         if (!at100) return;
         let px = width * 100 / at100;
-        if (!phone.matches) px = Math.min(px, (wrap.clientHeight - padY) / (term.rows * LINE));
+        if (!phone.matches) px = Math.min(px, (wrap.clientHeight - below - padY) / (term.rows * LINE));
         px = Math.max(MIN_PX, Math.min(MAX_PX, Math.floor(px * 100) / 100));
         screen.style.fontSize = `${px}px`;
     }

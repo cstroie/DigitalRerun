@@ -437,8 +437,9 @@ aside [data-tab].active { display: block; }
         min-height: 0;
         position: relative;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         overflow: hidden;
         border-radius: 14px;
     }
@@ -451,7 +452,7 @@ aside [data-tab].active { display: block; }
         display: flex;
         flex-direction: column;
         position: absolute;
-        inset: 0;
+        inset: 0 0 var(--below, 0) 0;           /* the drawer covers the screen, not the keys and the front strip */
         z-index: 3;
         margin: 0;
         max-width: none;
