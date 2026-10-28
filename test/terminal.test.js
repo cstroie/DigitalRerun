@@ -45,3 +45,53 @@ test('attributes and status replies', () => {
     t.writeString('\x1b[6n');
     assert.deepEqual(replies, ['\x1b[1;3R']);
 });
+
+const adm = s => { const t = new Terminal(80, 24, 'adm3a'); t.writeString(s); return t; };
+const row = (t, r) => t.text().split('\n')[r];
+
+test('ADM-3A: cursor address, clear, home and the control-key moves', () => {
+    const t = adm('junk\x1a\x1b=%(X');                       // clear, then row 5 col 8 (32+5, 32+8)
+    assert.equal(row(t, 0), '');
+    assert.equal(row(t, 5), '        X');
+    t.writeString('\x1eA');                                   // home
+    assert.equal(row(t, 0), 'A');
+    t.writeString('\n\x0c\x0cB\x0bC\x08\x08D');               // down, right twice, up, left
+    assert.equal(row(t, 0), 'A  DC');                        // LF keeps the column
+    assert.equal(row(t, 1), '   B');
+});
+
+test('ADM-3A: wraps at once at column 80 and scrolls at the bottom', () => {
+    const t = adm('\x1b=7 ' + 'x'.repeat(80));                // last row, then 80 characters
+    assert.deepEqual([t.x, t.y], [0, 23]);
+    assert.equal(row(t, 22), 'x'.repeat(80));                 // the screen scrolled up a line
+});
+
+test('ADM-3A: erase, insert and delete, and attributes', () => {
+    const t = adm('abcdef\r\nline2\r\nline3');
+    t.writeString('\x1e\x0c\x0c\x1bT');                       // erase from column 3 of row 1
+    assert.equal(row(t, 0), 'ab');
+    t.writeString('\x1b=! \x1bE');                            // row 2: insert a line
+    assert.deepEqual([row(t, 1), row(t, 2)], ['', 'line2']);
+    t.writeString('\x1bR');                                   // and delete it again
+    assert.equal(row(t, 1), 'line2');
+    t.writeString('\x1e\x1bWZ');                              // delete a character, then type
+    assert.equal(row(t, 0), 'Z');
+    t.writeString('\x1bG4R\x1bG0N\x1b)H\x1b(\x1bB3U\x1bC3');
+    assert.equal(t.attrs[0][1], ATTR.REVERSE);
+    assert.equal(t.attrs[0][2], 0);
+    assert.equal(t.attrs[0][3], ATTR.DIM);
+    assert.equal(t.attrs[0][4], ATTR.UNDERLINE);
+    assert.equal(t.attr, 0);
+});
+
+test('switching modes keeps the screen; VT100 codes are text to an ADM-3A', () => {
+    const t = new Terminal();
+    t.writeString('kept');
+    t.mode = 'adm3a';
+    t.writeString('\x1b[2J');                                 // not a VT100 now: ESC [ is ignored, "2J" printed
+    assert.equal(row(t, 0), 'kept2J');
+    t.mode = 'vt100';
+    t.writeString('\x1b[2J');
+    assert.equal(t.text().trim(), '');
+    assert.equal(structuredClone(t.getState()).mode, 'vt100');
+});

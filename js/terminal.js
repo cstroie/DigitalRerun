@@ -1,5 +1,6 @@
 /*
- * terminal.js: an 80x24 VT100 (subset) for the console.
+ * terminal.js: an 80x24 terminal for the console, a VT100 (subset) or an
+ * ADM-3A (mode 'vt100' | 'adm3a', switchable at any time).
  *
  * Terminal holds the screen as cells and interprets the bytes the
  * machine sends; TerminalView draws it into an element. They are apart
@@ -15,6 +16,18 @@
  *           restore), L M (insert, delete lines), @ P (insert, delete
  *           characters), X (erase characters), n (status/cursor report),
  *           c (device attributes), h l (?7 wrap, ?25 cursor, 4 insert)
+ *
+ * ADM-3A mode:
+ *   C0      BEL, BS (left), LF (down, scrolls), VT (up), FF (right),
+ *           CR, SUB (clear and home), RS (home), ESC
+ *   ESC =   row+32 col+32: cursor address
+ *   and the extensions later ADM-compatible terminals added, which CP/M
+ *   programs installed for them send:
+ *   ESC T t (erase to end of line), Y y (to end of screen), * : + ;
+ *   (clear), E (insert line), R (delete line), Q (insert character),
+ *   W (delete character), ) ( (half intensity on, off), G n (attribute
+ *   n: 2 blink, 4 reverse, 8 underline, 0 off), B n / C n (attribute on /
+ *   off: 0 reverse, 1 half intensity, 2 blink, 3 underline, 4 cursor)
  */
 (function (root) {
     'use strict';
@@ -22,9 +35,11 @@
     const BOLD = 1, UNDERLINE = 2, BLINK = 4, REVERSE = 8, DIM = 16;
 
     class Terminal {
-        constructor(cols = 80, rows = 24) {
+        constructor(cols = 80, rows = 24, mode = 'vt100') {
             this.cols = cols;
             this.rows = rows;
+            /** 'vt100' or 'adm3a': which codes the terminal answers to. */
+            this.mode = mode;
             /** Called with an array of bytes to send back (status reports). */
             this.reply = null;
             /** Called on BEL. */
@@ -54,6 +69,7 @@
 
         write(byte) {
             const b = byte & 0x7F;
+            if (this.mode === 'adm3a') return this.writeAdm(b);
             if (b === 0x18 || b === 0x1A) { this.state = 'ground'; return; }
             if (b === 0x1B) { this.state = 'esc'; this.params = ''; return; }
             switch (this.state) {
@@ -68,6 +84,99 @@
             if (b < 0x20) return this.control(b);
             if (b === 0x7F) return;
             this.print(b);
+        }
+
+        /* ---------- ADM-3A ---------- */
+
+        writeAdm(b) {
+            switch (this.state) {
+                case 'adm-esc': return this.admEscape(b);
+                case 'adm-row': this.admRow = b - 32; this.state = 'adm-col'; return;
+                case 'adm-col':
+                    this.state = 'ground';
+                    this.y = Math.max(0, Math.min(this.rows - 1, this.admRow));
+                    this.x = Math.max(0, Math.min(this.cols - 1, b - 32));
+                    this.dirty.add(this.y);
+                    return;
+                case 'adm-g': this.state = 'ground'; this.attr = this.admAttrG(b - 0x30); return;
+                case 'adm-on': case 'adm-off': {
+                    const on = this.state === 'adm-on';
+                    this.state = 'ground';
+                    const bit = { 0x30: REVERSE, 0x31: DIM, 0x32: BLINK, 0x33: UNDERLINE }[b];
+                    if (bit) this.attr = on ? this.attr | bit : this.attr & ~bit;
+                    else if (b === 0x34) this.cursorVisible = on;
+                    return;
+                }
+            }
+            if (this.state !== 'ground') this.state = 'ground';     // left over from VT100 mode
+            if (b >= 0x20 && b < 0x7F) return this.printAdm(b);
+            switch (b) {
+                case 0x07: if (this.bell) this.bell(); break;
+                case 0x08: if (this.x > 0) this.x--; break;
+                case 0x0A: this.lineFeed(); break;
+                case 0x0B: if (this.y > 0) this.y--; break;
+                case 0x0C: if (this.x < this.cols - 1) this.x++; break;
+                case 0x0D: this.x = 0; break;
+                case 0x1A: this.clearAll(); break;
+                case 0x1E: this.x = 0; this.y = 0; break;
+                case 0x1B: this.state = 'adm-esc'; break;
+            }
+            this.dirty.add(this.y);
+        }
+
+        /** The ADM-3A has no deferred wrap: the 80th character moves to the next line at once. */
+        printAdm(b) {
+            this.chars[this.y][this.x] = b;
+            this.attrs[this.y][this.x] = this.attr;
+            this.dirty.add(this.y);
+            if (++this.x === this.cols) { this.x = 0; this.lineFeed(); }
+        }
+
+        admEscape(b) {
+            this.state = 'ground';
+            const ch = String.fromCharCode(b);
+            switch (ch) {
+                case '=': this.state = 'adm-row'; break;
+                case 'T': case 't': this.erase(this.y, this.x, this.cols); break;
+                case 'Y': case 'y':
+                    this.erase(this.y, this.x, this.cols);
+                    for (let r = this.y + 1; r < this.rows; r++) this.erase(r, 0, this.cols);
+                    break;
+                case '*': case ':': case '+': case ';': this.clearAll(); break;
+                case 'E': this.scrollDown(this.y, this.rows - 1, 1); break;
+                case 'R': this.scrollUp(this.y, this.rows - 1, 1); break;
+                case 'Q':
+                    this.chars[this.y].copyWithin(this.x + 1, this.x, this.cols - 1);
+                    this.attrs[this.y].copyWithin(this.x + 1, this.x, this.cols - 1);
+                    this.erase(this.y, this.x, this.x + 1);
+                    break;
+                case 'W':
+                    this.chars[this.y].copyWithin(this.x, this.x + 1);
+                    this.attrs[this.y].copyWithin(this.x, this.x + 1);
+                    this.erase(this.y, this.cols - 1, this.cols);
+                    break;
+                case ')': this.attr |= DIM; break;
+                case '(': this.attr &= ~DIM; break;
+                case 'G': this.state = 'adm-g'; break;
+                case 'B': this.state = 'adm-on'; break;
+                case 'C': this.state = 'adm-off'; break;
+                // anything else: ignored, as a terminal without the feature would
+            }
+        }
+
+        admAttrG(n) {
+            let a = 0;
+            if (n & 2) a |= BLINK;
+            if (n & 4) a |= REVERSE;
+            if (n & 8) a |= UNDERLINE;
+            return a;
+        }
+
+        clearAll() {
+            for (let r = 0; r < this.rows; r++) this.erase(r, 0, this.cols);
+            this.x = 0;
+            this.y = 0;
+            this.attr = 0;
         }
 
         writeString(s) {
@@ -268,7 +377,7 @@
 
         getState() {
             return {
-                cols: this.cols, rows: this.rows,
+                cols: this.cols, rows: this.rows, mode: this.mode, admRow: this.admRow,
                 chars: this.chars.map(r => r.slice()), attrs: this.attrs.map(r => r.slice()),
                 x: this.x, y: this.y, attr: this.attr, top: this.top, bottom: this.bottom,
                 wrapPending: this.wrapPending, autowrap: this.autowrap, insertMode: this.insertMode,

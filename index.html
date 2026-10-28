@@ -90,10 +90,17 @@
 
             <section class="panel" data-tab="setup">
                 <h2>SETUP</h2>
+                <label class="field">Terminal
+                    <select id="terminal">
+                        <option value="vt100">VT100</option>
+                        <option value="adm3a">ADM-3A</option>
+                    </select>
+                </label>
                 <label class="field">Arrow keys
                     <select id="arrows">
                         <option value="wordstar">WordStar (^E ^X ^S ^D)</option>
                         <option value="vt100">VT100 (ESC [ A …)</option>
+                        <option value="adm3a">ADM-3A (^K ^J ^H ^L)</option>
                     </select>
                 </label>
                 <label class="field">Screen
@@ -108,7 +115,7 @@
                     <button id="installBtn" hidden title="Install DigitalRerun as an app that works offline">INSTALL APP</button>
                     <button id="updateBtn" title="Look for a new version">CHECK FOR UPDATES</button>
                 </div>
-                <p class="hint">The console is a VT100. <kbd>^C</kbd> warm start, <kbd>^S</kbd> pause, <kbd>^P</kbd> printer echo, <kbd>^X</kbd> cancel line.</p>
+                <p class="hint">Install your programs for the terminal chosen here (WordStar, Turbo Pascal and most others list both). <kbd>^C</kbd> warm start, <kbd>^S</kbd> pause, <kbd>^P</kbd> printer echo, <kbd>^X</kbd> cancel line.</p>
             </section>
             <section class="panel" data-tab="setup">
                 <h2>SNAPSHOTS <span id="snap-note"></span></h2>

@@ -32,10 +32,12 @@
 
     /* ---------- settings ---------- */
 
-    const settings = { speed: 4, arrows: 'wordstar', phosphor: 'green', tab: 'drives', resume: true };
+    const settings = { speed: 4, terminal: 'vt100', arrows: 'wordstar', phosphor: 'green', tab: 'drives', resume: true };
 
     function applySettings() {
         $('speed').value = String(settings.speed);
+        $('terminal').value = settings.terminal;
+        term.mode = settings.terminal;
         $('arrows').value = settings.arrows;
         $('phosphor').value = settings.phosphor;
         $('resume').checked = settings.resume;
@@ -78,9 +80,11 @@
         }
     }
 
-    for (const key of ['speed', 'arrows', 'phosphor']) {
+    for (const key of ['speed', 'terminal', 'arrows', 'phosphor']) {
         $(key).addEventListener('change', () => {
             settings[key] = key === 'speed' ? Number($(key).value) : $(key).value;
+            // Terminal arrow keys follow the terminal; WordStar keys stay.
+            if (key === 'terminal' && settings.arrows !== 'wordstar') settings.arrows = settings.terminal;
             applySettings();
             Storage.set('settings', settings).catch(() => {});
             focusScreen();
@@ -305,7 +309,8 @@
     const kbd = $('kbd');
     const ARROWS = {
         wordstar: { ArrowUp: [5], ArrowDown: [24], ArrowLeft: [19], ArrowRight: [4], PageUp: [18], PageDown: [3], Home: [17, 83], End: [17, 68], Delete: [7], Insert: [22] },
-        vt100: { ArrowUp: [27, 91, 65], ArrowDown: [27, 91, 66], ArrowRight: [27, 91, 67], ArrowLeft: [27, 91, 68], Delete: [127] }
+        vt100: { ArrowUp: [27, 91, 65], ArrowDown: [27, 91, 66], ArrowRight: [27, 91, 67], ArrowLeft: [27, 91, 68], Delete: [127] },
+        adm3a: { ArrowUp: [11], ArrowDown: [10], ArrowLeft: [8], ArrowRight: [12], Home: [30], Delete: [127] }
     };
 
     function keyBytes(e) {
@@ -547,6 +552,7 @@
         const snap = await Storage.getSnapshot(id);
         if (!snap) throw new Error('that snapshot is gone');
         Snapshot.restore(snap, parts);
+        term.mode = settings.terminal;                    // the SETUP choice wins over the snapshot's
         // The disks are now the snapshot's: keep them as the current ones.
         for (const d of DRIVES) {
             const disk = machine.fdc.drives[d];

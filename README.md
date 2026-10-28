@@ -19,7 +19,7 @@
 DigitalRerun is a complete CP/M 2.2 machine that runs in a web page:
 - a **Z80 with 64K** of RAM;
 - **8" floppy drives** and a 4 MB hard disk;
-- a **VT100** console with a glowing phosphor screen;
+- a **VT100** or **ADM-3A** console with a glowing phosphor screen;
 - an **FX-80 dot matrix printer** that strikes its dots onto fanfold paper, tractor holes and all.
 
 It is not a CP/M look-alike. The machine boots the **original CP/M 2.2 CCP and BDOS**, byte for byte as they shipped, read by a real BIOS from the system tracks of an 8" disk. Everything CP/M did then, it does here: `PIP`, `ED`, `ASM`, `DDT`, `SUBMIT`. You can even rebuild the BIOS inside CP/M with the 1980 recipe and boot the result.
@@ -72,7 +72,7 @@ A: holds the CP/M 2.2 tools (PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB, DUMP),
 | Memory | 64K RAM. CCP at `E400h`, BDOS at `EC00h`, BIOS at `FA00h` |
 | A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K. Compatible with cpmtools (`ibm-3740`) and z80pack |
 | I: | 4 MB hard disk, z80pack geometry |
-| Console | VT100 subset, exactly 80 × 24 at any window size, green, amber or white phosphor; WordStar or VT100 arrow keys. Typing reaches the machine wherever the focus is on the page (except form fields) |
+| Console | VT100 (subset) or ADM-3A, chosen in SETUP; exactly 80 × 24 at any window size, green, amber or white phosphor; WordStar, VT100 or ADM-3A arrow keys. Typing reaches the machine wherever the focus is on the page (except form fields) |
 | Printer | FX-80 compatible, on `LST:` |
 | Lights | POWER, RUN (bright while working, dim while waiting), one per drive, PRN |
 
@@ -95,6 +95,21 @@ The I/O ports follow z80pack for the disk controller:
 ### The panels
 
 Tabs above the side column show one panel at a time: DRIVES, PRINTER and SETUP (and PAPER on a phone). The front strip under the screen has the lights, the speed, PASTE, SHOT (a PNG of the screen), SNAP and RESET.
+
+### The console
+
+SETUP chooses the terminal: **VT100** (the default) or **ADM-3A**. Install your programs for the same one; WordStar, Turbo Pascal and most CP/M software list both. You can switch at any time, and the screen is kept.
+
+- **VT100:** cursor moves and addressing, erasing, bold, dim, underline, blink and reverse video, scroll regions, inserting and deleting lines and characters, and cursor and status reports.
+- **ADM-3A:** `ESC =` cursor addressing, `^Z` clear, `^^` home, and `^H ^J ^K ^L` moves. The 80th character wraps at once, as on the real terminal. It also accepts the extensions that later ADM-compatible terminals added and many CP/M programs send:
+  - `ESC T` / `ESC Y` erase to the end of the line or the screen;
+  - `ESC *` clears the screen;
+  - `ESC E` / `ESC R` insert or delete a line;
+  - `ESC Q` / `ESC W` insert or delete a character;
+  - `ESC )` / `ESC (` half intensity;
+  - `ESC G n` and `ESC B n` / `ESC C n` attributes.
+
+The arrow keys send WordStar's `^E ^X ^S ^D`, VT100's `ESC [ A …` or ADM-3A's `^K ^J ^H ^L`. Terminal arrow keys follow the terminal when you switch.
 
 ### Drives and files
 
@@ -232,4 +247,4 @@ DigitalRerun's own code is under the [MIT licence](LICENSE). The parts that come
 - Zork I under MIT;
 - Vezza under GPL-2.0-or-later (its licence is in `disks/zork1/`).
 
-**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.
+**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. VT100 was a terminal by Digital Equipment Corporation, and ADM-3A one by Lear Siegler, Inc. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.
