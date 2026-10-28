@@ -51,17 +51,23 @@
                     <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
                 </div>
             </div>
+            <nav class="tabs" id="tabs" role="tablist" aria-label="Panels">
+                <button role="tab" data-for="drives">DRIVES</button>
+                <button role="tab" data-for="printer">PRINTER</button>
+                <button role="tab" data-for="paper">PAPER <span class="badge" id="paper-badge" hidden></span></button>
+                <button role="tab" data-for="setup">SETUP</button>
+            </nav>
         </main>
 
         <aside>
-            <section class="panel" id="drives-panel">
+            <section class="panel" id="drives-panel" data-tab="drives">
                 <h2>DRIVES <span id="drive-note"></span></h2>
                 <div id="drives"></div>
                 <div class="files" id="files" aria-live="polite"></div>
                 <p class="hint">Drop files here to copy them to the selected drive, then press <kbd>^C</kbd> at the prompt. Click a file to download it.</p>
             </section>
 
-            <section class="panel">
+            <section class="panel" data-tab="printer">
                 <h2>PRINTER <span>EPSON FX-80</span></h2>
                 <div class="tools">
                     <button id="onlineBtn" class="toggle on" title="On line / off line">ON LINE</button>
@@ -73,7 +79,7 @@
                 <p class="hint">CP/M prints to <code>LST:</code>: <kbd>^P</kbd> echoes the console, <code>PIP LST:=FILE.TXT</code> prints a file.</p>
             </section>
 
-            <section class="panel">
+            <section class="panel" data-tab="setup">
                 <h2>KEYBOARD</h2>
                 <label class="field">Arrow keys
                     <select id="arrows">
@@ -93,8 +99,9 @@
         </aside>
     </div>
 
-    <section class="paper-tray" id="tray" hidden>
+    <section class="paper-tray" id="tray" data-tab="paper" hidden>
         <h2>PAPER</h2>
+        <p class="hint paper-empty">Nothing printed yet. Try <code>PRTDEMO</code>.</p>
         <div id="paper" class="paper"></div>
     </section>
 

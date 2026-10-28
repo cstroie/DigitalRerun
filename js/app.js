@@ -27,12 +27,12 @@
     machine.printer.output = b => {
         printer.write(b);
         leds.prn = performance.now();
-        $('tray').hidden = false;
+        paperOut();
     };
 
     /* ---------- settings ---------- */
 
-    const settings = { speed: 4, arrows: 'wordstar', phosphor: 'green' };
+    const settings = { speed: 4, arrows: 'wordstar', phosphor: 'green', tab: 'drives' };
 
     function applySettings() {
         $('speed').value = String(settings.speed);
@@ -40,6 +40,38 @@
         $('phosphor').value = settings.phosphor;
         $('crt').classList.toggle('amber', settings.phosphor === 'amber');
         $('crt').classList.toggle('white', settings.phosphor === 'white');
+    }
+
+    /* ---------- tabs (phones: one panel at a time) ---------- */
+
+    const phone = matchMedia('(max-width: 900px)');
+    let unseen = 0;
+
+    function showTab(name) {
+        settings.tab = name;
+        for (const b of document.querySelectorAll('#tabs [data-for]')) b.setAttribute('aria-selected', String(b.dataset.for === name));
+        for (const el of document.querySelectorAll('[data-tab]')) el.classList.toggle('active', el.dataset.tab === name);
+        if (name === 'paper') { unseen = 0; $('paper-badge').hidden = true; }
+    }
+
+    $('tabs').addEventListener('click', e => {
+        const b = e.target.closest('[data-for]');
+        if (!b) return;
+        showTab(b.dataset.for);
+        Storage.set('settings', settings).catch(() => {});
+    });
+
+    /** Paper came out of the printer: show the tray, count new sheets on the PAPER tab. */
+    function paperOut() {
+        const tray = $('tray');
+        if (tray.hidden || !tray.classList.contains('printed')) {
+            tray.hidden = false;
+            tray.classList.add('printed');
+        }
+        if (phone.matches && settings.tab !== 'paper') {
+            const sheets = paper.printed().length || 1;
+            if (sheets !== unseen) { unseen = sheets; $('paper-badge').textContent = sheets; $('paper-badge').hidden = false; }
+        }
     }
 
     for (const key of ['speed', 'arrows', 'phosphor']) {
@@ -327,11 +359,14 @@
         $('onlineBtn').classList.toggle('on', machine.printer.online);
         $('onlineBtn').textContent = machine.printer.online ? 'ON LINE' : 'OFF LINE';
     });
-    $('ffBtn').addEventListener('click', () => { printer.formFeed(); $('tray').hidden = false; });
+    $('ffBtn').addEventListener('click', () => { printer.formFeed(); paperOut(); });
     $('tearBtn').addEventListener('click', () => {
         printer.tearOff();
         paper.clear(printer.y);
         $('tray').hidden = true;
+        $('tray').classList.remove('printed');
+        unseen = 0;
+        $('paper-badge').hidden = true;
     });
     $('pngBtn').addEventListener('click', () => {
         paper.printed().forEach((c, i) => c.toBlob(b => download(`jscpm-page-${i + 1}.png`, b, 'image/png')));
@@ -393,6 +428,7 @@
             if (saved) Object.assign(settings, saved);
         } catch (e) { /* private mode: no storage */ }
         applySettings();
+        showTab(settings.tab);
         let disks = new Map();
         try { disks = await Storage.loadDisks(); } catch (e) { /* none */ }
         for (const [drive, d] of disks) {

@@ -247,9 +247,42 @@ kbd, code {
     border-bottom: 1px dashed #b9b5a5;
 }
 
+/* ---- tabs: phones only; the desktop shows every panel ---- */
+.tabs, .paper-empty { display: none; }
+
 @media (max-width: 900px) {
     .layout { grid-template-columns: minmax(0, 1fr); }
     .crt { padding: 10px 8px; }
+    .tabs {
+        display: flex;
+        gap: 4px;
+        margin-top: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: var(--page);
+        padding: 4px 0;
+    }
+    .tabs button { flex: 1; padding: 8px 4px; }
+    .tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--fg-faint); background: var(--panel); }
+    .tabs .badge {
+        display: inline-block;
+        min-width: 1.4em;
+        margin-left: 2px;
+        border-radius: 8px;
+        background: var(--accent);
+        color: var(--page);
+        font-size: 10px;
+        line-height: 1.4em;
+    }
+    .tabs .badge[hidden] { display: none; }
+    /* one panel at a time */
+    [data-tab] { display: none; }
+    [data-tab].active { display: block; }
+    .paper-tray.active .paper-empty { display: block; }
+    .paper-tray.active.printed .paper-empty { display: none; }
+    .paper { max-height: none; }
+    body { gap: 10px; }
 }
 
 @media print {
