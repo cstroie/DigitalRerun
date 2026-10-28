@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    const { Machine, Disk, CpmFs, FORMATS, diskFromImage, Terminal, TerminalView, FX80, PaperView, Storage,
+    const { Machine, Disk, CpmFs, FORMATS, diskFromImage, ALTAIR_SIZE, altairFiles, Terminal, TerminalView, FX80, PaperView, Storage,
         isTextFile, looksText, toCpmText, fromCpmText } = window.DigitalRerun;
 
     const $ = id => document.getElementById(id);
@@ -242,11 +242,32 @@
         const [file] = await pickFile($('fileInput'), '.dsk,.img,.bin');
         if (!file) return;
         try {
-            const disk = diskFromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name });
+            const bytes = new Uint8Array(await file.arrayBuffer());
+            if (bytes.length === ALTAIR_SIZE) { importAltair(drive, file.name, bytes); return; }
+            const disk = diskFromImage(bytes, { name: file.name });
             if ((disk.format === HARD) !== (drive === 8)) throw new Error(`${LETTER(drive)}: takes ${drive === 8 ? 'a 4 MB hard disk' : 'a floppy: 8" or 5¼"'}`);
             mount(drive, disk);
             note(`${file.name} in ${LETTER(drive)}:`);
         } catch (e) { note(e.message, false); }
+    }
+
+    /** An AltairZ80 disk is no machine of ours: its files go onto the disk in the drive, or a new blank one. */
+    function importAltair(drive, name, bytes) {
+        const files = altairFiles(bytes);
+        let disk = machine.fdc.drives[drive];
+        const fresh = !disk;
+        if (fresh) disk = new Disk(drive === 8 ? HARD : 'dsdd5', null, { name: name.replace(/\.[^.]*$/, '') });
+        const fsys = new CpmFs(disk);
+        let n = 0;
+        const failed = [];
+        for (const f of files) {
+            try { fsys.write(f.name, f.data, f.user); n++; } catch (e) { failed.push(f.name); }
+        }
+        if (fresh) mount(drive, disk); else persist(drive);
+        selected = drive;
+        renderDrives();
+        renderFiles();
+        note(`${n} of ${files.length} files from ${name} on ${LETTER(drive)}:${failed.length ? `; no room for ${failed.slice(0, 3).join(', ')}${failed.length > 3 ? '…' : ''} (try I:)` : ' press ^C'}`, !failed.length);
     }
 
     /** Write a system tracks image (loader + CCP + BDOS + BIOS, like system/cpm22.bin) onto a floppy. */

@@ -20,6 +20,7 @@ const SHELL = [
     'js/devices/serial.js',
     'js/machine.js',
     'js/cpmfs.js',
+    'js/altair.js',
     'js/terminal.js',
     'js/font9.js',
     'js/fx80.js',

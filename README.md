@@ -156,6 +156,7 @@ The disassembler ([`js/disz80.js`](js/disz80.js)) knows every Z80 opcode, the un
 - Each drive has these buttons:
   - **LOAD** inserts a `.dsk` image of any of the formats. The two 200K formats share a size, so LOAD reads the directory to tell which it is;
   - **SAVE** downloads one;
+  - An **AltairZ80** image (1,113,536 bytes: 254 tracks of 32 × 137-byte sectors) is no disk of this machine, so LOAD copies its files onto the disk in that drive, or onto a new blank disk (4 MB on I:, 400K on a floppy drive) if it is empty. Load it on I: when it holds more than a floppy does;
   - **NEW** asks for a label and a format, and inserts a blank disk (an 8" one is bootable);
   - **SYS** writes a system tracks image onto a disk.
 - Disks are kept in the browser (IndexedDB), and they are still there tomorrow.
