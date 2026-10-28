@@ -8,7 +8,7 @@
  */
 (function (root) {
     'use strict';
-    const info = { VERSION: '1.10.1', BUILD: '84dc973e567c' };
+    const info = { VERSION: '1.10.2', BUILD: 'a78dda974ca0' };
     if (typeof module !== 'undefined' && module.exports) module.exports = info;
     else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, info);
 })(typeof window !== 'undefined' ? window : globalThis);

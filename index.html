@@ -183,13 +183,14 @@
                 <p class="hint">Click a line of code to set or clear a breakpoint (●); the machine pauses when it gets there. ▶ marks the next instruction. Addresses are hex.</p>
             </section>
         </aside>
+
+        <section class="paper-tray" id="tray" data-tab="paper" hidden>
+            <h2>PAPER</h2>
+            <p class="hint paper-empty">Nothing printed yet. Try <code>PRTDEMO</code>.</p>
+            <div id="paper" class="paper"></div>
+        </section>
     </div>
 
-    <section class="paper-tray" id="tray" data-tab="paper" hidden>
-        <h2>PAPER</h2>
-        <p class="hint paper-empty">Nothing printed yet. Try <code>PRTDEMO</code>.</p>
-        <div id="paper" class="paper"></div>
-    </section>
 
     <input type="file" id="fileInput" hidden>
     <input type="file" id="filesInput" multiple hidden>
