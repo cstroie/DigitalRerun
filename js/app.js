@@ -188,11 +188,13 @@
         note(`new disk in ${LETTER(drive)}:`);
     }
 
-    async function systemDisk() {
-        const res = await fetch('disks/cpm22.dsk');
-        if (!res.ok) throw new Error('disks/cpm22.dsk: ' + res.status);
-        return new Disk(FLOPPY, new Uint8Array(await res.arrayBuffer()), { name: 'CP/M 2.2' });
+    async function shippedDisk(file, name) {
+        const res = await fetch(file);
+        if (!res.ok) throw new Error(`${file}: ${res.status}`);
+        return new Disk(FLOPPY, new Uint8Array(await res.arrayBuffer()), { name });
     }
+
+    const systemDisk = () => shippedDisk('disks/cpm22.dsk', 'CP/M 2.2');
 
     function renderDrives() {
         const box = $('drives');
@@ -443,6 +445,14 @@
             try {
                 mount(0, await systemDisk());
                 if (!machine.fdc.drives[1]) await newDisk(1);
+            } catch (e) { note(e.message, false); }
+        }
+        // The Zork I game disk goes in D: once; after that D: is the owner's.
+        if (!settings.zorkGiven) {
+            try {
+                if (!machine.fdc.drives[3]) mount(3, await shippedDisk('disks/zork1.dsk', 'Zork I'));
+                settings.zorkGiven = true;
+                Storage.set('settings', settings).catch(() => {});
             } catch (e) { note(e.message, false); }
         }
         renderDrives();

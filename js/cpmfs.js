@@ -255,7 +255,7 @@
     }
 
     /** Extensions treated as text when files cross between host and disk. */
-    const TEXT_TYPES = new Set(['ASM', 'MAC', 'Z80', 'LIB', 'SUB', 'TXT', 'DOC', 'BAS', 'PAS', 'C', 'H', 'FOR', 'PLI', 'PRN', 'LST', 'HEX', 'ME', 'INF', 'MSG']);
+    const TEXT_TYPES = new Set(['ASM', 'MAC', 'Z80', 'LIB', 'SUB', 'TXT', 'DOC', 'BAS', 'PAS', 'C', 'H', 'FOR', 'PLI', 'PRN', 'LST', 'HEX', 'ME', 'INF', 'MSG', 'LIC']);
 
     function isTextName(fileName) {
         const m = /\.([^.]+)$/.exec(fileName);

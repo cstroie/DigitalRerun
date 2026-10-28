@@ -3,7 +3,7 @@
  * Stale-while-revalidate: cached files load instantly and are refreshed
  * in the background, so an update shows up on the next visit.
  */
-const CACHE = 'digitalrerun-v2';
+const CACHE = 'digitalrerun-v3';
 const SHELL = [
     './',
     'index.html',
@@ -19,6 +19,7 @@ const SHELL = [
     'js/storage.js',
     'js/app.js',
     'disks/cpm22.dsk',
+    'disks/zork1.dsk',
     'manifest.webmanifest',
     'icons/icon-32.png',
     'icons/icon-180.png',

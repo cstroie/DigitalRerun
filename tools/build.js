@@ -12,6 +12,7 @@
  * system/sysgen.asm and prtdemo.asm become SYSGEN.COM and PRTDEMO.COM on the disk.
  * and disks/cpm22.dsk is made: an 8" disk with those system tracks and
  * every file of disks/cpm22/ (plus the system sources) on it.
+ * disks/zork1/ becomes disks/zork1.dsk, the game disk for D:.
  * Only needed after changing a source: the app loads the results.
  */
 'use strict';
@@ -70,9 +71,21 @@ function main() {
     for (const f of ['bios.asm', 'boot.asm', 'sysgen.asm', 'prtdemo.asm']) fsys.write(f.toUpperCase(), toCpmText(fs.readFileSync(path.join(ROOT, 'system', f))));
     fs.writeFileSync(path.join(ROOT, 'disks/cpm22.dsk'), disk.data);
 
+    // The Zork I game disk: an 8" data disk (no system), text files with CP/M line ends.
+    const zork = new Disk('ibm-3740');
+    const zfs = new CpmFs(zork);
+    const zdir = path.join(ROOT, 'disks/zork1');
+    for (const f of fs.readdirSync(zdir).sort()) {
+        const data = fs.readFileSync(path.join(zdir, f));
+        const name = f.startsWith('LICENSE-') ? f.slice(8) + '.LIC' : f;       // LICENSE-VEZZA -> VEZZA.LIC
+        zfs.write(name, /\.(TXT|LIC)$/i.test(name) ? toCpmText(data) : data);
+    }
+    fs.writeFileSync(path.join(ROOT, 'disks/zork1.dsk'), zork.data);
+
     const hex = v => v.toString(16).toUpperCase().padStart(4, '0') + 'h';
     console.log(`CCP ${hex(CCP)}, BDOS ${hex(BDOS)}, BIOS ${hex(BIOS)}-${hex(bios.result.high)} (${biosLoaded} of ${room} bytes on disk)`);
     console.log(`disks/cpm22.dsk: ${fsys.list().length} files, ${fsys.freeBytes() >> 10}K free`);
+    console.log(`disks/zork1.dsk: ${zfs.list().map(f => f.name).join(' ')}, ${zfs.freeBytes() >> 10}K free`);
 }
 
 main();

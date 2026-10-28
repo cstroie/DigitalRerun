@@ -27,4 +27,8 @@ Not covered by this licence (see LICENSE-DRI and the file headers):
   disks/cpm22/*.ASM    DEBLOCK.ASM, DISKDEF.LIB: Digital Research
   disks/cpm22/*.LIB
   disks/cpm22.dsk      holds the above
+  disks/zork1/ZORK1.Z3 Zork I, MIT licence, Microsoft (disks/zork1/LICENSE-ZORK1)
+  disks/zork1/VEZZA.COM  Vezza by Shawn Sijnstra, GPL-2.0-or-later
+                       (disks/zork1/LICENSE-VEZZA, gitlab.com/sijnstra1/vezza)
+  disks/zork1.dsk      holds the above
   js/z80.js            Z80.js, MIT licence, Molly Howell and contributors

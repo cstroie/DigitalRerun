@@ -24,6 +24,8 @@ A>PIP LST:=BOOT.ASM          (prints on the FX-80)
 
 The A: disk holds the DRI 2.2 tools: PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB and DUMP. It also holds SYSGEN and the sources of this machine's BIOS, loader and SYSGEN.
 
+**D: holds Zork I.** Type `D:`, then `VEZZA ZORK1.Z3`. The game is Microsoft's 2025 MIT release of Infocom's Zork I, and [Vezza](https://gitlab.com/sijnstra1/vezza) is the Z-machine interpreter that runs it. Type `SAVE` and `RESTORE` in the game to keep your progress on the disk. The disk goes in D: the first time the app starts; after that D: is yours.
+
 `^C` warm-starts the system, `^S` pauses output and `^P` echoes the console to the printer.
 
 - **Drives.** ADD FILES (or dropping files on the DRIVES panel) copies them to the selected drive, then press `^C` so CP/M logs the disk in again. Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way. `LOAD` inserts a `.dsk` image, `SAVE` downloads one, and `NEW` inserts a blank, bootable disk. Disks are kept in the browser (IndexedDB) and are still there after a reload.
@@ -109,6 +111,7 @@ js/asm8080.js                  8080 assembler (DRI ASM / Macro Assembler AS synt
 js/storage.js                  disks and settings in IndexedDB
 system/                        loader, BIOS, SYSGEN sources; dri/ CCP and BDOS sources
 disks/cpm22/, cpm22.dsk        the files of the boot disk and the disk image
+disks/zork1/, zork1.dsk        the Zork I game disk (D:) and its files
 tools/build.js                 assemble the system and make the boot disk
 tools/font9.txt, font9.js      the printer font as dot pictures, and its generator
 ```
@@ -128,5 +131,7 @@ The code of this project is under the MIT licence ([LICENSE](LICENSE)).
 
 - **CP/M 2.2** (CCP, BDOS, the utilities): Digital Research. It is redistributed under the 2022 permission from DRDOS, Inc. ([LICENSE-DRI](LICENSE-DRI)). The sources are [Eric Smith's reformatting](https://github.com/brouhaha/cpm22) of DRI's.
 - **Z80.js**: Molly Howell and contributors, MIT.
+- **Zork I**: Infocom. Microsoft released it under the MIT licence in 2025 ([historicalsource/zork1](https://github.com/historicalsource/zork1)); `disks/zork1/ZORK1.Z3` is that repository's compiled story file. ZORK is a trademark, which the licence does not cover.
+- **Vezza**: Shawn Sijnstra's Z-machine interpreter for CP/M, GPL-2.0-or-later ([gitlab.com/sijnstra1/vezza](https://gitlab.com/sijnstra1/vezza)). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
 - **ZEXDOC/ZEXALL**: Frank Cringle (GPL). They are downloaded by the test and not shipped.
 - The I/O port layout and the disk formats follow Udo Munk's [z80pack](https://github.com/udo-munk/z80pack).

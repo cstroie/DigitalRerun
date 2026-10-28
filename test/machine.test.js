@@ -134,3 +134,22 @@ test('a changed BIOS, assembled and installed inside CP/M, boots', () => {
     assert.match(m.out, /My own BIOS, 1980 style/);
     assert.match(command(m, 'DIR'), /PIP {6}COM/);
 });
+
+test('Zork I plays from the D: game disk under Vezza', () => {
+    const m = boot();
+    m.fdc.mount(3, Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(__dirname, '../disks/zork1.dsk')))));
+    command(m, 'D:');
+    assert.match(command(m, 'VEZZA ZORK1.Z3'), /West of House/);
+    // Keys at typing pace: a whole line at once can lose one, as on a real machine.
+    const play = line => {
+        m.out = '';
+        for (const ch of line + '\r') {
+            m.console.type(ch);
+            for (let i = 0; i < 4; i++) m.run(66000);
+        }
+        settle(m);
+        return m.out;
+    };
+    assert.match(play('open mailbox'), /leaflet/);
+    assert.match(play('read leaflet'), /WELCOME TO ZORK/);
+});

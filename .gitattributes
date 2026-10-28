@@ -3,3 +3,5 @@
 *.COM binary
 *.png binary
 disks/cpm22/** -text
+*.Z3 binary
+disks/zork1/** -text
