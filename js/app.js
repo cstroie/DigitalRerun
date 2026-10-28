@@ -96,10 +96,8 @@
     function countUnseen() {
         const sheets = paper.printed().length;
         const n = Math.max(0, sheets - seenSheets);
-        for (const id of ['paper-count', 'paper-badge']) {
-            $(id).textContent = n || '';
-            $(id).hidden = !n;
-        }
+        $('paper-badge').textContent = n || '';
+        $('paper-badge').hidden = !n;
     }
 
     function markSeen() { seenSheets = paper.printed().length; countUnseen(); }

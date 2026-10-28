@@ -169,7 +169,7 @@ header a { color: var(--text-dim); margin-left: auto; }
 .led.run.idle i { background: #2c6e2e; box-shadow: none; }
 
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.mhz { font-family: 'VT323', monospace; font-size: 18px; color: var(--fg-dim); min-width: 72px; text-align: right; }
+.mhz { margin-left: auto; font-family: 'VT323', monospace; font-size: 18px; color: var(--fg-dim); min-width: 72px; text-align: right; }
 
 button, select {
     font: inherit;
@@ -411,11 +411,6 @@ aside [data-tab].active { display: block; }
 .tray-head h2 { margin: 0; }
 .tray-head .close { font-size: 14px; }
 .tray-head .tools button[data-paper] { display: none; }
-#paperBtn .badge {
-    display: inline-block; min-width: 1.4em; margin-left: 3px; border-radius: 8px;
-    background: var(--accent); color: var(--page); font-size: 10px; line-height: 1.4em; text-align: center;
-}
-#paperBtn .badge[hidden] { display: none; }
 #paperBtn[aria-pressed="true"] { color: var(--fg); border-color: var(--fg-faint); }
 #paperClose { display: none; }
 

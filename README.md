@@ -119,7 +119,7 @@ On a desktop the window is the machine, with no page to scroll:
 - **Left:** the screen, as large as the window allows at 80 × 24 and in its proportions.
 - **Right:** tabs for DRIVES, SHELF, PRINTER, SETUP and DEBUG. Only the panel under them scrolls.
 
-**The paper** is a drawer over the screen. While something prints it stays shut: the PRN led lights and PAPER counts the sheets you have not seen. PAPER opens the drawer, at the top of the paper (a clean sheet if nothing was printed yet), with FF, TEAR OFF, PNG, PRINT and ✕ to go back. The machine keeps running underneath.
+**The paper** is a drawer over the screen. While something prints it stays shut: the PRN led lights. PAPER opens the drawer, at the top of the paper (a clean sheet if nothing was printed yet), with FF, TEAR OFF, PNG, PRINT and ✕ to go back. The machine keeps running underneath.
 
 On a phone the page scrolls instead, and the paper is the PAPER tab.
 
