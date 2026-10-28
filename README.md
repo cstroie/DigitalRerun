@@ -1,65 +1,83 @@
+<div align="center">
+
 # DigitalRerun
 
+### CP/M 2.2, running again: a whole 1980s computer in your browser
+
 [![test](https://github.com/cstroie/DigitalRerun/actions/workflows/test.yml/badge.svg)](https://github.com/cstroie/DigitalRerun/actions/workflows/test.yml)
+[![live demo](https://img.shields.io/badge/live-cstroie.github.io%2FDigitalRerun-9dff8a?labelColor=0d0f0c)](https://cstroie.github.io/DigitalRerun/)
+[![licence: MIT](https://img.shields.io/badge/licence-MIT-ffcf5c?labelColor=0d0f0c)](LICENSE)
+![no dependencies](https://img.shields.io/badge/dependencies-none-c9d6c4?labelColor=0d0f0c)
+![offline PWA](https://img.shields.io/badge/PWA-works%20offline-c9d6c4?labelColor=0d0f0c)
 
-*Digital Research's CP/M, running again.* A CP/M 2.2 computer in the browser: a Z80 with 64K of RAM, the **original Digital Research CCP and BDOS**, booted by a real BIOS from the system tracks of an 8" disk, four floppy drives and a hard disk, a VT100 console and an Epson FX-80 printer that prints on fanfold paper. There are no dependencies and no build step.
+**[▶ Boot it now](https://cstroie.github.io/DigitalRerun/)**: no install, no sign-up, no download.
 
-**Live demo: https://cstroie.github.io/DigitalRerun/**
+![DigitalRerun: the CP/M prompt, the drives and a page from the dot matrix printer](docs/screenshot.png)
 
-![DigitalRerun running DIR and printing on the FX-80](docs/screenshot.png)
+</div>
 
-## Quick start
+DigitalRerun is a complete CP/M 2.2 machine that runs in a web page:
+- a **Z80 with 64K** of RAM;
+- **8" floppy drives** and a 4 MB hard disk;
+- a **VT100** console with a glowing phosphor screen;
+- an **FX-80 dot matrix printer** that strikes its dots onto fanfold paper, tractor holes and all.
 
-The machine boots from the CP/M 2.2 disk in A:. B: holds an empty disk.
+It is not a CP/M look-alike. The machine boots the **original CP/M 2.2 CCP and BDOS**, byte for byte as they shipped, read by a real BIOS from the system tracks of an 8" disk. Everything CP/M did then, it does here: `PIP`, `ED`, `ASM`, `DDT`, `SUBMIT`. You can even rebuild the BIOS inside CP/M with the 1980 recipe and boot the result.
+
+It is a single web page with no dependencies, no build step and no server. It installs as an app, works offline, and keeps your disks and your place between visits.
+
+## Why you'll like it
+
+- **The real thing.** The original CP/M 2.2 system, assembled from source by the project's own assembler into exactly the binaries on the 1979 distribution disk. A test checks every byte.
+- **Zork I comes with it.** The great underground empire is on drive D:, ready to play.
+- **A printer you can watch.** PRTDEMO shows off pica, elite, condensed, bold, italic, underlined, enlarged, super- and subscript text and bit-image graphics. Save the pages as PNG or PDF.
+- **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
+- **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
+- **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
+- **Phone friendly.** On a small screen the panels become tabs, ADD FILES replaces drag and drop, and the 80 columns stay readable.
+
+<div align="center">
+
+<img src="docs/zork.png" alt="Zork I running in DigitalRerun" width="640">
+&nbsp;
+<img src="docs/phone.png" alt="DigitalRerun on a phone" width="200">
+
+</div>
+
+## Try it
+
+Open **https://cstroie.github.io/DigitalRerun/**, click the screen and type:
 
 ```
-A>DIR
-A>STAT B:
-A>PIP B:=A:*.COM
-A>ED HELLO.ASM
-A>ASM HELLO
-A>LOAD HELLO
-A>PIP LST:=BOOT.ASM          (prints on the FX-80)
+A>DIR                        what is on the disk
+A>STAT B:                    room on the empty disk in B:
+A>PIP B:=A:*.COM             copy the programs to B:
+A>PRTDEMO                    print a page (see PAPER)
+A>D:                         to the game disk
+D>VEZZA ZORK1.Z3             and you are standing west of a white house
 ```
 
-The A: disk holds the DRI 2.2 tools: PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB and DUMP. It also holds SYSGEN and the sources of this machine's BIOS, loader and SYSGEN.
+A: holds the CP/M 2.2 tools (PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB, DUMP), SYSGEN, PRTDEMO, and the sources of the BIOS, the loader and SYSGEN. B: holds an empty disk, and D: holds Zork I.
 
-**D: holds Zork I.** Type `D:`, then `VEZZA ZORK1.Z3`. The game is Microsoft's 2025 MIT release of Infocom's Zork I, and [Vezza](https://gitlab.com/sijnstra1/vezza) is the Z-machine interpreter that runs it. Type `SAVE` and `RESTORE` in the game to keep your progress on the disk. The disk goes in D: the first time the app starts; after that D: is yours.
+`^C` warm-starts the system, `^S` pauses the output and `^P` echoes the console to the printer. In Zork, `SAVE` and `RESTORE` keep your progress on the disk.
 
-`^C` warm-starts the system, `^S` pauses output and `^P` echoes the console to the printer.
+## What's inside
 
-- **Drives.** ADD FILES (or dropping files on the DRIVES panel) copies them to the selected drive, then press `^C` so CP/M logs the disk in again. Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way. `LOAD` inserts a `.dsk` image, `SAVE` downloads one, and `NEW` inserts a blank, bootable disk. Disks are kept in the browser (IndexedDB) and are still there after a reload.
-- **Speed.** The CPU runs at 2, 4 (the default) or 8 MHz, or as fast as the browser allows. It costs nothing while CP/M waits for a key.
-- **Lights.** POWER, RUN (bright while working, dim while waiting for a key), one light per drive, and PRN.
-
-## Snapshots
-
-A snapshot is the whole machine at one moment: CPU, memory, screen, printer head, and a copy of every disk (so the memory and the disks agree). **SNAP** (next to RESET) or **SAVE SNAPSHOT** in SETUP keeps one, up to twelve. Each shows its time and the last line on the screen. **RESTORE** puts the machine back to that moment, even in the middle of a program or a game of Zork. The printed paper is not part of a snapshot.
-
-With *Save when I leave, and resume there* on (the default), the app also keeps one automatic snapshot. It is saved when the page is hidden or closed, when the window loses focus (at most every 15 seconds), and once a minute while the machine works. The next visit then continues where you left off, and RESET starts afresh. Snapshots are kept in the browser, like the disks.
-
-## As an app
-
-DigitalRerun is a PWA, so it can be installed and works offline:
-
-- **Install.** Where the browser can install apps (Chrome, Edge, Android), a banner offers **INSTALL**. On an iPhone or iPad the banner says how: Share, then *Add to Home Screen*. SETUP has an INSTALL APP button too. *Not now* hides the offer for 30 days, and nothing is offered when the app already runs installed.
-- **Offline.** On the first visit the service worker keeps every file of the app, the CP/M and Zork disks included. After that it starts with no network.
-- **Updates.** A new version downloads in the background and waits. A banner names it (*DigitalRerun 1.2.0 (3f9c…) is ready*) and offers **RELOAD**. Reloading restarts the machine, but your disks are saved first. The app checks for a new version when it comes back to the screen, when the network returns, and every hour. SETUP shows the running version and has CHECK FOR UPDATES.
-
-Releasing a change: raise `VERSION` in [`js/version.js`](js/version.js), then run `node tools/stamp.js`. The stamp is a hash of every file the service worker keeps, and a test fails when it is stale, so no change can ship under an old version's cache.
-
-## The machine
+### The machine
 
 | | |
 |---|---|
-| CPU | Z80 ([Z80.js](https://github.com/DrGoldfire/Z80.js), passes ZEXDOC) |
+| CPU | Z80, passes the ZEXDOC instruction exerciser, at 2, 4 or 8 MHz or as fast as the browser goes. It costs nothing while CP/M waits for a key |
 | Memory | 64K RAM. CCP at `E400h`, BDOS at `EC00h`, BIOS at `FA00h` |
-| A: to D: | 8" IBM 3740 SSSD: 77 tracks, 26 sectors of 128 bytes, skew 6, 2 system tracks, 241K. The same images work with cpmtools (`ibm-3740`) and z80pack |
-| I: | 4 MB hard disk, z80pack geometry (255 tracks × 128 sectors) |
-| Console | VT100 subset, 80 × 24 |
-| Printer | Epson FX-80 on `LST:` |
+| A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K. Compatible with cpmtools (`ibm-3740`) and z80pack |
+| I: | 4 MB hard disk, z80pack geometry |
+| Console | VT100 subset, 80 × 24, green, amber or white phosphor; WordStar or VT100 arrow keys |
+| Printer | FX-80 compatible, on `LST:` |
+| Lights | POWER, RUN (bright while working, dim while waiting), one per drive, PRN |
 
-I/O ports. The disk controller ports are z80pack's:
+At reset, the "boot ROM" loads sector 1 of track 0 into `0000h` and jumps there. That sector is [`system/boot.asm`](system/boot.asm), which reads CCP, BDOS and BIOS from the system tracks and starts the BIOS. Nothing about CP/M is built into the emulator: the system is whatever the boot disk holds.
+
+The I/O ports follow z80pack for the disk controller:
 
 | Port | In | Out |
 |---|---|---|
@@ -73,11 +91,20 @@ I/O ports. The disk controller ports are z80pack's:
 | 13 | | command: 0 read, 1 write |
 | 14 | status of the last command (0 = ok) | |
 
-At reset, the "boot ROM" loads sector 1 of track 0 into `0000h` and jumps there. That sector is [`system/boot.asm`](system/boot.asm), which reads CCP, BDOS and BIOS from the system tracks and jumps to the BIOS. Nothing about CP/M is built into the emulator: the system is whatever the boot disk holds.
+### Drives and files
 
-## Changing the system
+- **ADD FILES** (or dropping files on the DRIVES panel) copies them to the selected drive. Then press `^C`, so CP/M logs the disk in again.
+- Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way in and out.
+- Each drive has these buttons:
+  - **LOAD** inserts a `.dsk` image;
+  - **SAVE** downloads one;
+  - **NEW** inserts a blank, bootable disk;
+  - **SYS** writes a system tracks image onto a disk.
+- Disks are kept in the browser (IndexedDB), and they are still there tomorrow.
 
-The BIOS ([`system/bios.asm`](system/bios.asm)) is 8080 code in the syntax of DRI's `ASM.COM`. You can change it inside CP/M, the way it was done in 1980:
+### Changing the system, the 1980 way
+
+The BIOS ([`system/bios.asm`](system/bios.asm)) is 8080 code in the syntax of CP/M's own `ASM.COM`. Change it inside CP/M:
 
 ```
 A>ED BIOS.ASM                 change it
@@ -91,17 +118,16 @@ A>DDT CPM64.COM
 A>SYSGEN                      source RETURN (use memory), destination A
 ```
 
-Then press RESET. From outside, the SYS button of a drive writes a system tracks image (up to 6656 bytes: the loader at 0, CCP at 80h, BDOS at 880h, BIOS at 1680h, like `system/cpm22.bin`) onto the disk in it. In the SYSGEN image the loader is at `0900h`, the CCP at `0980h`, the BDOS at `1180h` and the BIOS at `1F80h`, so the same recipe can also replace the CCP or the BDOS (ZCPR, ZSDOS, …) with their own offsets.
+Then press RESET and your BIOS boots. In the SYSGEN image the loader sits at `0900h`, the CCP at `0980h`, the BDOS at `1180h` and the BIOS at `1F80h`, so the same recipe also swaps in another CCP or BDOS (ZCPR, ZSDOS …).
 
-On the host side, `node tools/build.js` assembles `system/*.asm` and the DRI sources with [`js/asm8080.js`](js/asm8080.js), a two-pass 8080 assembler for the DRI ASM and Macro Assembler AS dialects. It then writes `system/cpm22.bin` (the system tracks) and `disks/cpm22.dsk`. The CCP and BDOS it produces are byte for byte Digital Research's: a test checks them against the binaries on the CP/M 2.2 distribution disk.
+On the host, `node tools/build.js` assembles everything with [`js/asm8080.js`](js/asm8080.js), a two-pass 8080 assembler that reads both the ASM.COM and the Macro Assembler AS dialects. It writes `system/cpm22.bin` (the system tracks), `disks/cpm22.dsk` and `disks/zork1.dsk`.
 
-## The printer
+### The printer
 
-The FX-80 strikes dots from its own 9-pin font onto 9½" fanfold sheets with tractor holes. You can download the sheets as PNG, or print them (or save as PDF) from the PRINTER panel. TEAR OFF starts a fresh sheet.
+The FX-80 strikes dots from its own 9-pin font onto 9½" fanfold sheets. From the PRINTER panel you can download the sheets as PNG or print them (or save as PDF), and TEAR OFF starts a fresh sheet. It understands:
 
-It understands:
 - CR, LF, FF, BS, HT;
-- SO/DC4 (enlarged for one line) and SI/DC2 (condensed);
+- SO/DC4 (enlarged for one line), SI/DC2 (condensed);
 - `ESC E/F` emphasized, `ESC G/H` double-strike, `ESC 4/5` italic, `ESC -` underline;
 - `ESC W` enlarged, `ESC S/T` super- and subscript, `ESC M/P` elite and pica, `ESC !` master select;
 - `ESC 0 1 2 3 A J` line spacing;
@@ -113,47 +139,92 @@ It understands:
 
 Other sequences are skipped together with their parameters.
 
-## Files
+### Snapshots
+
+A snapshot is the whole machine at one moment: CPU, memory, screen, printer head, and a copy of every disk, so memory and disks always agree.
+
+- **SNAP** (next to RESET) or **SAVE SNAPSHOT** (in SETUP) keeps one, up to twelve. Each shows its time and the last line on the screen.
+- **RESTORE** goes back to that moment, even in the middle of a program or a game.
+- With *Save when I leave, and resume there* on (the default), an automatic snapshot is also kept. It is saved when the page is hidden or closed, when the window loses focus, and once a minute while the machine works. The next visit continues where you left off.
+
+The printed paper is not part of a snapshot.
+
+### As an app
+
+DigitalRerun is a progressive web app:
+
+- **Install.** Where the browser can install apps, a banner offers INSTALL. On an iPhone or iPad it explains *Share, then Add to Home Screen*.
+- **Offline.** After the first visit everything is kept, the disks included, and the app starts with no network.
+- **Updates.** A new version downloads in the background. A banner names it and offers RELOAD; your disks are saved first. SETUP shows the running version and has CHECK FOR UPDATES.
+
+## For developers
 
 ```
-index.html, css/, js/app.js    the page
-js/z80.js                      the Z80 core (vendored, MIT)
-js/machine.js                  RAM, ports, run loop, boot ROM
-js/devices/fdc.js, serial.js   disk controller, console and printer ports
-js/terminal.js                 VT100 terminal and its view
-js/fx80.js, js/font9.js        FX-80 printer, paper view, dot-matrix font
-js/cpmfs.js                    CP/M file system on a disk image (outside the machine)
-js/asm8080.js                  8080 assembler (DRI ASM / Macro Assembler AS syntax)
-js/storage.js                  disks, settings and snapshots in IndexedDB
-js/snapshot.js                 take and restore a snapshot of the whole machine
-js/version.js, js/pwa.js, sw.js   version and build stamp; install, update and offline (PWA)
-tools/stamp.js                 write the build stamp after a change
-system/                        loader, BIOS, SYSGEN sources; dri/ CCP and BDOS sources
-disks/cpm22/, cpm22.dsk        the files of the boot disk and the disk image
-disks/zork1/, zork1.dsk        the Zork I game disk (D:) and its files
-tools/build.js                 assemble the system and make the boot disk
-tools/font9.txt, font9.js      the printer font as dot pictures, and its generator
+git clone https://github.com/cstroie/DigitalRerun.git
+cd DigitalRerun
+python3 -m http.server 8000         # any static server; then open http://localhost:8000
+node --test                         # 38 tests: assembler, file system, terminal, printer, CP/M, snapshots, PWA
+ZEX=1 node --test test/zex.test.js  # ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL)
 ```
 
-## Tests
+The machine tests boot the real disk and type at the CCP. They cover:
+- `DIR`, `STAT`, `PIP`, `ASM`, printing and `SYSGEN`;
+- the whole change-the-BIOS recipe above;
+- Zork;
+- restoring snapshots.
+
+Releasing a change: raise `VERSION` in [`js/version.js`](js/version.js) and run `node tools/stamp.js`. The build stamp is a hash of every file the app keeps offline, and a test fails when it is stale.
 
 ```
-node --test                          assembler, file system, terminal, printer, booting CP/M
-ZEX=1 node --test test/zex.test.js   ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL)
+index.html, css/, js/app.js       the page
+js/z80.js                         the Z80 core (vendored)
+js/machine.js                     RAM, ports, run loop, boot ROM, machine state
+js/devices/fdc.js, serial.js      disk controller, console and printer ports
+js/terminal.js                    VT100 terminal and its view
+js/fx80.js, js/font9.js           printer, paper view, dot matrix font
+js/cpmfs.js                       CP/M file system on a disk image, from outside the machine
+js/asm8080.js                     8080 assembler
+js/storage.js                     disks, settings and snapshots in IndexedDB
+js/snapshot.js                    take and restore a snapshot
+js/version.js, js/pwa.js, sw.js   version and build stamp; install, updates, offline
+system/                           loader, BIOS, SYSGEN, PRTDEMO; cpm22/: the original CCP and BDOS sources
+disks/cpm22/, disks/zork1/        the files of the boot disk and the game disk, and their images
+tools/build.js                    assemble the system, make the disks
+tools/stamp.js                    write the build stamp
+tools/font9.txt, font9.js         the printer font as dot pictures, and its generator
 ```
 
-The machine tests boot the real disk and type at the CCP. They cover DIR, STAT, PIP, ASM, printing and SYSGEN, and the whole change-the-BIOS recipe above.
+## Credits
 
-## Credits and licences
+DigitalRerun stands on the work of many people, with thanks to all of them.
 
-The code of this project is under the MIT licence ([LICENSE](LICENSE)).
+**CP/M**
+- **Gary Kildall** created CP/M at **Digital Research, Inc.** in Pacific Grove, California. This project is named in its honour: Digital Research's system, running again.
+- **DRDOS, Inc.** and its president **Bryan Sparks** granted everyone the right to use, distribute and modify CP/M and its derivatives (2022, at **Scott Chapman**'s request). See [LICENSE-DRI](LICENSE-DRI).
+- **Eric Smith** reformatted the CCP and BDOS sources for cross-assembly ([brouhaha/cpm22](https://github.com/brouhaha/cpm22)); they are in `system/cpm22/`.
+- **Gaby Chaudry**'s [Unofficial CP/M Web Site](http://www.cpm.z80.de/) keeps CP/M's history, its sources and the licence. It is where the CP/M 2.2 distribution files on A: come from.
 
-- **CP/M 2.2** (CCP, BDOS, the utilities): Digital Research. It is redistributed under the 2022 permission from DRDOS, Inc. ([LICENSE-DRI](LICENSE-DRI)). The sources are [Eric Smith's reformatting](https://github.com/brouhaha/cpm22) of DRI's.
-- **Z80.js**: Molly Howell and contributors, MIT.
-- **Zork I**: Infocom. Microsoft released it under the MIT licence in 2025 ([historicalsource/zork1](https://github.com/historicalsource/zork1)); `disks/zork1/ZORK1.Z3` is that repository's compiled story file. ZORK is a trademark, which the licence does not cover.
-- **Vezza**: Shawn Sijnstra's Z-machine interpreter for CP/M, GPL-2.0-or-later ([gitlab.com/sijnstra1/vezza](https://gitlab.com/sijnstra1/vezza)). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
-- **ZEXDOC/ZEXALL**: Frank Cringle (GPL). They are downloaded by the test and not shipped.
-- The I/O port layout and the disk formats follow Udo Munk's [z80pack](https://github.com/udo-munk/z80pack). The 8" format is the IBM 3740 single-sided, single-density layout (cpmtools' `ibm-3740`).
-- The printer emulates the Epson FX-80 from its published command set. Its 9-pin font is drawn for this project and is not copied from Epson's character ROM.
+**Emulation**
+- **Molly Howell** and contributors wrote [Z80.js](https://github.com/DrGoldfire/Z80.js), the Z80 core (MIT).
+- **Frank Cringle** wrote the ZEXDOC/ZEXALL instruction exercisers (GPL). **Tony Nicholson** keeps them at [agn453/ZEXALL](https://github.com/agn453/ZEXALL). They are downloaded by the test and not shipped.
+- **Udo Munk**'s [z80pack](https://github.com/udo-munk/z80pack) set the I/O port layout and the disk formats, and **Michael Haardt**'s cpmtools set the format names.
+- The 8" format is the IBM 3740 single-sided, single-density layout.
+- The printer follows the published command set of the **Epson FX-80**. Its 9-pin font was drawn for this project, not copied from Epson's character ROM.
 
-**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. ZORK is a trademark of its owner; Zork was written by Infocom, Inc., and released as open source by Microsoft in 2025. IBM is a trademark of International Business Machines Corporation. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.
+**Zork I**
+- *Zork I: The Great Underground Empire* is by **Marc Blank** and **Dave Lebling** at **Infocom, Inc.**, from the original MIT *Zork* by **Tim Anderson, Marc Blank, Bruce Daniels and Dave Lebling**.
+- In 2025 **Microsoft**'s Open Source Programs Office, **Team Xbox** and **Activision**, working with **Jason Scott** of the Internet Archive, released it under the MIT licence ([historicalsource/zork1](https://github.com/historicalsource/zork1)). `disks/zork1/ZORK1.Z3` is that repository's compiled story file.
+- **Shawn Sijnstra** wrote [Vezza](https://gitlab.com/sijnstra1/vezza), the Z-machine interpreter for CP/M that plays it (GPL-2.0-or-later). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
+
+**Fonts**
+- [VT323](https://fonts.google.com/specimen/VT323) by **Peter Hull**, and [IBM Plex Sans Condensed](https://github.com/IBM/plex) by **Mike Abbink** and **Bold Monday**, both under the SIL Open Font License.
+
+## Licence
+
+DigitalRerun's own code is under the [MIT licence](LICENSE). The parts that come from elsewhere keep their own licences, listed in [LICENSE](LICENSE):
+- CP/M under the DRDOS, Inc. grant ([LICENSE-DRI](LICENSE-DRI));
+- Z80.js under MIT;
+- Zork I under MIT;
+- Vezza under GPL-2.0-or-later (its licence is in `disks/zork1/`).
+
+**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.
