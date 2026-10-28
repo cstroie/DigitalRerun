@@ -74,6 +74,7 @@ header a { color: var(--text-dim); margin-left: auto; }
     container-type: inline-size;
 }
 .crt:focus-within { border-color: var(--fg-faint); }
+.crt:not(.fitted) { visibility: hidden; }   /* until app.js has the font in and the size fitted: no visible resizing at load */
 .crt::after {
     content: '';
     position: absolute;

@@ -814,6 +814,17 @@
     }
     new ResizeObserver(fitScreen).observe($('screen-wrap'));
     if (document.fonts) document.fonts.ready.then(fitScreen);
+    // show the screen only once VT323 is in and the size fitted (or after 2 s, if the font never comes)
+    const fontSheet = document.querySelector('link[rel="stylesheet"][href*="fonts.googleapis"]');
+    const sheetIn = new Promise(r => {   // VT323 is not known to document.fonts until its stylesheet is in
+        if (!fontSheet || fontSheet.sheet) r();
+        else { fontSheet.addEventListener('load', r); fontSheet.addEventListener('error', r); }
+    });
+    Promise.race([sheetIn.then(() => document.fonts && document.fonts.load('16px VT323')).catch(() => {}), new Promise(r => setTimeout(r, 2000))])
+        .then(() => {
+            fitScreen();
+            requestAnimationFrame(() => { fitScreen(); $('crt').classList.add('fitted'); });   // the strip under it changes height with the font: fit again
+        });
 
     /** A PNG of the screen as it looks: phosphor colour, glow, attributes, cursor, scan lines. */
     async function screenShot() {
