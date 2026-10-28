@@ -419,7 +419,7 @@ aside [data-tab].active { display: block; }
 
 /* ---- desktop: the window is the machine. The screen fills the left at
    80 x 24, the side panels scroll under their tabs, and the paper is a
-   drawer over the screen that peeks while printing. ---- */
+   drawer over the screen. ---- */
 @media (min-width: 901px) {
     body { height: 100vh; overflow: hidden; padding: 14px 16px; gap: 12px; }
     header, .layout { max-width: none; }            /* the window is the limit: the screen grows to its height */
@@ -467,11 +467,9 @@ aside [data-tab].active { display: block; }
         transform: translateY(102%);
         transition: transform 260ms ease;
     }
-    .bay > .paper-tray.peek { transform: translateY(calc(100% - 120px)); cursor: pointer; }
     .bay > .paper-tray.open { transform: none; }
     .bay > .paper-tray .tray-head .tools button[data-paper],
     .bay > .paper-tray #paperClose { display: inline-block; }
-    .bay > .paper-tray.peek .tray-head .tools { visibility: hidden; }
     .bay > .paper-tray { padding: 0; }
     .bay > .paper-tray .paper { position: absolute; inset: 0; max-height: none; margin: 0; padding-top: 44px; box-sizing: border-box; border-radius: inherit; }   /* the paper is as tall as the screen; the head lies over it */
     .bay > .paper-tray .tray-head {

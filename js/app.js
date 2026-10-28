@@ -77,17 +77,17 @@
 
     /*
      * The paper: on a phone it is the PAPER tab, after the side panels; on a
-     * desktop a drawer over the screen. While printing with the drawer shut,
-     * it peeks up from the bottom of the screen, showing the newest line, and
-     * the PAPER button counts the sheets not seen yet.
+     * desktop a drawer over the screen. While printing with the drawer shut
+     * it stays shut: the PRN led lights and the PAPER button counts the sheets
+     * not seen yet.
      */
-    let seenSheets = 0, peekTimer = 0, headPending = false;
+    let seenSheets = 0, headPending = false;
     const drawerOpen = () => $('tray').classList.contains('open');
 
     function placeTray() {
         const tray = $('tray');
         if (phone.matches) {
-            tray.classList.remove('open', 'peek');
+            tray.classList.remove('open');
             document.querySelector('.layout').appendChild(tray);
         } else $('bay').appendChild(tray);
         $('paperBtn').setAttribute('aria-pressed', 'false');
@@ -104,7 +104,7 @@
 
     function markSeen() { seenSheets = paper.printed().length; countUnseen(); }
 
-    /** Scroll the paper so the print head's line is in view (near the top when peeking). */
+    /** Scroll the paper so the print head's line is in view (near the top when the drawer is shut). */
     function showHead() {
         if (headPending) return;
         headPending = true;
@@ -124,7 +124,6 @@
         if (phone.matches) { showTab('paper'); $('tray').scrollIntoView({ block: 'start' }); markSeen(); return; }
         const tray = $('tray');
         tray.classList.toggle('open', open);
-        tray.classList.remove('peek');
         $('paperBtn').setAttribute('aria-pressed', String(open));
         if (open) { markSeen(); showHead(); } else focusScreen();
     }
@@ -142,16 +141,12 @@
         }
         if (drawerOpen()) { markSeen(); showHead(); return; }
         countUnseen();
-        tray.classList.add('peek');
         showHead();
-        clearTimeout(peekTimer);
-        peekTimer = setTimeout(() => tray.classList.remove('peek'), 2500);
     }
 
     $('paperBtn').addEventListener('click', () => openPaper(phone.matches || !drawerOpen()));
     $('paperClose').addEventListener('click', () => openPaper(false));
     $('tray').addEventListener('click', e => {
-        if ($('tray').classList.contains('peek')) { openPaper(true); return; }
         const b = e.target.closest('[data-paper]');
         if (b) $(b.dataset.paper).click();
     });
@@ -856,7 +851,7 @@
         printer.tearOff();
         paper.clear(printer.y);
         $('tray').hidden = true;
-        $('tray').classList.remove('printed', 'peek');
+        $('tray').classList.remove('printed');
         seenSheets = 0;
         countUnseen();
     });
