@@ -9,7 +9,9 @@
  *   OUT 16  DMA address, high byte
  *   OUT 13  command: 0 = read a sector into DMA, 1 = write it from DMA
  *   IN  14  status of the last command (0 = ok)
- *   IN  10  0FFh when the selected drive holds a disk, else 0 (DigitalRerun's own)
+ *   IN  10  0FFh when the selected drive holds a disk, else 0
+ *   IN  18  the format of that disk: 0 8" SSSD, 1 5¼" SSDD 512, 2 5¼" DSDD 512,
+ *           3 5¼" SSDD 1K, 4 hard disk (ports 10 in and 18: this machine's own)
  *
  * A sector is 128 bytes. A disk is a flat image, track after track,
  * sectors 1..spt in order (no skew in the image: the BIOS translates).
@@ -19,19 +21,37 @@
 
     const SECTOR = 128;
 
-    /** Formats the machine knows; matched by image size. */
+    /**
+     * Formats the machine knows. `code` is what IN 18 reports to the BIOS;
+     * `sectors` x `seclen` is a track as the image stores it (raw, in
+     * physical order, like cpmtools' images); `spt` counts 128-byte
+     * records, the unit the BIOS asks for.
+     */
     const FORMATS = {
-        // 8" single sided, single density: CP/M's distribution format.
-        'sssd8': { name: '8" SSSD 250K', tracks: 77, spt: 26, size: 77 * 26 * SECTOR },
+        // 8" single sided, single density: CP/M's distribution format (the BIOS does the skew).
+        'sssd8': { code: 0, name: '8" SSSD 250K', tracks: 77, sectors: 26, seclen: 128 },
+        // 5 1/4" double density data disks, the common archive formats.
+        'ssdd5': { code: 1, name: '5¼" SSDD 200K, 512-byte sectors', tracks: 40, sectors: 10, seclen: 512 },
+        'dsdd5': { code: 2, name: '5¼" DSDD 400K, 512-byte sectors', tracks: 80, sectors: 10, seclen: 512 },
+        'ssdd5k': { code: 3, name: '5¼" SSDD 200K, 1K sectors', tracks: 40, sectors: 5, seclen: 1024 },
         // z80pack's 4 MB hard disk.
-        'hd4mb': { name: '4 MB hard disk', tracks: 255, spt: 128, size: 255 * 128 * SECTOR }
+        'hd4mb': { code: 4, name: '4 MB hard disk', tracks: 255, sectors: 128, seclen: 128 }
     };
+    for (const f of Object.values(FORMATS)) {
+        f.spt = f.sectors * f.seclen / SECTOR;
+        f.size = f.tracks * f.sectors * f.seclen;
+    }
 
     const STATUS = { OK: 0, NO_DRIVE: 1, BAD_TRACK: 2, BAD_SECTOR: 3, READ_ERROR: 5, WRITE_ERROR: 6, BAD_COMMAND: 7 };
 
+    /** The formats an image of this size may be (two 200K formats share a size). */
+    function formatsOfSize(size) {
+        return Object.keys(FORMATS).filter(id => FORMATS[id].size === size);
+    }
+
     function formatOfSize(size) {
-        for (const [id, f] of Object.entries(FORMATS)) if (f.size === size) return id;
-        return null;
+        const ids = formatsOfSize(size);
+        return ids.length === 1 ? ids[0] : null;
     }
 
     /** A disk: an image plus its format. `data` is used in place. */
@@ -40,8 +60,11 @@
             const f = FORMATS[format];
             if (!f) throw new Error(`unknown disk format '${format}'`);
             this.format = format;
+            this.code = f.code;
             this.tracks = f.tracks;
             this.spt = f.spt;
+            this.seclen = f.seclen;
+            this.sectors = f.sectors;
             this.data = data || new Uint8Array(f.size).fill(0xE5);
             if (this.data.length !== f.size) throw new Error(`a ${format} image is ${f.size} bytes, not ${this.data.length}`);
             this.name = name;
@@ -49,14 +72,22 @@
             this.dirty = false;
         }
 
+        /** An image whose size names one format (cpmfs.diskFromImage also settles the others). */
         static fromImage(data, options) {
             const format = formatOfSize(data.length);
-            if (!format) throw new Error(`no disk format is ${data.length} bytes`);
+            if (!format) {
+                if (formatsOfSize(data.length).length) throw new Error(`${data.length} bytes fits more than one format`);
+                throw new Error(`no disk format is ${data.length} bytes`);
+            }
             return new Disk(format, data, options);
         }
 
+        /** Byte offset of 128-byte record `sector` (1-based) of `track`, in the image. */
         offset(track, sector) {
-            return (track * this.spt + (sector - 1)) * SECTOR;
+            const rec = sector - 1;
+            if (this.seclen === SECTOR) return (track * this.sectors + rec) * SECTOR;
+            const per = this.seclen / SECTOR;
+            return (track * this.sectors + Math.floor(rec / per)) * this.seclen + (rec % per) * SECTOR;
         }
     }
 
@@ -93,6 +124,7 @@
         in(port) {
             if (port === 14) return this.status;
             if (port === 10) return this.drives[this.drive] ? 0xFF : 0x00;
+            if (port === 18) return this.drives[this.drive] ? this.drives[this.drive].code : 0xFF;
             return 0xFF;
         }
 
@@ -120,7 +152,7 @@
         }
     }
 
-    const api = { FDC, Disk, FORMATS, STATUS, SECTOR, formatOfSize };
+    const api = { FDC, Disk, FORMATS, STATUS, SECTOR, formatOfSize, formatsOfSize };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

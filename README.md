@@ -72,7 +72,7 @@ A: holds the CP/M 2.2 tools (PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB, DUMP),
 |---|---|
 | CPU | Z80, passes the ZEXDOC instruction exerciser, at 2, 4 or 8 MHz or as fast as the browser goes. It costs nothing while CP/M waits for a key |
 | Memory | 64K RAM. CCP at `E400h`, BDOS at `EC00h`, BIOS at `FA00h` |
-| A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K. Compatible with cpmtools (`ibm-3740`) and z80pack |
+| A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K (boots). Also three 5¼" double-density data formats: SSDD 200K and DSDD 400K with 512-byte sectors, and SSDD 200K with 1K sectors. All are raw images, compatible with cpmtools (`ibm-3740`, `kpii`, `kpiv`, `osborne1`: the Kaypro II, Kaypro 4 and Osborne 1 formats) and z80pack |
 | I: | 4 MB hard disk, z80pack geometry |
 | Console | VT100 (subset) or ADM-3A, chosen in SETUP; exactly 80 × 24 at any window size, green, amber or white phosphor; WordStar, VT100 or ADM-3A arrow keys. Typing reaches the machine wherever the focus is on the page (except form fields) |
 | Printer | FX-80 compatible, on `LST:` |
@@ -95,6 +95,7 @@ The I/O ports follow z80pack for the disk controller:
 | 15, 16 | | DMA address (low, high) |
 | 13 | | command: 0 read, 1 write |
 | 14 | status of the last command (0 = ok) | |
+| 18 | the format of the disk in the selected drive (0 8", 1–3 the 5¼" ones, 4 hard disk) | |
 
 ### The shelf
 
@@ -134,9 +135,9 @@ The arrow keys send WordStar's `^E ^X ^S ^D`, VT100's `ESC [ A …` or ADM-3A's 
 - **ADD FILES** (or dropping files on the DRIVES panel) copies them to the selected drive. Then press `^C`, so CP/M logs the disk in again.
 - Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way in and out.
 - Each drive has these buttons:
-  - **LOAD** inserts a `.dsk` image;
+  - **LOAD** inserts a `.dsk` image of any of the formats. The two 200K formats share a size, so LOAD reads the directory to tell which it is;
   - **SAVE** downloads one;
-  - **NEW** asks for a label and inserts a blank, bootable disk;
+  - **NEW** asks for a label and a format, and inserts a blank disk (an 8" one is bootable);
   - **SYS** writes a system tracks image onto a disk.
 - Disks are kept in the browser (IndexedDB), and they are still there tomorrow.
 - **Paper tape.** LOAD TAPE puts a file from your device in the reader, and `PIP FILE.TXT=RDR:` reads it in. `PIP PUN:=FILE.TXT` punches a file, and SAVE TAPE downloads it, with PIP's leader nulls and closing `^Z` trimmed. Text gets CP/M's line ends on the way in and yours on the way out.
@@ -247,7 +248,8 @@ DigitalRerun stands on the work of many people, with thanks to all of them.
 **Emulation**
 - **Molly Howell** and contributors wrote [Z80.js](https://github.com/DrGoldfire/Z80.js), the Z80 core (MIT).
 - **Frank Cringle** wrote the ZEXDOC/ZEXALL instruction exercisers (GPL). **Tony Nicholson** keeps them at [agn453/ZEXALL](https://github.com/agn453/ZEXALL). They are downloaded by the test and not shipped.
-- **Udo Munk**'s [z80pack](https://github.com/udo-munk/z80pack) set the I/O port layout and the disk formats, and **Michael Haardt**'s cpmtools set the format names.
+- **Udo Munk**'s [z80pack](https://github.com/udo-munk/z80pack) set the I/O port layout and the disk formats. **Michael Haardt**'s [cpmtools](http://www.moria.de/~michael/cpmtools/) `diskdefs` give the geometry of every format here.
+- The 5¼" formats are those of the Kaypro II, the Kaypro 4 and the Osborne 1, read as cpmtools reads their images.
 - The 8" format is the IBM 3740 single-sided, single-density layout.
 - The printer follows the published command set of the **Epson FX-80**. Its 9-pin font was drawn for this project, not copied from Epson's character ROM.
 
@@ -272,4 +274,4 @@ DigitalRerun's own code is under the [MIT licence](LICENSE). The parts that come
 - Zork I under MIT;
 - Vezza under GPL-2.0-or-later (its licence is in `disks/zork1/`).
 
-**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. VT100 was a terminal by Digital Equipment Corporation, and ADM-3A one by Lear Siegler, Inc. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.
+**Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. Kaypro and Osborne are the names of their makers. VT100 was a terminal by Digital Equipment Corporation, and ADM-3A one by Lear Siegler, Inc. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.

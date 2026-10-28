@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    const { Machine, Disk, CpmFs, Terminal, TerminalView, FX80, PaperView, Storage,
+    const { Machine, Disk, CpmFs, FORMATS, diskFromImage, Terminal, TerminalView, FX80, PaperView, Storage,
         isTextFile, looksText, toCpmText, fromCpmText } = window.DigitalRerun;
 
     const $ = id => document.getElementById(id);
@@ -179,8 +179,8 @@
         const [file] = await pickFile($('fileInput'), '.dsk,.img,.bin');
         if (!file) return;
         try {
-            const disk = Disk.fromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name });
-            if (disk.format !== formatFor(drive)) throw new Error(`${LETTER(drive)}: takes ${drive === 8 ? 'a 4 MB hard disk' : 'an 8" disk (256256 bytes)'}`);
+            const disk = diskFromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name });
+            if ((disk.format === HARD) !== (drive === 8)) throw new Error(`${LETTER(drive)}: takes ${drive === 8 ? 'a 4 MB hard disk' : 'a floppy: 8" or 5¼"'}`);
             mount(drive, disk);
             note(`${file.name} in ${LETTER(drive)}:`);
         } catch (e) { note(e.message, false); }
@@ -205,8 +205,15 @@
             if (answer === null) return;                              // cancelled
             label = answer.trim().slice(0, 32) || label;
         }
-        const disk = new Disk(formatFor(drive), null, { name: label });
-        if (drive !== 8 && machine.fdc.drives[0]) {
+        let format = formatFor(drive);
+        if (ask && drive !== 8) {
+            const floppies = Object.keys(FORMATS).filter(f => f !== HARD);
+            const answer = prompt(`Format for ${LETTER(drive)}:\n${floppies.map((f, i) => `${i + 1}  ${FORMATS[f].name}${i ? '' : ' (bootable)'}`).join('\n')}`, '1');
+            if (answer === null) return;
+            format = floppies[Number(answer) - 1] || FLOPPY;
+        }
+        const disk = new Disk(format, null, { name: label });
+        if (format === FLOPPY && machine.fdc.drives[0] && machine.fdc.drives[0].format === FLOPPY) {
             // make it bootable: a copy of A:'s system tracks
             new CpmFs(disk).writeSystem(new CpmFs(machine.fdc.drives[0]).readSystem());
         }
@@ -233,7 +240,7 @@
             row.innerHTML = `<span class="led disk"><i></i></span><span class="letter">${LETTER(d)}:</span>` +
                 `<span class="name${disk ? '' : ' empty'}"></span><span class="acts"></span>`;
             row.querySelector('.name').textContent = disk ? disk.name || '(disk)' : (d === 8 ? 'no hard disk' : 'empty');
-            row.querySelector('.name').title = disk ? `${disk.name} (${d === 8 ? '4 MB' : '8" SSSD'})` : '';
+            row.querySelector('.name').title = disk ? `${disk.name} (${FORMATS[disk.format].name})` : '';
             const acts = row.querySelector('.acts');
             const btn = (label, title, fn) => {
                 const b = document.createElement('button');
@@ -320,7 +327,7 @@
 
     const { Shelf } = window.DigitalRerun;
     let shelf = [];
-    const kindOf = format => (format === HARD ? '4 MB hard disk, goes into I:' : '8" disk');
+    const kindOf = format => (format === HARD ? '4 MB hard disk, goes into I:' : FORMATS[format].name);
 
     async function fetchBytes(path) {
         const res = await fetch(path);
@@ -440,7 +447,7 @@
         const [file] = await pickFile($('fileInput'), '.dsk,.img,.bin');
         if (!file) return;
         try {
-            const disk = Disk.fromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name.replace(/\.[^.]*$/, '') });
+            const disk = diskFromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name.replace(/\.[^.]*$/, '') });
             await keepDisk(disk, disk.name);
         } catch (e) { note(e.message, false); }
     });

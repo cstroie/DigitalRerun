@@ -48,7 +48,7 @@
                 case 1: return this.console.read();
                 case 2: return this.printer.status();
                 case 4: return this.reader.read();
-                case 10: case 14: return this.fdc.in(port);
+                case 10: case 14: case 18: return this.fdc.in(port);
                 default: return 0xFF;
             }
         }

@@ -10,7 +10,7 @@
     'use strict';
 
     const node = typeof module !== 'undefined' && module.exports;
-    const { Disk } = node ? require('./devices/fdc.js') : root.DigitalRerun;
+    const { Disk, formatsOfSize } = node ? require('./devices/fdc.js') : root.DigitalRerun;
 
     const SECTOR = 128;
     const SKEW6 = [1, 7, 13, 19, 25, 5, 11, 17, 23, 3, 9, 15, 21, 2, 8, 14, 20, 26, 6, 12, 18, 24, 4, 10, 16, 22];
@@ -18,6 +18,10 @@
     /** The DPBs of system/bios.asm, one per format. */
     const DPB = {
         'sssd8': { spt: 26, bsh: 3, exm: 0, dsm: 242, drm: 63, dirBlocks: 2, off: 2, skew: SKEW6 },
+        // 5 1/4" data disks (cpmtools kpii, kpiv, osborne1): sector placement is the disk's
+        'ssdd5': { spt: 40, bsh: 3, exm: 0, dsm: 194, drm: 63, dirBlocks: 2, off: 1, skew: null },
+        'dsdd5': { spt: 40, bsh: 4, exm: 1, dsm: 196, drm: 63, dirBlocks: 1, off: 1, skew: null },
+        'ssdd5k': { spt: 40, bsh: 3, exm: 0, dsm: 184, drm: 63, dirBlocks: 2, off: 3, skew: null },
         'hd4mb': { spt: 128, bsh: 4, exm: 0, dsm: 2039, drm: 1023, dirBlocks: 16, off: 0, skew: null }
     };
 
@@ -53,8 +57,8 @@
             const { spt, off, skew } = this.dpb;
             const track = off + Math.floor(rec / spt);
             const s = rec % spt;
-            const sector = skew ? skew[s] : s + 1;
-            return (track * spt + sector - 1) * SECTOR;
+            const sector = skew ? skew[s] : s + 1;            // the 8" skew is the BIOS's
+            return this.disk.offset(track, sector);
         }
 
         readBlockRecord(block, r) {
@@ -283,12 +287,38 @@
         return !!m && TEXT_TYPES.has(m[1].toUpperCase());
     }
 
+    /**
+     * How much a disk's directory looks like a CP/M directory under its
+     * format: entries used well count, rubbish counts against.
+     */
+    function directoryScore(disk) {
+        const fsys = new CpmFs(disk);
+        let score = 0;
+        for (let i = 0; i < fsys.entries; i++) {
+            const e = fsys.entry(i);
+            if (e[0] === 0xE5) { score += 0.1; continue; }
+            const nameOk = e[0] <= 15 && [...e.subarray(1, 12)].every(c => (c & 0x7F) >= 0x20 && (c & 0x7F) < 0x7F);
+            const blocksOk = fsys.blocksOf(e).every(b => b >= fsys.dpb.dirBlocks && b <= fsys.dpb.dsm);
+            score += nameOk && blocksOk ? 1 : -1;
+        }
+        return score;
+    }
+
+    /** A disk from an image, its format settled by size and, where sizes are shared, by its directory. */
+    function diskFromImage(data, options) {
+        const ids = formatsOfSize(data.length);
+        if (!ids.length) throw new CpmFsError(`no disk format is ${data.length} bytes`);
+        if (ids.length === 1) return new Disk(ids[0], data, options);
+        const scored = ids.map(id => ({ id, score: directoryScore(new Disk(id, data)) })).sort((a, b) => b.score - a.score);
+        return new Disk(scored[0].id, data, options);
+    }
+
     /** A new, empty disk of `format` with a file system on it. */
     function blankDisk(format = 'sssd8', options) {
         return new Disk(format, null, options);
     }
 
-    const api = { CpmFs, CpmFsError, DPB, splitName, blankDisk, toCpmText, fromCpmText, isTextName, looksText, isTextFile };
+    const api = { CpmFs, CpmFsError, DPB, splitName, blankDisk, diskFromImage, directoryScore, toCpmText, fromCpmText, isTextName, looksText, isTextFile };
     if (node) module.exports = api;
     else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

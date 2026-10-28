@@ -2,7 +2,8 @@
 ;
 ;	A small BIOS for the DigitalRerun machine: console, printer and disk
 ;	controller on I/O ports (the disk ports are z80pack's). Drives
-;	A: to D: are 8" single density disks, I: a 4 MB hard
+;	A: to D: take 8" single density disks and three 5 1/4" double
+;	density formats (the controller reports which), I: a 4 MB hard
 ;	disk. 8080 code in the syntax of CP/M's ASM.COM, so it can be
 ;	changed and assembled inside CP/M as well as by tools/build.js.
 ;
@@ -33,6 +34,7 @@ fdcop	equ	13		;command: 0 read, 1 write
 fdcst	equ	14		;status: 0 ok
 dmal	equ	15		;DMA address, low byte
 dmah	equ	16		;DMA address, high byte
+fdcfmt	equ	18		;IN: format of the selected drive's disk
 
 	org	bios
 
@@ -72,6 +74,41 @@ dpb8:	dw	26		;sectors per track
 	db	0c0h,0		;directory blocks
 	dw	16		;directory check size
 	dw	2		;system tracks
+
+;	5 1/4" SSDD, 40 tracks of 10 x 512 bytes, 1K blocks, 1 system track
+dpbs5:	dw	40		;128-byte records per track
+	db	3,7,0		;1K blocks
+	dw	194		;highest block number
+	dw	63
+	db	0c0h,0
+	dw	16
+	dw	1
+
+;	5 1/4" DSDD, 80 tracks of 10 x 512 bytes, 2K blocks, 1 system track
+dpbd5:	dw	40
+	db	4,15,1		;2K blocks
+	dw	196
+	dw	63
+	db	080h,0
+	dw	16
+	dw	1
+
+;	5 1/4" SSDD, 40 tracks of 5 x 1024 bytes, 1K blocks, 3 system tracks
+dpbk5:	dw	40
+	db	3,7,0
+	dw	184
+	dw	63
+	db	0c0h,0
+	dw	16
+	dw	3
+
+;	by format (IN fdcfmt): skew table, DPB. The controller places the
+;	5 1/4" records itself, so they need no table.
+fmttab:	dw	trans,dpb8
+	dw	0,dpbs5
+	dw	0,dpbd5
+	dw	0,dpbk5
+nfmts	equ	4
 
 ;	4 MB hard disk: 255 tracks of 128 sectors, 2K blocks
 dpbhd:	dw	128		;sectors per track
@@ -225,6 +262,38 @@ seldsk:	lxi	h,0		;HL = 0: no such drive
 	dad	h
 	lxi	d,dpbase
 	dad	d
+	in	fdcfmt		;which format is the disk?
+	cpi	nfmts
+	jnc	selno
+	push	h		;the DPH
+	add	a
+	add	a		;4 bytes an entry
+	mov	e,a
+	mvi	d,0
+	lxi	h,fmttab
+	dad	d
+	mov	e,m		;DE = its skew table
+	inx	h
+	mov	d,m
+	inx	h
+	mov	a,m		;HL = its DPB
+	inx	h
+	mov	h,m
+	mov	l,a
+	xthl			;HL = DPH, the DPB on the stack
+	mov	m,e		;DPH+0: skew table
+	inx	h
+	mov	m,d
+	lxi	d,9
+	dad	d		;DPH+10: DPB
+	pop	d
+	mov	m,e
+	inx	h
+	mov	m,d
+	lxi	d,-11
+	dad	d		;back to the DPH
+	ret
+selno:	lxi	h,0		;a format this BIOS does not know
 	ret
 seli:	out	fdcd
 	in	fdcd
