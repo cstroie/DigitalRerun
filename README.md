@@ -34,6 +34,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
 - **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
+- **It sounds right.** The bell, the clunk of an 8" drive loading its head, the clicks of the head stepping across tracks, and the rasp of the print head. All are synthesized, and a SETUP switch turns them off.
 - **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
 - **Phone friendly.** A key row adds what phone keyboards lack (CTRL, ESC, TAB, arrows, ^C), ADD FILES replaces drag and drop, the printed paper gets its own tab, and the 80 columns stay readable.
 - **Paste a whole listing.** PASTE types at a careful typist's pace, waiting for the program to ask for each key, so nothing is lost, not even in programs that read the keyboard ahead.
@@ -207,6 +208,7 @@ js/cpmfs.js                       CP/M file system on a disk image, from outside
 js/asm8080.js                     8080 assembler
 js/storage.js                     disks, settings and snapshots in IndexedDB
 js/snapshot.js                    take and restore a snapshot
+js/sound.js                       bell, drive and printer sounds (Web Audio, synthesized)
 js/version.js, js/pwa.js, sw.js   version and build stamp; install, updates, offline
 system/                           loader, BIOS, SYSGEN, PRTDEMO; cpm22/: the original CCP and BDOS sources
 disks/cpm22/, disks/zork1/        the files of the boot disk and the game disk, and their images

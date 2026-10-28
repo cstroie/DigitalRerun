@@ -21,18 +21,25 @@
     const paper = new PaperView($('paper'));
     const printer = new FX80(paper);
 
+    const sound = new window.DigitalRerun.Sound();
     machine.console.output = b => term.write(b);
     term.reply = bytes => machine.console.type(bytes);
-    term.bell = () => { $('crt').animate([{ filter: 'brightness(1.8)' }, { filter: 'none' }], 120); };
+    term.bell = () => { $('crt').animate([{ filter: 'brightness(1.8)' }, { filter: 'none' }], 120); sound.bell(); };
+    let lineChars = 0;                       // characters struck since the last CR, for the sound
     machine.printer.output = b => {
+        const inText = !printer.esc;
         printer.write(b);
+        if (inText && (b & 0x7F) >= 0x20 && (b & 0x7F) < 0x7F) lineChars++;
+        else if (inText && b === 0x0D) { sound.printLine(lineChars); lineChars = 0; }
+        else if (inText && b === 0x0A) sound.feed(1);
+        else if (inText && b === 0x0C) { sound.printLine(lineChars); lineChars = 0; sound.feed(20); }
         leds.prn = performance.now();
         paperOut();
     };
 
     /* ---------- settings ---------- */
 
-    const settings = { speed: 4, terminal: 'vt100', arrows: 'wordstar', phosphor: 'green', tab: 'drives', resume: true };
+    const settings = { speed: 4, terminal: 'vt100', arrows: 'wordstar', phosphor: 'green', tab: 'drives', resume: true, sound: true };
 
     function applySettings() {
         $('speed').value = String(settings.speed);
@@ -41,6 +48,8 @@
         $('arrows').value = settings.arrows;
         $('phosphor').value = settings.phosphor;
         $('resume').checked = settings.resume;
+        $('sound').checked = settings.sound;
+        sound.enabled = settings.sound;
         $('crt').classList.toggle('amber', settings.phosphor === 'amber');
         $('crt').classList.toggle('white', settings.phosphor === 'white');
     }
@@ -94,7 +103,10 @@
     /* ---------- LEDs ---------- */
 
     const leds = { disk: {}, prn: 0, busy: false };
-    machine.fdc.onActivity = drive => { leds.disk[drive] = performance.now(); };
+    machine.fdc.onActivity = drive => {
+        leds.disk[drive] = performance.now();
+        sound.disk(drive, machine.fdc.track);
+    };
 
     function updateLeds(now) {
         for (const d of DRIVES) {
@@ -639,6 +651,15 @@
     }
     $('snapBtn').addEventListener('click', manualSnapshot);
     $('snapSaveBtn').addEventListener('click', manualSnapshot);
+
+    $('sound').addEventListener('change', () => {
+        settings.sound = $('sound').checked;
+        applySettings();
+        if (settings.sound) sound.unlock();
+        Storage.set('settings', settings).catch(() => {});
+    });
+    // Audio may start only after a key or a tap.
+    for (const ev of ['keydown', 'pointerdown']) addEventListener(ev, () => sound.unlock(), { capture: true });
 
     $('resume').addEventListener('change', () => {
         settings.resume = $('resume').checked;
