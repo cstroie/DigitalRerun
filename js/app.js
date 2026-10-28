@@ -50,10 +50,13 @@
 
     function showTab(name) {
         settings.tab = name;
+        if (name === 'paper' && !phone.matches) name = 'drives';      // the desktop has no PAPER tab
         for (const b of document.querySelectorAll('#tabs [data-for]')) b.setAttribute('aria-selected', String(b.dataset.for === name));
         for (const el of document.querySelectorAll('[data-tab]')) el.classList.toggle('active', el.dataset.tab === name);
         if (name === 'paper') { unseen = 0; $('paper-badge').hidden = true; }
     }
+
+    phone.addEventListener('change', () => showTab(settings.tab));
 
     $('tabs').addEventListener('click', e => {
         const b = e.target.closest('[data-for]');
@@ -179,8 +182,14 @@
         } catch (e) { note(e.message, false); }
     }
 
-    async function newDisk(drive) {
-        const disk = new Disk(formatFor(drive), null, { name: drive === 8 ? 'hard disk' : 'blank' });
+    async function newDisk(drive, ask = true) {
+        let label = drive === 8 ? 'hard disk' : 'blank';
+        if (ask) {
+            const answer = prompt(`A label for the new disk in ${LETTER(drive)}:`, label);
+            if (answer === null) return;                              // cancelled
+            label = answer.trim().slice(0, 32) || label;
+        }
+        const disk = new Disk(formatFor(drive), null, { name: label });
         if (drive !== 8 && machine.fdc.drives[0]) {
             // make it bootable: a copy of A:'s system tracks
             new CpmFs(disk).writeSystem(new CpmFs(machine.fdc.drives[0]).readSystem());
@@ -335,6 +344,23 @@
         machine.console.type(bytes);
         kick();
     });
+    // Keys typed while something else on the page has the focus go to the machine too,
+    // except into form fields, and Enter or Space on a button or link.
+    document.addEventListener('keydown', e => {
+        const t = e.target;
+        if (t === kbd || e.defaultPrevented || e.metaKey || e.altKey) return;
+        if (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName)) return;
+        if (['BUTTON', 'A', 'SUMMARY'].includes(t.tagName) && (e.key === 'Enter' || e.key === ' ')) return;
+        if (e.key === 'Tab') return;                                   // keyboard navigation of the page
+        if (e.ctrlKey && getSelection().toString()) return;            // copying a selection
+        const bytes = keyBytes(e);
+        if (!bytes) return;
+        e.preventDefault();
+        machine.console.type(bytes);
+        kick();
+        focusScreen();
+    });
+
     // Mobile keyboards send text through input events.
     kbd.addEventListener('input', () => {
         if (kbd.value) {
@@ -359,6 +385,74 @@
     $('pasteBtn').addEventListener('click', async () => {
         try { typeText(await navigator.clipboard.readText()); } catch (e) { focusScreen(); }
     });
+
+    /* ---------- the screen: 80 columns across, and pictures of it ---------- */
+
+    const COLS = 80, MIN_PX = 11, MAX_PX = 30;
+
+    /** The font size at which 80 columns fill the screen's width (measured: fonts differ). */
+    function fitScreen() {
+        const screen = $('screen');
+        const width = screen.clientWidth;
+        if (!width) return;
+        const probe = document.createElement('span');
+        probe.textContent = 'M'.repeat(COLS);
+        probe.style.cssText = 'position:absolute;visibility:hidden;font-size:100px;white-space:pre';
+        screen.appendChild(probe);
+        const at100 = probe.getBoundingClientRect().width;
+        probe.remove();
+        if (!at100) return;
+        const px = Math.max(MIN_PX, Math.min(MAX_PX, Math.floor(width * 100 / at100 * 100) / 100));
+        screen.style.fontSize = `${px}px`;
+    }
+    new ResizeObserver(fitScreen).observe($('crt'));
+    if (document.fonts) document.fonts.ready.then(fitScreen);
+
+    /** A PNG of the screen as it looks: phosphor colour, glow, attributes, cursor, scan lines. */
+    async function screenShot() {
+        const crtStyle = getComputedStyle($('crt'));
+        const fg = crtStyle.getPropertyValue('--fg').trim() || '#9dff8a';
+        const glow = crtStyle.getPropertyValue('--glow').trim() || 'rgba(157,255,138,0.35)';
+        const bg = '#050805';
+        const scale = 2, px = 20 * scale, lineH = Math.round(px * 1.06), pad = 18 * scale;
+        const font = `${px}px VT323, ui-monospace, monospace`;
+        if (document.fonts) await document.fonts.load(font).catch(() => {});
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.font = font;
+        const cw = ctx.measureText('M').width;
+        canvas.width = Math.ceil(pad * 2 + COLS * cw);
+        canvas.height = Math.ceil(pad * 2 + term.rows * lineH);
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = font;
+        ctx.textBaseline = 'top';
+        const { BOLD, UNDERLINE, REVERSE, DIM } = window.DigitalRerun.ATTR;
+        for (let r = 0; r < term.rows; r++) {
+            for (let c = 0; c < term.cols; c++) {
+                const code = term.chars[r][c], attr = term.attrs[r][c];
+                const cursor = term.cursorVisible && r === term.y && c === term.x;
+                const x = pad + c * cw, y = pad + r * lineH;
+                const inverse = !!(attr & REVERSE) !== cursor;
+                if (inverse) { ctx.shadowBlur = 0; ctx.fillStyle = fg; ctx.fillRect(x, y, Math.ceil(cw), lineH); }
+                if (code === 32 && !(attr & UNDERLINE)) continue;
+                ctx.globalAlpha = attr & DIM ? 0.6 : 1;
+                ctx.fillStyle = inverse ? bg : attr & BOLD ? '#e8ffe0' : fg;
+                ctx.shadowColor = glow;
+                ctx.shadowBlur = inverse ? 0 : (attr & BOLD ? 9 : 6) * scale;
+                ctx.fillText(String.fromCharCode(code), x, y + (lineH - px) / 2);
+                if (attr & UNDERLINE) ctx.fillRect(x, y + lineH - 2 * scale, Math.ceil(cw), scale);
+                ctx.globalAlpha = 1;
+            }
+        }
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        for (let y = 0; y < canvas.height; y += 3 * scale) ctx.fillRect(0, y, canvas.width, scale);
+        const stamp = new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-');
+        canvas.toBlob(b => download(`digitalrerun-screen-${stamp}.png`, b, 'image/png'));
+        focusScreen();
+    }
+    $('shotBtn').addEventListener('click', () => screenShot().catch(() => {}));
 
     /* ---------- printer panel ---------- */
 
@@ -548,7 +642,7 @@
         if (!machine.fdc.drives[0]) {
             try {
                 mount(0, await systemDisk());
-                if (!machine.fdc.drives[1]) await newDisk(1);
+                if (!machine.fdc.drives[1]) await newDisk(1, false);
             } catch (e) { note(e.message, false); }
         }
         // The Zork I game disk goes in D: once; after that D: is the owner's.

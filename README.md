@@ -34,7 +34,8 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
 - **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
-- **Phone friendly.** On a small screen the panels become tabs, ADD FILES replaces drag and drop, and the 80 columns stay readable.
+- **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
+- **Phone friendly.** ADD FILES replaces drag and drop, the printed paper gets its own tab, and the 80 columns stay readable.
 
 <div align="center">
 
@@ -71,7 +72,7 @@ A: holds the CP/M 2.2 tools (PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB, DUMP),
 | Memory | 64K RAM. CCP at `E400h`, BDOS at `EC00h`, BIOS at `FA00h` |
 | A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K. Compatible with cpmtools (`ibm-3740`) and z80pack |
 | I: | 4 MB hard disk, z80pack geometry |
-| Console | VT100 subset, 80 × 24, green, amber or white phosphor; WordStar or VT100 arrow keys |
+| Console | VT100 subset, exactly 80 × 24 at any window size, green, amber or white phosphor; WordStar or VT100 arrow keys. Typing reaches the machine wherever the focus is on the page (except form fields) |
 | Printer | FX-80 compatible, on `LST:` |
 | Lights | POWER, RUN (bright while working, dim while waiting), one per drive, PRN |
 
@@ -91,6 +92,10 @@ The I/O ports follow z80pack for the disk controller:
 | 13 | | command: 0 read, 1 write |
 | 14 | status of the last command (0 = ok) | |
 
+### The panels
+
+Tabs above the side column show one panel at a time: DRIVES, PRINTER and SETUP (and PAPER on a phone). The front strip under the screen has the lights, the speed, PASTE, SHOT (a PNG of the screen), SNAP and RESET.
+
 ### Drives and files
 
 - **ADD FILES** (or dropping files on the DRIVES panel) copies them to the selected drive. Then press `^C`, so CP/M logs the disk in again.
@@ -98,7 +103,7 @@ The I/O ports follow z80pack for the disk controller:
 - Each drive has these buttons:
   - **LOAD** inserts a `.dsk` image;
   - **SAVE** downloads one;
-  - **NEW** inserts a blank, bootable disk;
+  - **NEW** asks for a label and inserts a blank, bootable disk;
   - **SYS** writes a system tracks image onto a disk.
 - Disks are kept in the browser (IndexedDB), and they are still there tomorrow.
 

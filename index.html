@@ -52,19 +52,20 @@
                     </select>
                     <span id="mhz" class="mhz"></span>
                     <button id="pasteBtn" title="Type the clipboard into CP/M">PASTE</button>
+                    <button id="shotBtn" title="Save a picture of the screen (PNG)">SHOT</button>
                     <button id="snapBtn" title="Save a snapshot of the machine, to come back to later">SNAP</button>
                     <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
                 </div>
             </div>
+        </main>
+
+        <aside>
             <nav class="tabs" id="tabs" role="tablist" aria-label="Panels">
                 <button role="tab" data-for="drives">DRIVES</button>
                 <button role="tab" data-for="printer">PRINTER</button>
                 <button role="tab" data-for="paper">PAPER <span class="badge" id="paper-badge" hidden></span></button>
                 <button role="tab" data-for="setup">SETUP</button>
             </nav>
-        </main>
-
-        <aside>
             <section class="panel" id="drives-panel" data-tab="drives">
                 <h2>DRIVES <span id="drive-note"></span></h2>
                 <div id="drives"></div>

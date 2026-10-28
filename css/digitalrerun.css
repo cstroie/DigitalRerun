@@ -78,9 +78,13 @@ header a { color: var(--text-dim); margin-left: auto; }
 }
 .screen {
     font-family: 'VT323', ui-monospace, monospace;
-    /* 80 columns fill the width (VT323 is 0.5em per character); on a phone
-       they stay readable and the screen scrolls sideways */
-    font-size: clamp(11px, 2.48cqi, 24px);
+    /* app.js (fitScreen) sets the size so 80 columns fill the width; on a
+       phone they stay readable and the screen scrolls sideways */
+    font-size: 16px;
+    /* one character per cell: no ff/fi ligatures, no kerning */
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0;
+    font-kerning: none;
     overflow-x: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--fg-faint) transparent;
@@ -170,6 +174,8 @@ button, select {
 button:hover, select:hover { border-color: var(--fg-faint); color: var(--fg); }
 button:focus-visible, select:focus-visible { outline: 2px solid var(--fg-dim); outline-offset: 1px; }
 button.toggle.on { color: var(--fg); border-color: var(--fg-faint); }
+#resetBtn { color: #ff9d90; background: #2a1714; border-color: #5c2a23; }
+#resetBtn:hover { color: #ffc0b6; border-color: #9a4236; }
 button.small { font-size: 11px; padding: 2px 6px; letter-spacing: 0; }
 
 /* ---- side panels ---- */
@@ -306,38 +312,40 @@ kbd, code {
     border-bottom: 1px dashed #b9b5a5;
 }
 
-/* ---- tabs: phones only; the desktop shows every panel ---- */
-.tabs, .paper-empty { display: none; }
+/* ---- tabs above the side panels: one panel at a time ---- */
+.tabs { display: flex; gap: 4px; }
+.tabs button { flex: 1; padding: 7px 4px; }
+.tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--fg-faint); background: var(--panel); }
+.tabs .badge {
+    display: inline-block;
+    min-width: 1.4em;
+    margin-left: 2px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--page);
+    font-size: 10px;
+    line-height: 1.4em;
+}
+.tabs .badge[hidden] { display: none; }
+aside [data-tab] { display: none; }
+aside [data-tab].active { display: block; }
+/* the desktop shows the paper under everything: no PAPER tab there */
+.tabs [data-for="paper"], .paper-empty { display: none; }
 
 @media (max-width: 900px) {
     .layout { grid-template-columns: minmax(0, 1fr); }
     .crt { padding: 10px 8px; }
     .tabs {
-        display: flex;
-        gap: 4px;
-        margin-top: 10px;
         position: sticky;
         top: 0;
         z-index: 2;
         background: var(--page);
         padding: 4px 0;
     }
-    .tabs button { flex: 1; padding: 8px 4px; }
-    .tabs button[aria-selected="true"] { color: var(--fg); border-color: var(--fg-faint); background: var(--panel); }
-    .tabs .badge {
-        display: inline-block;
-        min-width: 1.4em;
-        margin-left: 2px;
-        border-radius: 8px;
-        background: var(--accent);
-        color: var(--page);
-        font-size: 10px;
-        line-height: 1.4em;
-    }
-    .tabs .badge[hidden] { display: none; }
-    /* one panel at a time */
-    [data-tab] { display: none; }
-    [data-tab].active { display: block; }
+    .tabs button { padding: 8px 4px; }
+    .tabs [data-for="paper"] { display: block; }
+    .paper-tray[data-tab] { display: none; }
+    .paper-tray[data-tab].active { display: block; }
     .paper-tray.active .paper-empty { display: block; }
     .paper-tray.active.printed .paper-empty { display: none; }
     .paper { max-height: none; }
