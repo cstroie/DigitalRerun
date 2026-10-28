@@ -115,7 +115,8 @@ Only software that may be shared is on the shipped shelf. **My disks** holds you
 ### The panels
 
 On a desktop the window is the machine, with no page to scroll:
-- **Left:** the screen, as large as the window allows at 80 × 24 and in its proportions, with the front strip under it: the lights, the speed, PASTE, PAPER, SHOT (a PNG of the screen), SNAP and RESET.
+- **Top right:** the front strip, above the side panels: the lights and the speed readout, then the clock, PASTE, PAPER, SHOT (a PNG of the screen), SNAP and RESET.
+- **Left:** the screen, as large as the window allows at 80 × 24 and in its proportions.
 - **Right:** tabs for DRIVES, SHELF, PRINTER, SETUP and DEBUG. Only the panel under them scrolls.
 
 **The paper** is a drawer over the screen. While something prints it stays shut: the PRN led lights and PAPER counts the sheets you have not seen. PAPER opens the drawer, at the top of the paper (a clean sheet if nothing was printed yet), with FF, TEAR OFF, PNG, PRINT and ✕ to go back. The machine keeps running underneath.

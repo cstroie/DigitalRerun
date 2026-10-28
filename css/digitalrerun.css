@@ -34,7 +34,7 @@ header, .layout {
     margin: 0 auto;
 }
 
-header { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+header { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
 h1 {
     font-family: 'VT323', monospace;
     font-weight: normal;
@@ -133,20 +133,19 @@ header a { color: var(--text-dim); margin-left: auto; }
 .keyrow button.toggle.on { color: var(--page); background: var(--fg); border-color: var(--fg); }
 @media (pointer: coarse) { .keyrow { display: flex; } }
 
-/* ---- front strip ---- */
+/* ---- front strip: on top of the side panels ---- */
 .front {
-    margin-top: 10px;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 10px 18px;
     background: var(--panel);
     border: 1px solid var(--edge);
     border-radius: 10px;
-    padding: 8px 12px;
+    padding: 6px 12px;
 }
-.leds { display: flex; flex-wrap: wrap; gap: 14px; }
+.leds { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 .led {
     display: inline-flex;
     align-items: center;
@@ -193,6 +192,7 @@ button.small { font-size: 11px; padding: 2px 6px; letter-spacing: 0; }
 
 /* ---- side panels ---- */
 aside { display: flex; flex-direction: column; gap: 12px; }
+.panels { display: flex; flex-direction: column; gap: 12px; }
 .panel {
     background: var(--panel);
     border: 1px solid var(--edge);
@@ -419,78 +419,72 @@ aside [data-tab].active { display: block; }
 #paperBtn[aria-pressed="true"] { color: var(--fg); border-color: var(--fg-faint); }
 #paperClose { display: none; }
 
-/* ---- desktop: the window is the machine. The screen fills the left at
-   80 x 24, the side panels scroll under their tabs, and the paper is a
-   drawer over the screen. ---- */
+/* ---- desktop: the window is the machine. The screen takes all of the
+   left at 80 x 24, the front strip is in the header, the side panels scroll
+   under their tabs, and the paper is a drawer over the screen only. ---- */
 @media (min-width: 901px) {
     body { height: 100vh; overflow: hidden; padding: 14px 16px; gap: 12px; }
-    header, .layout { max-width: none; }            /* the window is the limit: the screen grows to its height */
-    .layout { grid-template-columns: minmax(0, 1fr) 320px; }
+    header, .layout { max-width: none; }            /* the window is the limit */
     .layout {
         flex: 1;
         min-height: 0;
+        grid-template-columns: minmax(0, 1fr) 320px;
         grid-template-areas: "main aside";
         grid-template-rows: minmax(0, 1fr);
         align-items: stretch;
     }
-    .layout > main { display: flex; flex-direction: column; min-height: 0; }
-    .screen-wrap {
-        flex: 1;
-        min-height: 0;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-start;
-        overflow: hidden;
-        border-radius: 14px;
-    }
+    .layout > main { min-height: 0; display: flex; }
+    .keyrow { display: none; }
+    .screen-wrap { flex: 1; min-width: 0; min-height: 0; overflow: hidden; display: grid; place-items: start center; }
     .crt { container-type: normal; }
-    /* the drawer's place: over the screen only, not the keys and the front strip; as wide as the screen */
-    .glass { position: relative; }
+    .screen { width: 80ch; overflow: hidden; }       /* the 80 columns, empty or not: fitScreen sizes the font to the place */
+    .glass { position: relative; max-width: 100%; }
     .bay { position: absolute; inset: 0; overflow: hidden; border-radius: 14px; pointer-events: none; }
-    .bay > .paper-tray { pointer-events: auto; }
-    .machine { display: flex; flex-direction: column; width: min-content; max-width: 100%; }   /* as wide as the screen's 80 columns: the keys and the front strip follow it */
-    .layout > aside { min-height: 0; overflow-y: auto; padding-right: 2px; scrollbar-width: thin; scrollbar-color: var(--fg-faint) transparent; }
-    .layout > aside .tabs { position: sticky; top: 0; z-index: 2; background: var(--page); padding-bottom: 8px; margin-bottom: -8px; }
+
+    .layout > aside { min-height: 0; }
+    /* two rows, as wide as the side panels: the lights, then the controls */
+    .front { flex: none; min-width: 0; flex-direction: column; align-items: stretch; gap: 8px; padding: 8px 10px; }
+    .front .leds { flex-wrap: nowrap; justify-content: space-between; gap: 0; }
+    .front .led { font-size: 10px; letter-spacing: 0.5px; gap: 4px; }
+    .front .mhz { min-width: 50px; font-size: 16px; line-height: 1; }
+    .front .controls { display: grid; grid-template-columns: auto repeat(5, minmax(0, 1fr)); gap: 4px; }
+    .front .controls button, .front .controls select { padding: 5px 4px; letter-spacing: 0.5px; font-size: 11px; overflow: hidden; }
+    .panels { flex: 1; min-height: 0; overflow-y: auto; padding-right: 2px; scrollbar-width: thin; scrollbar-color: var(--fg-faint) transparent; }
 
     .bay > .paper-tray,
     .bay > .paper-tray[hidden] {
-        display: flex;
-        flex-direction: column;
+        display: block;
         position: absolute;
         inset: 0;
-        z-index: 3;
-        margin: 0;
-        max-width: none;
+        padding: 0;
         border-radius: 14px;
         border-color: var(--fg-faint);
         box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.55);
+        pointer-events: auto;
         transform: translateY(102%);
-        transition: transform 260ms ease;
+        visibility: hidden;
+        transition: transform 260ms ease, visibility 0s 260ms;
     }
-    .bay > .paper-tray.open { transform: none; }
+    .bay > .paper-tray.open { transform: none; visibility: visible; transition: transform 260ms ease; }
     .bay > .paper-tray .tray-head .tools button[data-paper],
     .bay > .paper-tray #paperClose { display: inline-block; }
-    .bay > .paper-tray { padding: 0; }
-    .bay > .paper-tray .paper { position: absolute; inset: 0; max-height: none; margin: 0; padding-top: 44px; box-sizing: border-box; border-radius: inherit; }   /* the paper is as tall as the screen; the head lies over it */
+    .bay > .paper-tray .paper { position: absolute; inset: 0; max-height: none; padding-top: 44px; border-radius: inherit; }   /* as tall as the screen; the head lies over it */
     .bay > .paper-tray .tray-head {
         position: absolute; top: 0; left: 0; right: 0; z-index: 2;
         padding: 6px 10px; border-radius: 13px 13px 0 0;
         background: color-mix(in srgb, var(--panel) 88%, transparent);
     }
-    .bay > .paper-tray .paper-empty { display: none; }
 }
 
 @media print {
     /* only the paper: it lives inside the machine, so the machine's boxes stay and everything else goes */
     body { background: #fff; padding: 0; display: block; height: auto; overflow: visible; }
-    header, .layout > aside, .paper-tray h2, .tray-head, #banners, .crt, .keyrow, .front, .paper-empty { display: none !important; }
-    .layout, .layout > main, .screen-wrap, .machine, .glass, .bay {
+    header, .layout > aside, .paper-tray h2, .tray-head, #banners, .crt, .keyrow, .paper-empty { display: none !important; }
+    .layout, .layout > main, .screen-wrap, .glass, .bay {
         display: block; position: static; width: auto; height: auto; max-width: none; overflow: visible; border-radius: 0;
     }
     .paper-tray, .bay > .paper-tray, .bay > .paper-tray[hidden] {
-        display: block !important; position: static; transform: none; transition: none; border: 0; padding: 0; margin: 0; background: #fff; box-shadow: none;
+        display: block !important; position: static; transform: none; transition: none; visibility: visible; border: 0; padding: 0; margin: 0; background: #fff; box-shadow: none;
     }
     .paper, .bay > .paper-tray .paper { position: static; max-height: none; overflow: visible; display: block; padding: 0; }
     .paper .sheet { width: 100%; box-shadow: none; border: 0; page-break-after: always; }

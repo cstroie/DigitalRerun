@@ -798,8 +798,6 @@
         const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) * 2;
         const width = phone.matches ? screen.clientWidth : wrap.clientWidth - padX;
         if (!width) return;
-        const below = phone.matches ? 0 : [$('keyrow'), document.querySelector('.front')]
-            .reduce((h, el) => h + (el.offsetParent ? el.offsetHeight + parseFloat(getComputedStyle(el).marginTop) : 0), 0);
         const probe = document.createElement('span');
         probe.textContent = 'M'.repeat(COLS);
         probe.style.cssText = 'position:absolute;visibility:hidden;font-size:100px;white-space:pre';
@@ -808,7 +806,7 @@
         probe.remove();
         if (!at100) return;
         let px = width * 100 / at100;
-        if (!phone.matches) px = Math.min(px, (wrap.clientHeight - below - padY) / (term.rows * LINE));
+        if (!phone.matches) px = Math.min(px, (wrap.clientHeight - padY) / (term.rows * LINE));
         px = Math.max(MIN_PX, Math.min(MAX_PX, Math.floor(px * 100) / 100));
         screen.style.fontSize = `${px}px`;
     }
@@ -823,7 +821,7 @@
     Promise.race([sheetIn.then(() => document.fonts && document.fonts.load('16px VT323')).catch(() => {}), new Promise(r => setTimeout(r, 2000))])
         .then(() => {
             fitScreen();
-            requestAnimationFrame(() => { fitScreen(); $('crt').classList.add('fitted'); });   // the strip under it changes height with the font: fit again
+            requestAnimationFrame(() => { fitScreen(); $('crt').classList.add('fitted'); });   // the header changes height with the font: fit again
         });
 
     /** A PNG of the screen as it looks: phosphor colour, glow, attributes, cursor, scan lines. */

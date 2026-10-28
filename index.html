@@ -28,7 +28,6 @@
     <div class="layout">
         <main>
             <div class="screen-wrap" id="screen-wrap">
-                <div class="machine">
                 <div class="glass">
                 <div class="crt" id="crt" tabindex="0" aria-label="CP/M console: click and type">
                     <div id="screen" class="screen"></div>
@@ -36,6 +35,7 @@
                 </div>
                 <div class="bay" id="bay"></div>
                 </div>
+            </div>
 
             <div class="keyrow" id="keyrow" aria-label="Keys a phone keyboard lacks">
                 <button data-key="ctrl" class="toggle" title="Hold Ctrl for the next key">CTRL</button>
@@ -48,6 +48,9 @@
                 <button data-key="ctrl-c" title="Control-C: warm start">^C</button>
             </div>
 
+        </main>
+
+        <aside>
             <div class="front">
                 <div class="leds">
                     <span class="led power on" id="led-power"><i></i>POWER</span>
@@ -58,6 +61,7 @@
                     <span class="led disk" id="led-3"><i></i>D</span>
                     <span class="led disk" id="led-8"><i></i>I</span>
                     <span class="led prn" id="led-prn"><i></i>PRN</span>
+                    <span id="mhz" class="mhz"></span>
                 </div>
                 <div class="controls">
                     <select id="speed" title="CPU clock">
@@ -66,19 +70,13 @@
                         <option value="8">8 MHz</option>
                         <option value="0">max</option>
                     </select>
-                    <span id="mhz" class="mhz"></span>
                     <button id="pasteBtn" title="Type the clipboard into CP/M">PASTE</button>
                     <button id="paperBtn" title="The printed paper">PAPER <span class="badge" id="paper-count" hidden></span></button>
                     <button id="shotBtn" title="Save a picture of the screen (PNG)">SHOT</button>
                     <button id="snapBtn" title="Save a snapshot of the machine, to come back to later">SNAP</button>
                     <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
                 </div>
-            </div>
-                </div>
-            </div>
-        </main>
-
-        <aside>
+        </div>
             <nav class="tabs" id="tabs" role="tablist" aria-label="Panels">
                 <button role="tab" data-for="drives">DRIVES</button>
                 <button role="tab" data-for="shelf">SHELF</button>
@@ -87,6 +85,7 @@
                 <button role="tab" data-for="setup">SETUP</button>
                 <button role="tab" data-for="debug">DEBUG</button>
             </nav>
+            <div class="panels">
             <section class="panel" id="drives-panel" data-tab="drives">
                 <h2>DRIVES <span id="drive-note"></span></h2>
                 <div id="drives"></div>
@@ -190,6 +189,7 @@
                 <pre class="dbg" id="dbg-memv"></pre>
                 <p class="hint">Click a line of code to set or clear a breakpoint (●); the machine pauses when it gets there. ▶ marks the next instruction. Addresses are hex.</p>
             </section>
+            </div>
         </aside>
 
         <section class="paper-tray" id="tray" data-tab="paper" hidden>
