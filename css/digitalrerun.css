@@ -444,15 +444,20 @@ aside [data-tab].active { display: block; }
         border-radius: 14px;
     }
     .crt { container-type: normal; }
+    /* the drawer's place: over the screen only, not the keys and the front strip; as wide as the screen */
+    .glass { position: relative; }
+    .bay { position: absolute; inset: 0; overflow: hidden; border-radius: 14px; pointer-events: none; }
+    .bay > .paper-tray { pointer-events: auto; }
+    .machine { display: flex; flex-direction: column; width: min-content; max-width: 100%; }   /* as wide as the screen's 80 columns: the keys and the front strip follow it */
     .layout > aside { min-height: 0; overflow-y: auto; padding-right: 2px; scrollbar-width: thin; scrollbar-color: var(--fg-faint) transparent; }
     .layout > aside .tabs { position: sticky; top: 0; z-index: 2; background: var(--page); padding-bottom: 8px; margin-bottom: -8px; }
 
-    .screen-wrap > .paper-tray,
-    .screen-wrap > .paper-tray[hidden] {
+    .bay > .paper-tray,
+    .bay > .paper-tray[hidden] {
         display: flex;
         flex-direction: column;
         position: absolute;
-        inset: 0 0 var(--below, 0) 0;           /* the drawer covers the screen, not the keys and the front strip */
+        inset: 0;
         z-index: 3;
         margin: 0;
         max-width: none;
@@ -462,14 +467,20 @@ aside [data-tab].active { display: block; }
         transform: translateY(102%);
         transition: transform 260ms ease;
     }
-    .screen-wrap > .paper-tray.peek { transform: translateY(calc(100% - 120px)); cursor: pointer; }
-    .screen-wrap > .paper-tray.open { transform: none; }
-    .screen-wrap > .paper-tray .tray-head .tools button[data-paper],
-    .screen-wrap > .paper-tray #paperClose { display: inline-block; }
-    .screen-wrap > .paper-tray.peek .tray-head .tools { visibility: hidden; }
-    .screen-wrap > .paper-tray .paper { flex: 1; min-height: 0; max-height: none; position: relative; margin-top: 8px; }
-    .screen-wrap > .paper-tray .paper-empty { display: block; }
-    .screen-wrap > .paper-tray.printed .paper-empty { display: none; }
+    .bay > .paper-tray.peek { transform: translateY(calc(100% - 120px)); cursor: pointer; }
+    .bay > .paper-tray.open { transform: none; }
+    .bay > .paper-tray .tray-head .tools button[data-paper],
+    .bay > .paper-tray #paperClose { display: inline-block; }
+    .bay > .paper-tray.peek .tray-head .tools { visibility: hidden; }
+    .bay > .paper-tray { padding: 0; }
+    .bay > .paper-tray .paper { position: absolute; inset: 0; max-height: none; margin: 0; padding-top: 44px; box-sizing: border-box; border-radius: inherit; }   /* the paper is as tall as the screen; the head lies over it */
+    .bay > .paper-tray .tray-head {
+        position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+        padding: 6px 10px; border-radius: 13px 13px 0 0;
+        background: color-mix(in srgb, var(--panel) 88%, transparent);
+    }
+    .bay > .paper-tray .paper-empty { display: block; position: absolute; top: 52px; left: 14px; margin: 0; }
+    .bay > .paper-tray.printed .paper-empty { display: none; }
 }
 
 @media print {
