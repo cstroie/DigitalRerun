@@ -306,6 +306,7 @@ kbd, code {
 .dbg i { color: var(--fg-faint); font-style: normal; }
 .dbg .on { color: var(--accent); }
 .dbg.code div { cursor: pointer; }
+.dbg.code u { display: inline-block; width: 1ch; overflow: hidden; text-decoration: none; text-align: center; }   /* a marker glyph from a fallback font must not widen the column */
 .dbg.code div:hover { background: #121a10; }
 .dbg.code .pc { color: var(--fg); background: #15230f; }
 .dbg.code .bp { color: #ff8a7a; }
@@ -482,10 +483,15 @@ aside [data-tab].active { display: block; }
 }
 
 @media print {
-    body { background: #fff; padding: 0; display: block; }
-    header, .layout > main, .layout > aside, .paper-tray h2, #banners { display: none; }
-    .layout { display: block; max-width: none; }
-    .paper-tray { border: 0; padding: 0; background: #fff; }
-    .paper { max-height: none; overflow: visible; display: block; }
+    /* only the paper: it lives inside the machine, so the machine's boxes stay and everything else goes */
+    body { background: #fff; padding: 0; display: block; height: auto; overflow: visible; }
+    header, .layout > aside, .paper-tray h2, .tray-head, #banners, .crt, .keyrow, .front, .paper-empty { display: none !important; }
+    .layout, .layout > main, .screen-wrap, .machine, .glass, .bay {
+        display: block; position: static; width: auto; height: auto; max-width: none; overflow: visible; border-radius: 0;
+    }
+    .paper-tray, .bay > .paper-tray, .bay > .paper-tray[hidden] {
+        display: block !important; position: static; transform: none; transition: none; border: 0; padding: 0; margin: 0; background: #fff; box-shadow: none;
+    }
+    .paper, .bay > .paper-tray .paper { position: static; max-height: none; overflow: visible; display: block; padding: 0; }
     .paper .sheet { width: 100%; box-shadow: none; border: 0; page-break-after: always; }
 }

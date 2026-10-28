@@ -553,7 +553,7 @@
             const ins = Disz80.disassemble(readMem, a);
             const bp = machine.breakpoints.has(a), here = a === s.pc;
             const bytes = ins.bytes.map(h2).join(' ').padEnd(12);
-            lines.push(`<div data-addr="${a}" class="${here ? 'pc' : ''}${bp ? ' bp' : ''}">${bp ? '●' : ' '}${here ? '▶' : ' '}${h4(a)}  ${bytes}${esc(ins.text)}</div>`);
+            lines.push(`<div data-addr="${a}" class="${here ? 'pc' : ''}${bp ? ' bp' : ''}"><u>${bp ? '●' : ' '}</u><u>${here ? '▶' : ' '}</u>${h4(a)}  ${bytes}${esc(ins.text)}</div>`);
             a = (a + ins.length) & 0xFFFF;
         }
         $('dbg-code').innerHTML = lines.join('');
