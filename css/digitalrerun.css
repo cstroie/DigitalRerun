@@ -404,6 +404,73 @@ aside [data-tab].active { display: block; }
     body { gap: 10px; }
 }
 
+/* ---- the drawer's head (desktop) and the PAPER button's count ---- */
+.tray-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.tray-head h2 { margin: 0; }
+.tray-head .close { font-size: 14px; }
+.tray-head .tools button[data-paper] { display: none; }
+#paperBtn .badge {
+    display: inline-block; min-width: 1.4em; margin-left: 3px; border-radius: 8px;
+    background: var(--accent); color: var(--page); font-size: 10px; line-height: 1.4em; text-align: center;
+}
+#paperBtn .badge[hidden] { display: none; }
+#paperBtn[aria-pressed="true"] { color: var(--fg); border-color: var(--fg-faint); }
+#paperClose { display: none; }
+
+/* ---- desktop: the window is the machine. The screen fills the left at
+   80 x 24, the side panels scroll under their tabs, and the paper is a
+   drawer over the screen that peeks while printing. ---- */
+@media (min-width: 901px) {
+    body { height: 100vh; overflow: hidden; padding: 14px 16px; gap: 12px; }
+    header, .layout { max-width: none; }            /* the window is the limit: the screen grows to its height */
+    .layout { grid-template-columns: minmax(0, 1fr) 320px; }
+    .layout {
+        flex: 1;
+        min-height: 0;
+        grid-template-areas: "main aside";
+        grid-template-rows: minmax(0, 1fr);
+        align-items: stretch;
+    }
+    .layout > main { display: flex; flex-direction: column; min-height: 0; }
+    .screen-wrap {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 14px;
+    }
+    .crt { container-type: normal; }
+    .layout > aside { min-height: 0; overflow-y: auto; padding-right: 2px; scrollbar-width: thin; scrollbar-color: var(--fg-faint) transparent; }
+    .layout > aside .tabs { position: sticky; top: 0; z-index: 2; background: var(--page); padding-bottom: 8px; margin-bottom: -8px; }
+
+    .screen-wrap > .paper-tray,
+    .screen-wrap > .paper-tray[hidden] {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        margin: 0;
+        max-width: none;
+        border-radius: 14px;
+        border-color: var(--fg-faint);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.55);
+        transform: translateY(102%);
+        transition: transform 260ms ease;
+    }
+    .screen-wrap > .paper-tray.peek { transform: translateY(calc(100% - 120px)); cursor: pointer; }
+    .screen-wrap > .paper-tray.open { transform: none; }
+    .screen-wrap > .paper-tray .tray-head .tools button[data-paper],
+    .screen-wrap > .paper-tray #paperClose { display: inline-block; }
+    .screen-wrap > .paper-tray.peek .tray-head .tools { visibility: hidden; }
+    .screen-wrap > .paper-tray .paper { flex: 1; min-height: 0; max-height: none; position: relative; margin-top: 8px; }
+    .screen-wrap > .paper-tray .paper-empty { display: block; }
+    .screen-wrap > .paper-tray.printed .paper-empty { display: none; }
+}
+
 @media print {
     body { background: #fff; padding: 0; display: block; }
     header, .layout > main, .layout > aside, .paper-tray h2, #banners { display: none; }

@@ -114,7 +114,13 @@ Only software that may be shared is on the shipped shelf. **My disks** holds you
 
 ### The panels
 
-Tabs above the side column show one panel at a time: DRIVES, PRINTER and SETUP (and PAPER on a phone). The front strip under the screen has the lights, the speed, PASTE, SHOT (a PNG of the screen), SNAP and RESET.
+On a desktop the window is the machine, with no page to scroll:
+- **Left:** the screen, as large as the window allows at 80 × 24 and in its proportions, with the front strip under it: the lights, the speed, PASTE, PAPER, SHOT (a PNG of the screen), SNAP and RESET.
+- **Right:** tabs for DRIVES, SHELF, PRINTER, SETUP and DEBUG. Only the panel under them scrolls.
+
+**The paper** is a drawer over the screen. While something prints, a strip of it peeks up from the bottom of the screen, showing the newest line, and PAPER counts the sheets you have not seen. A click on the strip or PAPER opens the drawer, with FF, TEAR OFF, PNG, PRINT and ✕ to go back. The machine keeps running underneath.
+
+On a phone the page scrolls instead, and the paper is the PAPER tab.
 
 ### The console
 

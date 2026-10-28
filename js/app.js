@@ -57,17 +57,16 @@
     /* ---------- tabs (phones: one panel at a time) ---------- */
 
     const phone = matchMedia('(max-width: 900px)');
-    let unseen = 0;
 
     function showTab(name) {
         settings.tab = name;
         if (name === 'paper' && !phone.matches) name = 'drives';      // the desktop has no PAPER tab
         for (const b of document.querySelectorAll('#tabs [data-for]')) b.setAttribute('aria-selected', String(b.dataset.for === name));
         for (const el of document.querySelectorAll('[data-tab]')) el.classList.toggle('active', el.dataset.tab === name);
-        if (name === 'paper') { unseen = 0; $('paper-badge').hidden = true; }
+        if (name === 'paper') markSeen();
     }
 
-    phone.addEventListener('change', () => showTab(settings.tab));
+    phone.addEventListener('change', () => { placeTray(); showTab(settings.tab); });
 
     $('tabs').addEventListener('click', e => {
         const b = e.target.closest('[data-for]');
@@ -76,18 +75,86 @@
         Storage.set('settings', settings).catch(() => {});
     });
 
-    /** Paper came out of the printer: show the tray, count new sheets on the PAPER tab. */
+    /*
+     * The paper: on a phone it is the PAPER tab, after the side panels; on a
+     * desktop a drawer over the screen. While printing with the drawer shut,
+     * it peeks up from the bottom of the screen, showing the newest line, and
+     * the PAPER button counts the sheets not seen yet.
+     */
+    let seenSheets = 0, peekTimer = 0, headPending = false;
+    const drawerOpen = () => $('tray').classList.contains('open');
+
+    function placeTray() {
+        const tray = $('tray');
+        if (phone.matches) {
+            tray.classList.remove('open', 'peek');
+            document.querySelector('.layout').appendChild(tray);
+        } else $('screen-wrap').appendChild(tray);
+        $('paperBtn').setAttribute('aria-pressed', 'false');
+    }
+
+    function countUnseen() {
+        const sheets = paper.printed().length;
+        const n = Math.max(0, sheets - seenSheets);
+        for (const id of ['paper-count', 'paper-badge']) {
+            $(id).textContent = n || '';
+            $(id).hidden = !n;
+        }
+    }
+
+    function markSeen() { seenSheets = paper.printed().length; countUnseen(); }
+
+    /** Scroll the paper so the print head's line is in view (near the top when peeking). */
+    function showHead() {
+        if (headPending) return;
+        headPending = true;
+        requestAnimationFrame(() => {
+            headPending = false;
+            const box = $('paper');
+            const i = Math.floor(printer.y / paper.pageLength) - paper.first;
+            const s = paper.sheets[Math.min(Math.max(i, 0), paper.sheets.length - 1)];
+            if (!s) return;
+            const frac = (printer.y - Math.floor(printer.y / paper.pageLength) * paper.pageLength) / paper.pageLength;
+            const y = s.canvas.offsetTop + frac * s.canvas.clientHeight;
+            box.scrollTop = Math.max(0, y - (drawerOpen() ? box.clientHeight * 0.6 : 36));
+        });
+    }
+
+    function openPaper(open) {
+        if (phone.matches) { showTab('paper'); $('tray').scrollIntoView({ block: 'start' }); markSeen(); return; }
+        const tray = $('tray');
+        tray.classList.toggle('open', open);
+        tray.classList.remove('peek');
+        $('paperBtn').setAttribute('aria-pressed', String(open));
+        if (open) { markSeen(); showHead(); } else focusScreen();
+    }
+
+    /** Paper came out of the printer. */
     function paperOut() {
         const tray = $('tray');
         if (tray.hidden || !tray.classList.contains('printed')) {
             tray.hidden = false;
             tray.classList.add('printed');
         }
-        if (phone.matches && settings.tab !== 'paper') {
-            const sheets = paper.printed().length || 1;
-            if (sheets !== unseen) { unseen = sheets; $('paper-badge').textContent = sheets; $('paper-badge').hidden = false; }
+        if (phone.matches) {
+            if (settings.tab === 'paper') markSeen(); else countUnseen();
+            return;
         }
+        if (drawerOpen()) { markSeen(); showHead(); return; }
+        countUnseen();
+        tray.classList.add('peek');
+        showHead();
+        clearTimeout(peekTimer);
+        peekTimer = setTimeout(() => tray.classList.remove('peek'), 2500);
     }
+
+    $('paperBtn').addEventListener('click', () => openPaper(phone.matches || !drawerOpen()));
+    $('paperClose').addEventListener('click', () => openPaper(false));
+    $('tray').addEventListener('click', e => {
+        if ($('tray').classList.contains('peek')) { openPaper(true); return; }
+        const b = e.target.closest('[data-paper]');
+        if (b) $(b.dataset.paper).click();
+    });
 
     for (const key of ['speed', 'terminal', 'arrows', 'phosphor']) {
         $(key).addEventListener('change', () => {
@@ -699,12 +766,20 @@
 
     /* ---------- the screen: 80 columns across, and pictures of it ---------- */
 
-    const COLS = 80, MIN_PX = 11, MAX_PX = 30;
+    const COLS = 80, LINE = 1.06, MIN_PX = 11, MAX_PX = 44;      // LINE: the rows' line height, as in the CSS
 
-    /** The font size at which 80 columns fill the screen's width (measured: fonts differ). */
+    /**
+     * The font size at which the screen shows 80 x 24 as large as it can:
+     * on a phone 80 columns across its width; on a desktop as large as both
+     * the width and the height of the screen's place allow (measured: fonts
+     * differ).
+     */
     function fitScreen() {
-        const screen = $('screen');
-        const width = screen.clientWidth;
+        const screen = $('screen'), crt = $('crt'), wrap = $('screen-wrap');
+        const cs = getComputedStyle(crt);
+        const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) * 2;
+        const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) * 2;
+        const width = phone.matches ? screen.clientWidth : wrap.clientWidth - padX;
         if (!width) return;
         const probe = document.createElement('span');
         probe.textContent = 'M'.repeat(COLS);
@@ -713,10 +788,12 @@
         const at100 = probe.getBoundingClientRect().width;
         probe.remove();
         if (!at100) return;
-        const px = Math.max(MIN_PX, Math.min(MAX_PX, Math.floor(width * 100 / at100 * 100) / 100));
+        let px = width * 100 / at100;
+        if (!phone.matches) px = Math.min(px, (wrap.clientHeight - padY) / (term.rows * LINE));
+        px = Math.max(MIN_PX, Math.min(MAX_PX, Math.floor(px * 100) / 100));
         screen.style.fontSize = `${px}px`;
     }
-    new ResizeObserver(fitScreen).observe($('crt'));
+    new ResizeObserver(fitScreen).observe($('screen-wrap'));
     if (document.fonts) document.fonts.ready.then(fitScreen);
 
     /** A PNG of the screen as it looks: phosphor colour, glow, attributes, cursor, scan lines. */
@@ -777,9 +854,9 @@
         printer.tearOff();
         paper.clear(printer.y);
         $('tray').hidden = true;
-        $('tray').classList.remove('printed');
-        unseen = 0;
-        $('paper-badge').hidden = true;
+        $('tray').classList.remove('printed', 'peek');
+        seenSheets = 0;
+        countUnseen();
     });
     $('pngBtn').addEventListener('click', () => {
         paper.printed().forEach((c, i) => c.toBlob(b => download(`digitalrerun-page-${i + 1}.png`, b, 'image/png')));
@@ -976,6 +1053,7 @@
                 Storage.set('settings', settings).catch(() => {});
             } catch (e) { note(e.message, false); }
         }
+        placeTray();
         renderDrives();
         renderSnapshots();
         loadShelf();

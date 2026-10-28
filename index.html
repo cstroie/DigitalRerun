@@ -27,9 +27,11 @@
 
     <div class="layout">
         <main>
-            <div class="crt" id="crt" tabindex="0" aria-label="CP/M console: click and type">
-                <div id="screen" class="screen"></div>
-                <textarea id="kbd" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="keyboard"></textarea>
+            <div class="screen-wrap" id="screen-wrap">
+                <div class="crt" id="crt" tabindex="0" aria-label="CP/M console: click and type">
+                    <div id="screen" class="screen"></div>
+                    <textarea id="kbd" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="keyboard"></textarea>
+                </div>
             </div>
 
             <div class="keyrow" id="keyrow" aria-label="Keys a phone keyboard lacks">
@@ -63,6 +65,7 @@
                     </select>
                     <span id="mhz" class="mhz"></span>
                     <button id="pasteBtn" title="Type the clipboard into CP/M">PASTE</button>
+                    <button id="paperBtn" title="The printed paper">PAPER <span class="badge" id="paper-count" hidden></span></button>
                     <button id="shotBtn" title="Save a picture of the screen (PNG)">SHOT</button>
                     <button id="snapBtn" title="Save a snapshot of the machine, to come back to later">SNAP</button>
                     <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
@@ -185,7 +188,16 @@
         </aside>
 
         <section class="paper-tray" id="tray" data-tab="paper" hidden>
-            <h2>PAPER</h2>
+            <div class="tray-head">
+                <h2>PAPER</h2>
+                <div class="tools">
+                    <button data-paper="ffBtn" title="Form feed">FF</button>
+                    <button data-paper="tearBtn" title="Tear off the printed sheets">TEAR OFF</button>
+                    <button data-paper="pngBtn" title="Download the printed sheets as PNG">PNG</button>
+                    <button data-paper="printBtn" title="Print or save as PDF">PRINT</button>
+                    <button id="paperClose" class="close" title="Back to the screen">✕</button>
+                </div>
+            </div>
             <p class="hint paper-empty">Nothing printed yet. Try <code>PRTDEMO</code>.</p>
             <div id="paper" class="paper"></div>
         </section>
