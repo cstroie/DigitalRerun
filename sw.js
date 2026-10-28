@@ -1,13 +1,20 @@
 /*
- * Service worker: serves the app from cache so it works offline.
- * Stale-while-revalidate: cached files load instantly and are refreshed
- * in the background, so an update shows up on the next visit.
+ * Service worker: keeps the app for offline use.
+ *
+ * Every file of the app is cached under the version's own name
+ * (digitalrerun-{VERSION}-{BUILD}) and served from there, so a page
+ * always runs one consistent version. A new version installs beside the
+ * old one and waits; the page offers to reload, then sends
+ * 'skip-waiting'. The old cache is removed when the new worker takes over.
  */
-const CACHE = 'digitalrerun-v3';
+importScripts('js/version.js');
+const { VERSION, BUILD } = self.DigitalRerun;
+const CACHE = `digitalrerun-${VERSION}-${BUILD}`;
 const SHELL = [
     './',
     'index.html',
     'css/digitalrerun.css',
+    'js/version.js',
     'js/z80.js',
     'js/devices/fdc.js',
     'js/devices/serial.js',
@@ -17,6 +24,7 @@ const SHELL = [
     'js/font9.js',
     'js/fx80.js',
     'js/storage.js',
+    'js/pwa.js',
     'js/app.js',
     'disks/cpm22.dsk',
     'disks/zork1.dsk',
@@ -24,34 +32,51 @@ const SHELL = [
     'icons/icon-32.png',
     'icons/icon-180.png',
     'icons/icon-192.png',
-    'icons/icon-512.png'
+    'icons/icon-512.png',
+    'icons/icon-maskable-512.png'
 ];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', event => {
-    event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
+    // Fetch past the HTTP cache, so the new version is really new. No skipWaiting: the page decides.
+    event.waitUntil(caches.open(CACHE).then(cache =>
+        cache.addAll(SHELL.map(url => new Request(url, { cache: 'reload' })))));
 });
 
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys()
-            .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+            // Only our own caches: the origin (cstroie.github.io) is shared with other apps.
+            .then(keys => Promise.all(keys
+                .filter(k => (k.startsWith('digitalrerun-') || k.startsWith('jscpm-')) && k !== CACHE && k !== 'digitalrerun-fonts')
+                .map(k => caches.delete(k))))
             .then(() => self.clients.claim())
     );
+});
+
+self.addEventListener('message', event => {
+    const msg = event.data || {};
+    if (msg.type === 'skip-waiting') self.skipWaiting();
+    if (msg.type === 'version' && event.ports[0]) event.ports[0].postMessage({ version: VERSION, build: BUILD });
 });
 
 self.addEventListener('fetch', event => {
     const req = event.request;
     if (req.method !== 'GET') return;
     const url = new URL(req.url);
-    if (url.origin !== location.origin && !FONT_HOSTS.includes(url.hostname)) return;
-
-    event.respondWith(caches.open(CACHE).then(async cache => {
-        const cached = await cache.match(req, { ignoreSearch: true });
-        const network = fetch(req).then(res => {
+    if (FONT_HOSTS.includes(url.hostname)) {
+        // Fonts: cached once, kept across versions.
+        event.respondWith(caches.open('digitalrerun-fonts').then(async cache => {
+            const hit = await cache.match(req);
+            if (hit) return hit;
+            const res = await fetch(req);
             if (res.ok || res.type === 'opaque') cache.put(req, res.clone());
             return res;
-        }).catch(() => cached);
-        return cached || network;
-    }));
+        }));
+        return;
+    }
+    if (url.origin !== location.origin) return;
+    // The app: this version's copy, else the network (and nothing is stored outside the version).
+    event.respondWith(caches.open(CACHE).then(cache =>
+        cache.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req))));
 });

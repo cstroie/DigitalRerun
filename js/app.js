@@ -462,7 +462,14 @@
 
     start();
 
-    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-        navigator.serviceWorker.register('sw.js').catch(() => {});
+    /** Save every changed disk now (before a reload for an update). */
+    function flushDisks() {
+        return Promise.all(DRIVES.map(d => {
+            const disk = machine.fdc.drives[d];
+            clearTimeout(saveTimers[d]);
+            return disk && disk.dirty ? Storage.saveDisk(d, disk).then(() => { disk.dirty = false; }) : null;
+        }));
     }
+
+    window.DigitalRerun.PWA.init({ beforeReload: flushDisks });
 })();

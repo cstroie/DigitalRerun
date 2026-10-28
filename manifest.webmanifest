@@ -1,24 +1,18 @@
 {
+  "id": "./",
   "name": "DigitalRerun: CP/M 2.2 on a Z80",
   "short_name": "DigitalRerun",
   "description": "A CP/M 2.2 computer in the browser: Z80, 64K, the original CCP and BDOS, 8-inch drives and an Epson FX-80 printer.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#0d0f0c",
   "theme_color": "#0d0f0c",
+  "categories": ["utilities", "education", "games"],
   "icons": [
-    {
-      "src": "icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

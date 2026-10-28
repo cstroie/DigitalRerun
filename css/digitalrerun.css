@@ -233,6 +233,47 @@ kbd, code {
 .files .free { column-span: all; color: var(--text-dim); font-family: 'IBM Plex Sans Condensed', sans-serif; font-size: 12px; margin-top: 4px; }
 #drives-panel.drop { border-color: var(--accent); }
 
+.panel h2.sub { margin-top: 14px; }
+.panel h2.sub span { color: var(--text-dim); font-weight: 400; letter-spacing: 0.5px; }
+
+/* ---- banners and toasts (pwa.js) ---- */
+#banners {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    width: min(560px, calc(100% - 24px));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+    pointer-events: none;
+}
+.banner {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #182016;
+    border: 1px solid var(--fg-faint);
+    border-left: 3px solid var(--fg);
+    border-radius: 10px;
+    padding: 10px 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    color: var(--text);
+    line-height: 1.4;
+    animation: rise 180ms ease-out;
+}
+.banner p { flex: 1; }
+.banner .acts { display: flex; gap: 6px; flex-shrink: 0; }
+.banner button.primary { color: var(--page); background: var(--fg); border-color: var(--fg); }
+.banner.toast { border-left-color: var(--accent); justify-content: center; text-align: center; }
+@keyframes rise { from { transform: translateY(12px); opacity: 0; } }
+@media (max-width: 500px) {
+    .banner { flex-direction: column; align-items: stretch; }
+    .banner .acts { justify-content: flex-end; }
+}
+
 /* ---- paper ---- */
 .paper-tray {
     background: var(--panel);
@@ -288,7 +329,7 @@ kbd, code {
 
 @media print {
     body { background: #fff; padding: 0; display: block; }
-    header, .layout, .paper-tray h2 { display: none; }
+    header, .layout, .paper-tray h2, #banners { display: none; }
     .paper-tray { border: 0; padding: 0; background: #fff; }
     .paper { max-height: none; overflow: visible; display: block; }
     .paper .sheet { width: 100%; box-shadow: none; border: 0; page-break-after: always; }

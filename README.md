@@ -32,6 +32,16 @@ The A: disk holds the DRI 2.2 tools: PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB
 - **Speed.** The CPU runs at 2, 4 (the default) or 8 MHz, or as fast as the browser allows. It costs nothing while CP/M waits for a key.
 - **Lights.** POWER, RUN (bright while working, dim while waiting for a key), one light per drive, and PRN.
 
+## As an app
+
+DigitalRerun is a PWA, so it can be installed and works offline:
+
+- **Install.** Where the browser can install apps (Chrome, Edge, Android), a banner offers **INSTALL**. On an iPhone or iPad the banner says how: Share, then *Add to Home Screen*. SETUP has an INSTALL APP button too. *Not now* hides the offer for 30 days, and nothing is offered when the app already runs installed.
+- **Offline.** On the first visit the service worker keeps every file of the app, the CP/M and Zork disks included. After that it starts with no network.
+- **Updates.** A new version downloads in the background and waits. A banner names it (*DigitalRerun 1.2.0 (3f9c…) is ready*) and offers **RELOAD**. Reloading restarts the machine, but your disks are saved first. The app checks for a new version when it comes back to the screen, when the network returns, and every hour. SETUP shows the running version and has CHECK FOR UPDATES.
+
+Releasing a change: raise `VERSION` in [`js/version.js`](js/version.js), then run `node tools/stamp.js`. The stamp is a hash of every file the service worker keeps, and a test fails when it is stale, so no change can ship under an old version's cache.
+
 ## The machine
 
 | | |
@@ -109,6 +119,8 @@ js/fx80.js, js/font9.js        FX-80 printer, paper view, dot-matrix font
 js/cpmfs.js                    CP/M file system on a disk image (outside the machine)
 js/asm8080.js                  8080 assembler (DRI ASM / Macro Assembler AS syntax)
 js/storage.js                  disks and settings in IndexedDB
+js/version.js, js/pwa.js, sw.js   version and build stamp; install, update and offline (PWA)
+tools/stamp.js                 write the build stamp after a change
 system/                        loader, BIOS, SYSGEN sources; dri/ CCP and BDOS sources
 disks/cpm22/, cpm22.dsk        the files of the boot disk and the disk image
 disks/zork1/, zork1.dsk        the Zork I game disk (D:) and its files
