@@ -121,11 +121,12 @@
     }
 
     function openPaper(open) {
+        if (open) paper.sheet(paper.first);                  // nothing printed yet: a clean sheet
         if (phone.matches) { showTab('paper'); $('tray').scrollIntoView({ block: 'start' }); markSeen(); return; }
         const tray = $('tray');
         tray.classList.toggle('open', open);
         $('paperBtn').setAttribute('aria-pressed', String(open));
-        if (open) { markSeen(); showHead(); } else focusScreen();
+        if (open) { markSeen(); $('paper').scrollTop = 0; } else focusScreen();   // the paper opens at its top; while it stays open, it follows the head
     }
 
     /** Paper came out of the printer. */

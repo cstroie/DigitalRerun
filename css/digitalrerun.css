@@ -478,8 +478,7 @@ aside [data-tab].active { display: block; }
         padding: 6px 10px; border-radius: 13px 13px 0 0;
         background: color-mix(in srgb, var(--panel) 88%, transparent);
     }
-    .bay > .paper-tray .paper-empty { display: block; position: absolute; top: 52px; left: 14px; margin: 0; }
-    .bay > .paper-tray.printed .paper-empty { display: none; }
+    .bay > .paper-tray .paper-empty { display: none; }
 }
 
 @media print {
