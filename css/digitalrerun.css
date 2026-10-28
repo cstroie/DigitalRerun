@@ -120,6 +120,12 @@ header a { color: var(--text-dim); margin-left: auto; }
     pointer-events: none;
 }
 
+/* ---- the extra keys a phone keyboard lacks (touch screens only) ---- */
+.keyrow { display: none; gap: 4px; margin-top: 8px; }
+.keyrow button { flex: 1; padding: 9px 2px; font-size: 13px; touch-action: manipulation; }
+.keyrow button.toggle.on { color: var(--page); background: var(--fg); border-color: var(--fg); }
+@media (pointer: coarse) { .keyrow { display: flex; } }
+
 /* ---- front strip ---- */
 .front {
     margin-top: 10px;
@@ -156,7 +162,7 @@ header a { color: var(--text-dim); margin-left: auto; }
 .led.run.on i { background: #46e04a; box-shadow: 0 0 6px #46e04a; }
 .led.run.idle i { background: #2c6e2e; box-shadow: none; }
 
-.controls { display: flex; align-items: center; gap: 8px; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .mhz { font-family: 'VT323', monospace; font-size: 18px; color: var(--fg-dim); min-width: 72px; text-align: right; }
 
 button, select {

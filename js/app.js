@@ -341,8 +341,33 @@
 
     function focusScreen() { kbd.focus({ preventScroll: true }); }
 
+    /* The phone key row: CTRL holds for the next key; the buttons never take the focus,
+       so the on-screen keyboard stays open. */
+    let ctrlArmed = false;
+    const armCtrl = on => { ctrlArmed = on; document.querySelector('#keyrow [data-key="ctrl"]').classList.toggle('on', on); };
+    const ctrlOf = ch => { const c = ch.toUpperCase().charCodeAt(0); return c >= 64 && c <= 95 ? c & 0x1F : null; };
+    const KEYROW = { Escape: [27], Tab: [9], 'ctrl-c': [3] };
+    $('keyrow').addEventListener('pointerdown', e => e.preventDefault());
+    $('keyrow').addEventListener('click', e => {
+        const b = e.target.closest('[data-key]');
+        if (!b) return;
+        const key = b.dataset.key;
+        if (key === 'ctrl') { armCtrl(!ctrlArmed); focusScreen(); return; }
+        const bytes = KEYROW[key] || ARROWS[settings.arrows][key] || ARROWS.vt100[key];
+        if (bytes) { machine.console.type(bytes); kick(); }
+        armCtrl(false);
+        focusScreen();
+    });
+
     kbd.addEventListener('keydown', e => {
         if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V') && e.shiftKey) return;   // let paste happen
+        if (ctrlArmed && e.key.length === 1 && ctrlOf(e.key) !== null) {
+            e.preventDefault();
+            machine.console.type([ctrlOf(e.key)]);
+            armCtrl(false);
+            kick();
+            return;
+        }
         const bytes = keyBytes(e);
         if (!bytes) return;
         e.preventDefault();
@@ -369,7 +394,14 @@
     // Mobile keyboards send text through input events.
     kbd.addEventListener('input', () => {
         if (kbd.value) {
-            machine.console.type(kbd.value.replace(/\n/g, '\r'));
+            let text = kbd.value.replace(/\n/g, '\r');
+            if (ctrlArmed && ctrlOf(text[0]) !== null) {
+                machine.console.type([ctrlOf(text[0])]);
+                text = text.slice(1);
+                armCtrl(false);
+            }
+            // One key types at once; a word from the keyboard's suggestions is pasted, paced.
+            if (text.length === 1) machine.console.type(text); else if (text) machine.console.paste(text);
             kbd.value = '';
             kick();
         }
@@ -382,7 +414,7 @@
     $('crt').addEventListener('focus', focusScreen);
 
     function typeText(text) {
-        machine.console.type(text.replace(/\r?\n/g, '\r').replace(/[^\x00-\x7f]/g, '?'));
+        machine.console.paste(text.replace(/\r?\n/g, '\r').replace(/[^\x00-\x7f]/g, '?'));
         kick();
         focusScreen();
     }

@@ -35,7 +35,8 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
 - **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
-- **Phone friendly.** ADD FILES replaces drag and drop, the printed paper gets its own tab, and the 80 columns stay readable.
+- **Phone friendly.** A key row adds what phone keyboards lack (CTRL, ESC, TAB, arrows, ^C), ADD FILES replaces drag and drop, the printed paper gets its own tab, and the 80 columns stay readable.
+- **Paste a whole listing.** PASTE types at a careful typist's pace, waiting for the program to ask for each key, so nothing is lost, not even in programs that read the keyboard ahead.
 
 <div align="center">
 

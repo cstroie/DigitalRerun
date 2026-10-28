@@ -153,3 +153,24 @@ test('Zork I plays from the D: game disk under Vezza', () => {
     assert.match(play('open mailbox'), /leaflet/);
     assert.match(play('read leaflet'), /WELCOME TO ZORK/);
 });
+
+test('pasted text arrives whole, even in a program that reads ahead', () => {
+    const m = boot();
+    m.fdc.mount(3, Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(__dirname, '../disks/zork1.dsk')))));
+    command(m, 'D:');
+    command(m, 'VEZZA ZORK1.Z3');
+    m.out = '';
+    m.console.paste('open mailbox\rread leaflet\r');           // all at once, as a paste
+    settle(m);
+    assert.match(m.out, /Opening the small mailbox reveals a leaflet/);
+    assert.match(m.out, /WELCOME TO ZORK/);
+    assert.doesNotMatch(m.out, /I don't know the word/);
+});
+
+test('a pasted batch of commands runs one after another at the CCP', () => {
+    const m = boot();
+    m.out = '';
+    m.console.paste('DIR B:\rSTAT B:\rTYPE NOFILE.TXT\r');
+    settle(m);
+    assert.match(m.out, /^DIR B:[\s\S]*NO FILE[\s\S]*A>STAT B:[\s\S]*Bytes Remaining On B: 241k[\s\S]*A>TYPE NOFILE\.TXT/);
+});
