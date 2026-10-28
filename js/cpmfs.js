@@ -10,7 +10,7 @@
     'use strict';
 
     const node = typeof module !== 'undefined' && module.exports;
-    const { Disk } = node ? require('./devices/fdc.js') : root.JSCPM;
+    const { Disk } = node ? require('./devices/fdc.js') : root.DigitalRerun;
 
     const SECTOR = 128;
     const SKEW6 = [1, 7, 13, 19, 25, 5, 11, 17, 23, 3, 9, 15, 21, 2, 8, 14, 20, 26, 6, 12, 18, 24, 4, 10, 16, 22];
@@ -33,7 +33,7 @@
     }
 
     class CpmFs {
-        /** `disk` is a JSCPM.Disk (or anything with `format` and `data`). */
+        /** `disk` is a DigitalRerun.Disk (or anything with `format` and `data`). */
         constructor(disk) {
             const dpb = DPB[disk.format];
             if (!dpb) throw new CpmFsError(`no file system known for '${disk.format}'`);
@@ -269,5 +269,5 @@
 
     const api = { CpmFs, CpmFsError, DPB, splitName, blankDisk, toCpmText, fromCpmText, isTextName };
     if (node) module.exports = api;
-    else Object.assign(root.JSCPM = root.JSCPM || {}, api);
+    else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

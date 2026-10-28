@@ -1,5 +1,5 @@
 /*
- * font9.js: jscpm's dot-matrix font, ASCII 20h-7Eh. Generated from
+ * font9.js: DigitalRerun's dot-matrix font, ASCII 20h-7Eh. Generated from
  * tools/font9.txt by tools/font9.js: edit that file, not this one.
  * Each glyph is 9 pin rows (top first); bit 4 is the leftmost column.
  */
@@ -103,5 +103,5 @@
         [0,0,8,21,2,0,0,0,0], // ~
     ];
     if (typeof module !== 'undefined' && module.exports) module.exports = { FONT9 };
-    else (root.JSCPM = root.JSCPM || {}).FONT9 = FONT9;
+    else (root.DigitalRerun = root.DigitalRerun || {}).FONT9 = FONT9;
 })(typeof window !== 'undefined' ? window : globalThis);

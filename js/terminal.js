@@ -342,5 +342,5 @@
 
     const api = { Terminal, TerminalView, ATTR: { BOLD, UNDERLINE, BLINK, REVERSE, DIM } };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
-    else Object.assign(root.JSCPM = root.JSCPM || {}, api);
+    else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

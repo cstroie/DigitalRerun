@@ -1,7 +1,7 @@
-# jscpm dot-matrix font: one glyph per block, 5 columns, 9 rows (pins 1-9).
+# DigitalRerun dot-matrix font: one glyph per block, 5 columns, 9 rows (pins 1-9).
 # Rows 1-7 are the body, 8-9 the descenders. '#' is a dot, '.' none.
 # A block starts with the character (or its code as 0xNN) on a line of its own.
-# Drawn for jscpm (MIT licence); tools/font9.js turns it into js/font9.js.
+# Drawn for DigitalRerun (MIT licence); tools/font9.js turns it into js/font9.js.
 
 0x20
 .....

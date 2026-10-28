@@ -1,4 +1,4 @@
-;	SYSGEN for jscpm: copy the system tracks
+;	SYSGEN for DigitalRerun: copy the system tracks
 ;
 ;	Reads the two system tracks of a drive into memory and writes
 ;	them to another, the way DRI's SYSGEN did. The image sits where
@@ -199,7 +199,7 @@ setdma:	jmp	0
 read:	jmp	0
 write:	jmp	0
 
-signon:	db	'JSCPM SYSGEN VER 1.0',cr,lf,'$'
+signon:	db	'DIGITALRERUN SYSGEN VER 1.0',cr,lf,'$'
 asksrc:	db	cr,lf,'SOURCE DRIVE NAME (OR RETURN TO SKIP) $'
 putsrc:	db	cr,lf,'SOURCE ON '
 srcd:	db	'A, THEN TYPE RETURN $'

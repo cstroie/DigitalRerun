@@ -8,7 +8,7 @@
 (function (root) {
     'use strict';
 
-    const DB = 'jscpm';
+    const DB = 'jscpm';             // the app's first name: kept, so saved disks stay
     const VERSION = 1;
 
     function open() {
@@ -60,5 +60,5 @@
         set(key, value) { return call('settings', 'readwrite', s => s.put(value, key)); }
     };
 
-    (root.JSCPM = root.JSCPM || {}).Storage = Storage;
+    (root.DigitalRerun = root.DigitalRerun || {}).Storage = Storage;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -26,7 +26,7 @@
     'use strict';
 
     const node = typeof module !== 'undefined' && module.exports;
-    const FONT9 = node ? require('./font9.js').FONT9 : root.JSCPM.FONT9;
+    const FONT9 = node ? require('./font9.js').FONT9 : root.DigitalRerun.FONT9;
 
     const PIN = 1 / 72;              // vertical distance between pins
     const PAPER_WIDTH = 8.0;         // printable width, inches (80 columns pica)
@@ -396,5 +396,5 @@
 
     const api = { FX80, PaperView };
     if (node) module.exports = api;
-    else Object.assign(root.JSCPM = root.JSCPM || {}, api);
+    else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

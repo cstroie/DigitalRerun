@@ -1,7 +1,7 @@
 /*
- * Vendored for jscpm from https://github.com/DrGoldfire/Z80.js
+ * Vendored for DigitalRerun from https://github.com/DrGoldfire/Z80.js
  * (archived 2020), MIT licence: copyright Molly Howell and contributors,
- * full text below. Changes for jscpm: the `window` check works outside a
+ * full text below. Changes for DigitalRerun: the `window` check works outside a
  * browser, and the constructor is exported for Node and the browser.
  *
  * MIT License
@@ -3414,4 +3414,4 @@ let cycle_counts_dd = [
 }
 
 if (typeof module !== 'undefined' && module.exports) module.exports = Z80;
-else (globalThis.JSCPM = globalThis.JSCPM || {}).Z80 = Z80;
+else (globalThis.DigitalRerun = globalThis.DigitalRerun || {}).Z80 = Z80;

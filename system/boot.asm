@@ -1,4 +1,4 @@
-;	jscpm cold-start loader
+;	DigitalRerun cold-start loader
 ;
 ;	The boot ROM reads this sector (track 0, sector 1 of A:) into
 ;	0000h and starts the CPU there. It reads CCP, BDOS and BIOS from

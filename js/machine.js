@@ -12,9 +12,9 @@
     'use strict';
 
     const node = typeof module !== 'undefined' && module.exports;
-    const Z80 = node ? require('./z80.js') : root.JSCPM.Z80;
-    const { FDC } = node ? require('./devices/fdc.js') : root.JSCPM;
-    const { Console, PrinterPort } = node ? require('./devices/serial.js') : root.JSCPM;
+    const Z80 = node ? require('./z80.js') : root.DigitalRerun.Z80;
+    const { FDC } = node ? require('./devices/fdc.js') : root.DigitalRerun;
+    const { Console, PrinterPort } = node ? require('./devices/serial.js') : root.DigitalRerun;
 
     class Machine {
         constructor() {
@@ -98,5 +98,5 @@
 
     const api = { Machine };
     if (node) module.exports = api;
-    else Object.assign(root.JSCPM = root.JSCPM || {}, api);
+    else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

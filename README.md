@@ -1,12 +1,12 @@
-# JSCPM
+# DigitalRerun
 
-[![test](https://github.com/cstroie/jscpm/actions/workflows/test.yml/badge.svg)](https://github.com/cstroie/jscpm/actions/workflows/test.yml)
+[![test](https://github.com/cstroie/DigitalRerun/actions/workflows/test.yml/badge.svg)](https://github.com/cstroie/DigitalRerun/actions/workflows/test.yml)
 
-A CP/M 2.2 computer in the browser: a Z80 with 64K of RAM, the **original Digital Research CCP and BDOS**, booted by a real BIOS from the system tracks of an 8" disk, four floppy drives and a hard disk, a VT100 console and an Epson FX-80 printer that prints on fanfold paper. There are no dependencies and no build step.
+*Digital Research's CP/M, running again.* A CP/M 2.2 computer in the browser: a Z80 with 64K of RAM, the **original Digital Research CCP and BDOS**, booted by a real BIOS from the system tracks of an 8" disk, four floppy drives and a hard disk, a VT100 console and an Epson FX-80 printer that prints on fanfold paper. There are no dependencies and no build step.
 
-**Live demo: https://cstroie.github.io/jscpm/**
+**Live demo: https://cstroie.github.io/DigitalRerun/**
 
-![JSCPM running DIR and printing on the FX-80](docs/screenshot.png)
+![DigitalRerun running DIR and printing on the FX-80](docs/screenshot.png)
 
 ## Quick start
 

@@ -422,5 +422,5 @@
 
     const api = { assemble, formatListing, AsmError };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
-    else (root.JSCPM = root.JSCPM || {}).Asm8080 = api;
+    else (root.DigitalRerun = root.DigitalRerun || {}).Asm8080 = api;
 })(typeof window !== 'undefined' ? window : globalThis);

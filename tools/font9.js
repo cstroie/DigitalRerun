@@ -34,7 +34,7 @@ for (let c = 0x20; c < 0x7F; c++) if (!glyphs.has(c)) throw new Error(`no glyph 
 const body = [];
 for (let c = 0x20; c < 0x7F; c++) body.push(`        [${glyphs.get(c).join(',')}], // ${String.fromCharCode(c)}`);
 const out = `/*
- * font9.js: jscpm's dot-matrix font, ASCII 20h-7Eh. Generated from
+ * font9.js: DigitalRerun's dot-matrix font, ASCII 20h-7Eh. Generated from
  * tools/font9.txt by tools/font9.js: edit that file, not this one.
  * Each glyph is 9 pin rows (top first); bit 4 is the leftmost column.
  */
@@ -44,7 +44,7 @@ const out = `/*
 ${body.join('\n')}
     ];
     if (typeof module !== 'undefined' && module.exports) module.exports = { FONT9 };
-    else (root.JSCPM = root.JSCPM || {}).FONT9 = FONT9;
+    else (root.DigitalRerun = root.DigitalRerun || {}).FONT9 = FONT9;
 })(typeof window !== 'undefined' ? window : globalThis);
 `;
 fs.writeFileSync(path.join(__dirname, '..', 'js', 'font9.js'), out);

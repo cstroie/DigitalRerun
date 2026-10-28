@@ -3,11 +3,11 @@
  * Stale-while-revalidate: cached files load instantly and are refreshed
  * in the background, so an update shows up on the next visit.
  */
-const CACHE = 'jscpm-v3';
+const CACHE = 'digitalrerun-v1';
 const SHELL = [
     './',
     'index.html',
-    'css/jscpm.css',
+    'css/digitalrerun.css',
     'js/z80.js',
     'js/devices/fdc.js',
     'js/devices/serial.js',

@@ -37,7 +37,7 @@ function command(m, text) {
 
 test('cold start from the system tracks to the A> prompt', () => {
     const m = boot();
-    assert.match(m.out, /jscpm 64K CP\/M 2\.2/);
+    assert.match(m.out, /DigitalRerun 64K CP\/M 2\.2/);
     assert.match(m.out, /A>$/);
 });
 
@@ -70,7 +70,7 @@ test('the printer port receives LST: output', () => {
     let printed = '';
     m.printer.output = b => { printed += String.fromCharCode(b); };
     command(m, 'PIP LST:=BOOT.ASM');
-    assert.match(printed, /jscpm cold-start loader/);
+    assert.match(printed, /DigitalRerun cold-start loader/);
 });
 
 test('DRI ASM assembles inside CP/M', () => {
@@ -91,7 +91,7 @@ test('SYSGEN copies the system tracks to another disk', () => {
     m.console.type('\r');                          // no more: reboot
     settle(m);
     assert.deepEqual([...new CpmFs(m.fdc.drives[1]).readSystem()], [...new CpmFs(m.fdc.drives[0]).readSystem()]);
-    assert.match(command(m, 'SYSGEN'), /JSCPM SYSGEN/);
+    assert.match(command(m, 'SYSGEN'), /DIGITALRERUN SYSGEN/);
     m.console.type('I');
     settle(m);
     m.console.type('\r');
@@ -104,8 +104,8 @@ test('a changed BIOS, assembled and installed inside CP/M, boots', () => {
     // The owner edits BIOS.ASM (here from outside, as with ED).
     const fsys = new CpmFs(m.fdc.drives[0]);
     const src = Buffer.from(fromCpmText(fsys.read('BIOS.ASM'))).toString('latin1');
-    assert.match(src, /jscpm 64K CP\/M 2\.2/);
-    fsys.write('BIOS.ASM', toCpmText(Buffer.from(src.replace('jscpm 64K CP/M 2.2', 'My own BIOS, 1980 style'), 'latin1')));
+    assert.match(src, /DigitalRerun 64K CP\/M 2\.2/);
+    fsys.write('BIOS.ASM', toCpmText(Buffer.from(src.replace('DigitalRerun 64K CP/M 2.2', 'My own BIOS, 1980 style'), 'latin1')));
     command(m, '');                                // ^C would do; the CCP logs in again at each command
 
     command(m, 'SYSGEN');

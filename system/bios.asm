@@ -1,6 +1,6 @@
-;	jscpm BIOS for CP/M 2.2, 64K
+;	DigitalRerun BIOS for CP/M 2.2, 64K
 ;
-;	A small BIOS for the jscpm machine: console, printer and disk
+;	A small BIOS for the DigitalRerun machine: console, printer and disk
 ;	controller on I/O ports (the disk ports are z80pack's). Drives
 ;	A: to D: are 8" IBM 3740 single density disks, I: a 4 MB hard
 ;	disk. 8080 code in the syntax of DRI's ASM.COM, so it can be
@@ -86,7 +86,7 @@ dpbhd:	dw	128		;sectors per track
 trans:	db	1,7,13,19,25,5,11,17,23,3,9,15,21
 	db	2,8,14,20,26,6,12,18,24,4,10,16,22
 
-signon:	db	13,10,'jscpm 64K CP/M 2.2',13,10,0
+signon:	db	13,10,'DigitalRerun 64K CP/M 2.2',13,10,0
 
 ;	cold start
 boot:	lxi	sp,buff

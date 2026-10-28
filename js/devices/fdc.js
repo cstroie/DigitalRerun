@@ -9,7 +9,7 @@
  *   OUT 16  DMA address, high byte
  *   OUT 13  command: 0 = read a sector into DMA, 1 = write it from DMA
  *   IN  14  status of the last command (0 = ok)
- *   IN  10  0FFh when the selected drive holds a disk, else 0 (jscpm's own)
+ *   IN  10  0FFh when the selected drive holds a disk, else 0 (DigitalRerun's own)
  *
  * A sector is 128 bytes. A disk is a flat image, track after track,
  * sectors 1..spt in order (no skew in the image: the BIOS translates).
@@ -122,5 +122,5 @@
 
     const api = { FDC, Disk, FORMATS, STATUS, SECTOR, formatOfSize };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
-    else Object.assign(root.JSCPM = root.JSCPM || {}, api);
+    else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

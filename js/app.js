@@ -7,7 +7,7 @@
     'use strict';
 
     const { Machine, Disk, CpmFs, Terminal, TerminalView, FX80, PaperView, Storage,
-        isTextName, toCpmText, fromCpmText } = window.JSCPM;
+        isTextName, toCpmText, fromCpmText } = window.DigitalRerun;
 
     const $ = id => document.getElementById(id);
     const DRIVES = [0, 1, 2, 3, 8];                 // A: B: C: D: I:
@@ -374,7 +374,7 @@
         $('paper-badge').hidden = true;
     });
     $('pngBtn').addEventListener('click', () => {
-        paper.printed().forEach((c, i) => c.toBlob(b => download(`jscpm-page-${i + 1}.png`, b, 'image/png')));
+        paper.printed().forEach((c, i) => c.toBlob(b => download(`digitalrerun-page-${i + 1}.png`, b, 'image/png')));
     });
     $('printBtn').addEventListener('click', () => window.print());
 

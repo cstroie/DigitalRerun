@@ -59,7 +59,7 @@ send:	mov	a,m
 	jmp	send
 
 text:	db	esc,'@'
-	db	esc,'E',esc,'W',1,'JSCPM  FX-80',esc,'W',0,esc,'F',cr,lf
+	db	esc,'E',esc,'W',1,'DigitalRerun  FX-80',esc,'W',0,esc,'F',cr,lf
 	db	'CP/M 2.2 printing on an emulated Epson FX-80',cr,lf,lf
 	db	'Pica, 10 characters to the inch.',cr,lf
 	db	esc,'M','Elite, 12 characters to the inch.',esc,'P',cr,lf
