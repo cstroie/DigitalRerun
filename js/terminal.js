@@ -266,6 +266,25 @@
             if (this.reply) this.reply([...s].map(c => c.charCodeAt(0)));
         }
 
+        getState() {
+            return {
+                cols: this.cols, rows: this.rows,
+                chars: this.chars.map(r => r.slice()), attrs: this.attrs.map(r => r.slice()),
+                x: this.x, y: this.y, attr: this.attr, top: this.top, bottom: this.bottom,
+                wrapPending: this.wrapPending, autowrap: this.autowrap, insertMode: this.insertMode,
+                cursorVisible: this.cursorVisible, saved: { ...this.saved },
+                state: this.state, params: this.params, tabs: [...this.tabs]
+            };
+        }
+
+        setState(s) {
+            Object.assign(this, s, {
+                chars: s.chars.map(r => r.slice()), attrs: s.attrs.map(r => r.slice()),
+                saved: { ...s.saved }, tabs: new Set(s.tabs)
+            });
+            for (let r = 0; r < this.rows; r++) this.dirty.add(r);
+        }
+
         /** The screen as text, one line per row (for tests). */
         text() {
             return this.chars.map(r => String.fromCharCode(...r).trimEnd()).join('\n');

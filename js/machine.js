@@ -13,7 +13,7 @@
 
     const node = typeof module !== 'undefined' && module.exports;
     const Z80 = node ? require('./z80.js') : root.DigitalRerun.Z80;
-    const { FDC } = node ? require('./devices/fdc.js') : root.DigitalRerun;
+    const { FDC, Disk } = node ? require('./devices/fdc.js') : root.DigitalRerun;
     const { Console, PrinterPort } = node ? require('./devices/serial.js') : root.DigitalRerun;
 
     class Machine {
@@ -69,6 +69,33 @@
             fdc.dma = 0x80;
             this.state = 'running';
             return true;
+        }
+
+        /** Everything needed to continue later: CPU, RAM, controller, and a copy of each disk. */
+        getState() {
+            const f = this.fdc;
+            return {
+                memory: this.memory.slice(),
+                cpu: this.cpu.getState(),
+                cycles: this.cycles,
+                state: this.state,
+                fdc: { drive: f.drive, track: f.track, sector: f.sector, dma: f.dma, status: f.status },
+                printerOnline: this.printer.online,
+                drives: f.drives.map((d, i) => d && { drive: i, name: d.name, format: d.format, readOnly: d.readOnly, data: d.data.slice() }).filter(Boolean)
+            };
+        }
+
+        setState(s) {
+            this.memory.set(s.memory);
+            this.cpu.setState(s.cpu);
+            this.cycles = s.cycles;
+            this.state = s.state;
+            Object.assign(this.fdc, s.fdc);
+            this.printer.online = s.printerOnline;
+            this.fdc.drives.fill(null);
+            for (const d of s.drives) this.fdc.mount(d.drive, new Disk(d.format, d.data.slice(), { name: d.name, readOnly: d.readOnly }));
+            this.console.queue.length = 0;
+            this.console.idlePolls = 0;
         }
 
         get halted() {

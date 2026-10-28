@@ -52,6 +52,7 @@
                     </select>
                     <span id="mhz" class="mhz"></span>
                     <button id="pasteBtn" title="Type the clipboard into CP/M">PASTE</button>
+                    <button id="snapBtn" title="Save a snapshot of the machine, to come back to later">SNAP</button>
                     <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
                 </div>
             </div>
@@ -108,6 +109,15 @@
                 </div>
                 <p class="hint">The console is a VT100. <kbd>^C</kbd> warm start, <kbd>^S</kbd> pause, <kbd>^P</kbd> printer echo, <kbd>^X</kbd> cancel line.</p>
             </section>
+            <section class="panel" data-tab="setup">
+                <h2>SNAPSHOTS <span id="snap-note"></span></h2>
+                <div class="tools">
+                    <button id="snapSaveBtn" title="The whole machine now: CPU, memory, screen and disks">SAVE SNAPSHOT</button>
+                </div>
+                <div class="snaps" id="snapshots"></div>
+                <label class="check"><input type="checkbox" id="resume"> Save when I leave, and resume there</label>
+                <p class="hint">A snapshot keeps the CPU, the memory, the screen and a copy of the disks. RESTORE puts the machine back to that moment; the printed paper stays as it is.</p>
+            </section>
         </aside>
     </div>
 
@@ -130,6 +140,7 @@
     <script src="js/font9.js"></script>
     <script src="js/fx80.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/snapshot.js"></script>
     <script src="js/pwa.js"></script>
     <script src="js/app.js"></script>
 </body>

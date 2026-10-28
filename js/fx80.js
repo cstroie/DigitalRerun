@@ -64,6 +64,22 @@
             this.dots = 0;
         }
 
+        /* --- state, for snapshots --- */
+
+        getState() {
+            const s = {};
+            for (const k of FX80.STATE) s[k] = this[k];
+            s.tabs = this.tabs.slice();
+            s.esc = this.esc && { ...this.esc, args: this.esc.args.slice() };
+            return s;
+        }
+
+        setState(s) {
+            for (const k of FX80.STATE) if (k in s) this[k] = s[k];
+            this.tabs = s.tabs.slice();
+            this.esc = s.esc && { ...s.esc, args: s.esc.args.slice() };
+        }
+
         /* --- geometry --- */
 
         get columnWidth() {                      // width of one column for margins and tabs
@@ -311,6 +327,9 @@
             }
         }
     }
+
+    FX80.STATE = ['y', 'x', 'lineSpacing', 'pageLength', 'skip', 'leftMargin', 'rightMargin', 'pitch', 'condensed',
+        'enlarged', 'enlargedLine', 'emphasized', 'double', 'italic', 'underline', 'script', 'vtabs', 'dots'];
 
     /**
      * Fanfold paper in the page: one canvas per sheet, made as the paper

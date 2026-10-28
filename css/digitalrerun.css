@@ -236,6 +236,23 @@ kbd, code {
 .panel h2.sub { margin-top: 14px; }
 .panel h2.sub span { color: var(--text-dim); font-weight: 400; letter-spacing: 0.5px; }
 
+.snaps { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.snap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+    padding: 4px 6px;
+    border-radius: 6px;
+    background: #12160f;
+}
+.snap .when { color: var(--text); font-size: 12px; }
+.snap .when b { color: var(--accent); font-weight: 600; letter-spacing: 1px; margin-right: 4px; }
+.snap .what { font-family: 'VT323', monospace; font-size: 16px; color: var(--fg-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.snap .acts { display: flex; gap: 3px; grid-row: span 2; }
+.check { display: flex; gap: 8px; align-items: center; margin-top: 10px; color: var(--text-dim); cursor: pointer; }
+.check input { accent-color: var(--fg-dim); }
+
 /* ---- banners and toasts (pwa.js) ---- */
 #banners {
     position: fixed;

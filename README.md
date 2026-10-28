@@ -32,6 +32,12 @@ The A: disk holds the DRI 2.2 tools: PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB
 - **Speed.** The CPU runs at 2, 4 (the default) or 8 MHz, or as fast as the browser allows. It costs nothing while CP/M waits for a key.
 - **Lights.** POWER, RUN (bright while working, dim while waiting for a key), one light per drive, and PRN.
 
+## Snapshots
+
+A snapshot is the whole machine at one moment: CPU, memory, screen, printer head, and a copy of every disk (so the memory and the disks agree). **SNAP** (next to RESET) or **SAVE SNAPSHOT** in SETUP keeps one, up to twelve. Each shows its time and the last line on the screen. **RESTORE** puts the machine back to that moment, even in the middle of a program or a game of Zork. The printed paper is not part of a snapshot.
+
+With *Save when I leave, and resume there* on (the default), the app also keeps one automatic snapshot. It is saved when the page is hidden or closed, when the window loses focus (at most every 15 seconds), and once a minute while the machine works. The next visit then continues where you left off, and RESET starts afresh. Snapshots are kept in the browser, like the disks.
+
 ## As an app
 
 DigitalRerun is a PWA, so it can be installed and works offline:
@@ -118,7 +124,8 @@ js/terminal.js                 VT100 terminal and its view
 js/fx80.js, js/font9.js        FX-80 printer, paper view, dot-matrix font
 js/cpmfs.js                    CP/M file system on a disk image (outside the machine)
 js/asm8080.js                  8080 assembler (DRI ASM / Macro Assembler AS syntax)
-js/storage.js                  disks and settings in IndexedDB
+js/storage.js                  disks, settings and snapshots in IndexedDB
+js/snapshot.js                 take and restore a snapshot of the whole machine
 js/version.js, js/pwa.js, sw.js   version and build stamp; install, update and offline (PWA)
 tools/stamp.js                 write the build stamp after a change
 system/                        loader, BIOS, SYSGEN sources; dri/ CCP and BDOS sources

@@ -32,12 +32,13 @@
 
     /* ---------- settings ---------- */
 
-    const settings = { speed: 4, arrows: 'wordstar', phosphor: 'green', tab: 'drives' };
+    const settings = { speed: 4, arrows: 'wordstar', phosphor: 'green', tab: 'drives', resume: true };
 
     function applySettings() {
         $('speed').value = String(settings.speed);
         $('arrows').value = settings.arrows;
         $('phosphor').value = settings.phosphor;
+        $('resume').checked = settings.resume;
         $('crt').classList.toggle('amber', settings.phosphor === 'amber');
         $('crt').classList.toggle('white', settings.phosphor === 'white');
     }
@@ -427,6 +428,109 @@
 
     $('resetBtn').addEventListener('click', coldStart);
 
+    /* ---------- snapshots ---------- */
+
+    const { Snapshot, PWA } = window.DigitalRerun;
+    const MAX_SNAPSHOTS = 12;
+    const parts = { machine, terminal: term, printer };
+    let lastAuto = { time: 0, cycles: -1 };
+
+    const when = t => new Date(t).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+    async function saveSnapshot(kind = 'manual') {
+        const snap = Snapshot.take(parts, { kind, version: window.DigitalRerun.VERSION });
+        const id = kind === 'auto' ? 'auto' : 'm' + snap.time;
+        await Storage.saveSnapshot(id, snap, { kind, time: snap.time, preview: snap.preview, version: snap.version, size: Snapshot.size(snap) });
+        if (kind !== 'auto') {
+            const manual = (await Storage.listSnapshots()).filter(s => s.kind !== 'auto');
+            for (const old of manual.slice(MAX_SNAPSHOTS)) await Storage.deleteSnapshot(old.id);
+        }
+        renderSnapshots();
+        return snap;
+    }
+
+    async function restoreSnapshot(id, { quiet = false } = {}) {
+        const snap = await Storage.getSnapshot(id);
+        if (!snap) throw new Error('that snapshot is gone');
+        Snapshot.restore(snap, parts);
+        // The disks are now the snapshot's: keep them as the current ones.
+        for (const d of DRIVES) {
+            const disk = machine.fdc.drives[d];
+            if (disk) await Storage.saveDisk(d, disk); else await Storage.removeDisk(d);
+        }
+        lastAuto = { time: Date.now(), cycles: machine.cycles };
+        renderDrives();
+        view.render();
+        kick();
+        focusScreen();
+        if (!quiet) PWA.toast(`Restored the snapshot of ${when(snap.time)}.`);
+        return snap;
+    }
+
+    async function renderSnapshots() {
+        const box = $('snapshots');
+        let list = [];
+        try { list = await Storage.listSnapshots(); } catch (e) { /* no storage */ }
+        box.textContent = '';
+        for (const s of list) {
+            const row = document.createElement('div');
+            row.className = 'snap';
+            row.innerHTML = '<span class="when"></span><span class="acts"></span><span class="what"></span>';
+            row.querySelector('.when').innerHTML = (s.kind === 'auto' ? '<b>AUTO</b>' : '') + when(s.time);
+            row.querySelector('.what').textContent = s.preview || ' ';
+            row.title = `${s.kind === 'auto' ? 'Saved when you left' : 'Saved by hand'}, version ${s.version || '?'}, ${Math.round(s.size / 1024)}K`;
+            const acts = row.querySelector('.acts');
+            const btn = (label, title, fn) => {
+                const b = document.createElement('button');
+                b.className = 'small';
+                b.textContent = label;
+                b.title = title;
+                b.addEventListener('click', fn);
+                acts.appendChild(b);
+            };
+            btn('RESTORE', 'Put the machine back to this moment', () => {
+                if (!confirm(`Restore the snapshot of ${when(s.time)}? The machine as it is now is replaced (save a snapshot first to keep it).`)) return;
+                restoreSnapshot(s.id).catch(e => PWA.toast(`Could not restore: ${e.message}`));
+            });
+            btn('✕', 'Delete this snapshot', () => Storage.deleteSnapshot(s.id).then(renderSnapshots));
+            box.appendChild(row);
+        }
+        $('snap-note').textContent = list.length ? `${list.length}` : '';
+    }
+
+    function manualSnapshot() {
+        if (machine.state === 'stopped') { PWA.toast('Nothing to save: the machine is not running.'); return; }
+        saveSnapshot('manual')
+            .then(s => PWA.toast(`Snapshot saved: ${when(s.time)}.`))
+            .catch(e => PWA.toast(`Could not save the snapshot: ${e.message}`));
+        focusScreen();
+    }
+    $('snapBtn').addEventListener('click', manualSnapshot);
+    $('snapSaveBtn').addEventListener('click', manualSnapshot);
+
+    $('resume').addEventListener('change', () => {
+        settings.resume = $('resume').checked;
+        Storage.set('settings', settings).catch(() => {});
+        if (!settings.resume) Storage.deleteSnapshot('auto').then(renderSnapshots).catch(() => {});
+    });
+
+    /**
+     * One automatic snapshot (id 'auto', replaced each time) when the page is
+     * left (hidden or closed: at once) or the window loses focus (at most every
+     * 15 s), and only if the machine ran since the last one.
+     */
+    function autoSnapshot(leaving) {
+        if (!settings.resume || machine.state === 'stopped' || machine.cycles === lastAuto.cycles) return;
+        if (!leaving && Date.now() - lastAuto.time < 15000) return;
+        lastAuto = { time: Date.now(), cycles: machine.cycles };
+        saveSnapshot('auto').catch(() => {});
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') autoSnapshot(true); });
+    addEventListener('pagehide', () => autoSnapshot(true));
+    addEventListener('blur', () => autoSnapshot(false));
+    // A safety net: a page being closed may not finish writing, so also once a minute while it runs.
+    setInterval(() => { if (document.visibilityState === 'visible') autoSnapshot(false); }, 60000);
+
     /* ---------- start ---------- */
 
     async function start() {
@@ -456,7 +560,13 @@
             } catch (e) { note(e.message, false); }
         }
         renderDrives();
-        coldStart();
+        renderSnapshots();
+        let resumed = null;
+        if (settings.resume) {
+            try { resumed = await Storage.getSnapshot('auto') ? await restoreSnapshot('auto', { quiet: true }) : null; } catch (e) { resumed = null; }
+        }
+        if (resumed) PWA.toast(`Resumed where you left off (${when(resumed.time)}). RESET starts afresh.`);
+        else coldStart();
         kick();
     }
 
