@@ -19,3 +19,11 @@ jobs:
         with:
           node-version: 22
       - run: ZEX=1 node --test test/zex.test.js
+  zexall:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: ZEX=all node --test --test-name-pattern=zexall test/zex.test.js

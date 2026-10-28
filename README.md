@@ -71,7 +71,7 @@ A: holds the CP/M 2.2 tools (PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB, DUMP),
 
 | | |
 |---|---|
-| CPU | Z80, passes the ZEXDOC instruction exerciser, at 2, 4 or 8 MHz or as fast as the browser goes. It costs nothing while CP/M waits for a key |
+| CPU | Z80, at 2, 4 or 8 MHz or as fast as the browser goes. It costs nothing while CP/M waits for a key. It passes all of ZEXDOC and 66 of the 67 ZEXALL tests. The one left checks the undocumented X and Y flags of `BIT n,(HL)`, which a real Z80 takes from its hidden MEMPTR register; no CP/M program depends on them |
 | Memory | 64K RAM. CCP at `E400h`, BDOS at `EC00h`, BIOS at `FA00h` |
 | A: to D: | 8" single-sided, single-density: 77 tracks of 26 × 128-byte sectors, skew 6, 2 system tracks, 241K (boots). Also three 5¼" double-density data formats: SSDD 200K and DSDD 400K with 512-byte sectors, and SSDD 200K with 1K sectors. All are raw images, compatible with cpmtools (`ibm-3740`, `kpii`, `kpiv`, `osborne1`: the Kaypro II, Kaypro 4 and Osborne 1 formats) and z80pack |
 | I: | 4 MB hard disk, z80pack geometry |
@@ -217,7 +217,7 @@ git clone https://github.com/cstroie/DigitalRerun.git
 cd DigitalRerun
 python3 -m http.server 8000         # any static server; then open http://localhost:8000
 node --test                         # 38 tests: assembler, file system, terminal, printer, CP/M, snapshots, PWA
-ZEX=1 node --test test/zex.test.js  # ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL)
+ZEX=1 node --test test/zex.test.js  # ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL, CI runs both)
 ```
 
 The machine tests boot the real disk and type at the CCP. They cover:

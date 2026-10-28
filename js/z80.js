@@ -2,9 +2,10 @@
  * Vendored for DigitalRerun from https://github.com/DrGoldfire/Z80.js
  * (archived 2020), MIT licence: copyright Molly Howell and contributors,
  * full text below. Changes for DigitalRerun: the `window` check works outside a
- * browser, the constructor is exported for Node and the browser, and
+ * browser, the constructor is exported for Node and the browser,
  * get_pc() reads the program counter (for breakpoints) without building
- * the whole state.
+ * the whole state, and BIT n,(IX+d) sets the undocumented X and Y flags
+ * from the address, as a Z80 does.
  *
  * MIT License
  *
@@ -3253,6 +3254,10 @@ dd_instructions[0xcb] = function()
          flags.Z = !(core.mem_read((ix + offset) & 0xffff) & (1 << bit_number)) ? 1 : 0;
          flags.P = flags.Z;
          flags.S = ((bit_number === 7) && !flags.Z) ? 1 : 0;
+         // DigitalRerun: the undocumented Y and X flags are bits 5 and 3
+         //  of the high byte of the address IX+d (they were left as they were).
+         flags.Y = (((ix + offset) & 0xffff) >>> 13) & 1;
+         flags.X = (((ix + offset) & 0xffff) >>> 11) & 1;
       }
       else if (opcode < 0xc0)
       {
