@@ -31,4 +31,10 @@ Not covered by this licence (see LICENSE-DRI and the file headers):
   disks/zork1/VEZZA.COM  Vezza by Shawn Sijnstra, GPL-2.0-or-later
                        (disks/zork1/LICENSE-VEZZA, gitlab.com/sijnstra1/vezza)
   disks/zork1.dsk      holds the above
+  disks/shelf/zork2/, zork3/   Zork II and III (MIT, Microsoft) and Vezza (GPL-2.0-or-later)
+  disks/shelf/bbcbasic/        BBC BASIC (Z80), R.T. Russell, zlib licence (BBCBASIC.LIC);
+                               the .BAS/.BBC examples are this project's (MIT)
+  disks/shelf/bdsc/            BDS C 1.60, Leor Zolman, public domain (HELLO.C is this project's)
+  disks/shelf/hitech/          HI-TECH C 3.09-21, HI-TECH Software, free for any use
+                               (HITECH.LIC); updates by Tony Nicholson (HELLO.C is this project's)
   js/z80.js            Z80.js, MIT licence, Molly Howell and contributors

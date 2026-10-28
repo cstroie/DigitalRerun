@@ -265,6 +265,23 @@ kbd, code {
 .check { display: flex; gap: 8px; align-items: center; margin-top: 10px; color: var(--text-dim); cursor: pointer; }
 .check input { accent-color: var(--fg-dim); }
 
+.shelf { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.shelf h3 { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: var(--text-dim); margin-top: 6px; }
+.disk-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 8px;
+    padding: 7px 8px;
+    border-radius: 7px;
+    background: #12160f;
+    border: 1px solid transparent;
+}
+.disk-card:hover { border-color: var(--edge); }
+.disk-card .title { color: var(--fg); font-family: 'VT323', monospace; font-size: 19px; line-height: 1; }
+.disk-card .acts { display: flex; gap: 3px; grid-row: span 3; align-self: center; }
+.disk-card .desc { color: var(--text); font-size: 12px; line-height: 1.35; }
+.disk-card .meta { color: var(--text-dim); font-size: 11px; }
+
 /* ---- banners and toasts (pwa.js) ---- */
 #banners {
     position: fixed;

@@ -6,12 +6,13 @@
  *   settings:  key = name, value = anything
  *   snapshots: key = id ('auto' or 'm{time}'), value = a snapshot (js/snapshot.js)
  *   snapmeta:  key = the same id, value = { id, kind, time, preview, version, size }: the list
+ *   mydisks:   key = id ('d{time}'), value = { id, name, format, time, data }: the owner's shelf
  */
 (function (root) {
     'use strict';
 
     const DB = 'DigitalRerun';
-    const VERSION = 2;
+    const VERSION = 3;
 
     function open() {
         return new Promise((resolve, reject) => {
@@ -22,6 +23,7 @@
                 if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings');
                 if (!db.objectStoreNames.contains('snapshots')) db.createObjectStore('snapshots');
                 if (!db.objectStoreNames.contains('snapmeta')) db.createObjectStore('snapmeta');
+                if (!db.objectStoreNames.contains('mydisks')) db.createObjectStore('mydisks');
             };
             req.onsuccess = () => resolve(req.result);
             req.onerror = () => reject(req.error);
@@ -69,6 +71,24 @@
                 tx.objectStore('snapmeta').put({ ...meta, id }, id);
                 tx.oncomplete = () => resolve(id);
                 tx.onerror = () => reject(tx.error);
+            }));
+        },
+        saveMyDisk(d) { return call('mydisks', 'readwrite', s => s.put(d, d.id)); },
+        getMyDisk(id) { return call('mydisks', 'readonly', s => s.get(id)); },
+        deleteMyDisk(id) { return call('mydisks', 'readwrite', s => s.delete(id)); },
+        /** My disks without their data, newest first. */
+        listMyDisks() {
+            return db().then(d => new Promise((resolve, reject) => {
+                const out = [];
+                const req = d.transaction('mydisks', 'readonly').objectStore('mydisks').openCursor();
+                req.onsuccess = () => {
+                    const c = req.result;
+                    if (!c) return resolve(out.sort((a, b) => b.time - a.time));
+                    const { data, ...meta } = c.value;
+                    out.push({ ...meta, size: data.length });
+                    c.continue();
+                };
+                req.onerror = () => reject(req.error);
             }));
         },
         getSnapshot(id) { return call('snapshots', 'readonly', s => s.get(id)); },

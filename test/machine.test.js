@@ -23,7 +23,7 @@ function boot() {
 function settle(m) {
     for (let i = 0; i < 2000; i++) {
         m.run(200000);
-        if (m.console.idlePolls > 64 || m.state !== 'running') return;
+        if (m.waiting || m.state !== 'running') return;
     }
     throw new Error('did not settle');
 }

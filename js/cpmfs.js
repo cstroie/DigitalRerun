@@ -257,6 +257,27 @@
     /** Extensions treated as text when files cross between host and disk. */
     const TEXT_TYPES = new Set(['ASM', 'MAC', 'Z80', 'LIB', 'SUB', 'TXT', 'DOC', 'BAS', 'PAS', 'C', 'H', 'FOR', 'PLI', 'PRN', 'LST', 'HEX', 'ME', 'INF', 'MSG', 'LIC']);
 
+    /**
+     * Does the content look like text? No NUL, and almost no control
+     * characters but TAB, LF, FF, CR and ^Z. Some extensions (.LIB) are
+     * text for one program and binary for another, so the name alone is
+     * not enough.
+     */
+    function looksText(bytes) {
+        let odd = 0;
+        for (let i = 0; i < bytes.length; i++) {
+            const b = bytes[i];
+            if (b === 0) return false;
+            if (b < 32 && b !== 9 && b !== 10 && b !== 12 && b !== 13 && b !== 26) odd++;
+        }
+        return odd <= bytes.length / 100;
+    }
+
+    /** Text by its name and its content: what crosses between host and disk converted. */
+    function isTextFile(fileName, bytes) {
+        return isTextName(fileName) && looksText(bytes);
+    }
+
     function isTextName(fileName) {
         const m = /\.([^.]+)$/.exec(fileName);
         return !!m && TEXT_TYPES.has(m[1].toUpperCase());
@@ -267,7 +288,7 @@
         return new Disk(format, null, options);
     }
 
-    const api = { CpmFs, CpmFsError, DPB, splitName, blankDisk, toCpmText, fromCpmText, isTextName };
+    const api = { CpmFs, CpmFsError, DPB, splitName, blankDisk, toCpmText, fromCpmText, isTextName, looksText, isTextFile };
     if (node) module.exports = api;
     else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

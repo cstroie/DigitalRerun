@@ -1,0 +1,432 @@
+[
+ {
+  "id": "cpm22",
+  "name": "CP/M 2.2",
+  "format": "sssd8",
+  "image": "disks/cpm22.dsk",
+  "category": "System",
+  "description": "The system disk: the CP/M 2.2 tools, SYSGEN, PRTDEMO and the sources of this machine's BIOS.",
+  "credit": "Digital Research; free under the DRDOS, Inc. licence.",
+  "licence": "DRDOS, Inc. grant",
+  "size": 256256
+ },
+ {
+  "id": "zork1",
+  "name": "Zork I",
+  "format": "sssd8",
+  "image": "disks/zork1.dsk",
+  "category": "Games",
+  "description": "Zork I: The Great Underground Empire. Type VEZZA ZORK1.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "MIT; GPL-2.0-or-later",
+  "size": 256256
+ },
+ {
+  "id": "bbcbasic",
+  "name": "BBC BASIC (Z80)",
+  "format": "sssd8",
+  "description": "R.T. Russell's BBC BASIC for CP/M, with example programs. Type BBCBASIC, then LOAD \"MANDEL\" and RUN.",
+  "credit": "R.T. Russell, zlib licence.",
+  "licence": "zlib",
+  "category": "Languages",
+  "files": [
+   {
+    "name": "BANNER.BAS",
+    "path": "disks/shelf/bbcbasic/BANNER.BAS"
+   },
+   {
+    "name": "BANNER.BBC",
+    "path": "disks/shelf/bbcbasic/BANNER.BBC"
+   },
+   {
+    "name": "BBCBASIC.COM",
+    "path": "disks/shelf/bbcbasic/BBCBASIC.COM"
+   },
+   {
+    "name": "BBCBASIC.LIC",
+    "path": "disks/shelf/bbcbasic/BBCBASIC.LIC"
+   },
+   {
+    "name": "GUESS.BAS",
+    "path": "disks/shelf/bbcbasic/GUESS.BAS"
+   },
+   {
+    "name": "GUESS.BBC",
+    "path": "disks/shelf/bbcbasic/GUESS.BBC"
+   },
+   {
+    "name": "MANDEL.BAS",
+    "path": "disks/shelf/bbcbasic/MANDEL.BAS"
+   },
+   {
+    "name": "MANDEL.BBC",
+    "path": "disks/shelf/bbcbasic/MANDEL.BBC"
+   },
+   {
+    "name": "PRIMES.BAS",
+    "path": "disks/shelf/bbcbasic/PRIMES.BAS"
+   },
+   {
+    "name": "PRIMES.BBC",
+    "path": "disks/shelf/bbcbasic/PRIMES.BBC"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/bbcbasic/README.TXT"
+   }
+  ],
+  "size": 23104,
+  "free": 217088
+ },
+ {
+  "id": "bdsc",
+  "name": "BDS C 1.60",
+  "format": "sssd8",
+  "description": "Leor Zolman's BD Software C compiler, the first C for CP/M. Type CC HELLO, CLINK HELLO, HELLO.",
+  "credit": "Leor Zolman, BD Software; public domain since 2002.",
+  "licence": "public domain",
+  "category": "Languages",
+  "files": [
+   {
+    "name": "BDSCIO.H",
+    "path": "disks/shelf/bdsc/BDSCIO.H"
+   },
+   {
+    "name": "C.CCC",
+    "path": "disks/shelf/bdsc/C.CCC"
+   },
+   {
+    "name": "CC.COM",
+    "path": "disks/shelf/bdsc/CC.COM"
+   },
+   {
+    "name": "CC2.COM",
+    "path": "disks/shelf/bdsc/CC2.COM"
+   },
+   {
+    "name": "CCONFIG.COM",
+    "path": "disks/shelf/bdsc/CCONFIG.COM"
+   },
+   {
+    "name": "CLIB.COM",
+    "path": "disks/shelf/bdsc/CLIB.COM"
+   },
+   {
+    "name": "CLINK.COM",
+    "path": "disks/shelf/bdsc/CLINK.COM"
+   },
+   {
+    "name": "DEFF.CRL",
+    "path": "disks/shelf/bdsc/DEFF.CRL"
+   },
+   {
+    "name": "DEFF2.CRL",
+    "path": "disks/shelf/bdsc/DEFF2.CRL"
+   },
+   {
+    "name": "EXAMPLES.LBR",
+    "path": "disks/shelf/bdsc/EXAMPLES.LBR"
+   },
+   {
+    "name": "FILES.DOC",
+    "path": "disks/shelf/bdsc/FILES.DOC"
+   },
+   {
+    "name": "HELLO.C",
+    "path": "disks/shelf/bdsc/HELLO.C"
+   },
+   {
+    "name": "LBREXT.COM",
+    "path": "disks/shelf/bdsc/LBREXT.COM"
+   },
+   {
+    "name": "LDIR.COM",
+    "path": "disks/shelf/bdsc/LDIR.COM"
+   },
+   {
+    "name": "READ.ME",
+    "path": "disks/shelf/bdsc/READ.ME"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/bdsc/README.TXT"
+   }
+  ],
+  "size": 135182,
+  "free": 104448
+ },
+ {
+  "id": "hitech",
+  "name": "HI-TECH C 3.09",
+  "format": "hd4mb",
+  "description": "The HI-TECH Z80 C compiler (ANSI C), with Tony Nicholson's updates, on a 4 MB hard disk for I:. Type I:, then C -V HELLO.C and HELLO.",
+  "credit": "HI-TECH Software, free for any use; updates by Tony Nicholson.",
+  "licence": "free for any use (HI-TECH Software)",
+  "category": "Languages",
+  "text": [
+   "OPTIONS"
+  ],
+  "files": [
+   {
+    "name": "$EXEC.COM",
+    "path": "disks/shelf/hitech/$EXEC.COM"
+   },
+   {
+    "name": "ASSERT.H",
+    "path": "disks/shelf/hitech/ASSERT.H"
+   },
+   {
+    "name": "C.COM",
+    "path": "disks/shelf/hitech/C.COM"
+   },
+   {
+    "name": "CGEN.COM",
+    "path": "disks/shelf/hitech/CGEN.COM"
+   },
+   {
+    "name": "CONIO.H",
+    "path": "disks/shelf/hitech/CONIO.H"
+   },
+   {
+    "name": "CPM.H",
+    "path": "disks/shelf/hitech/CPM.H"
+   },
+   {
+    "name": "CPP.COM",
+    "path": "disks/shelf/hitech/CPP.COM"
+   },
+   {
+    "name": "CREF.COM",
+    "path": "disks/shelf/hitech/CREF.COM"
+   },
+   {
+    "name": "CRTCPM.OBJ",
+    "path": "disks/shelf/hitech/CRTCPM.OBJ"
+   },
+   {
+    "name": "CTYPE.H",
+    "path": "disks/shelf/hitech/CTYPE.H"
+   },
+   {
+    "name": "DEBUG.COM",
+    "path": "disks/shelf/hitech/DEBUG.COM"
+   },
+   {
+    "name": "DEHUFF.COM",
+    "path": "disks/shelf/hitech/DEHUFF.COM"
+   },
+   {
+    "name": "DRTCPM.OBJ",
+    "path": "disks/shelf/hitech/DRTCPM.OBJ"
+   },
+   {
+    "name": "EXEC.H",
+    "path": "disks/shelf/hitech/EXEC.H"
+   },
+   {
+    "name": "FLOAT.H",
+    "path": "disks/shelf/hitech/FLOAT.H"
+   },
+   {
+    "name": "HELLO.C",
+    "path": "disks/shelf/hitech/HELLO.C"
+   },
+   {
+    "name": "HITECH.H",
+    "path": "disks/shelf/hitech/HITECH.H"
+   },
+   {
+    "name": "HITECH.LIC",
+    "path": "disks/shelf/hitech/HITECH.LIC"
+   },
+   {
+    "name": "HTCZ80.TXT",
+    "path": "disks/shelf/hitech/HTCZ80.TXT"
+   },
+   {
+    "name": "LIBC.LIB",
+    "path": "disks/shelf/hitech/LIBC.LIB"
+   },
+   {
+    "name": "LIBF.LIB",
+    "path": "disks/shelf/hitech/LIBF.LIB"
+   },
+   {
+    "name": "LIBOVR.LIB",
+    "path": "disks/shelf/hitech/LIBOVR.LIB"
+   },
+   {
+    "name": "LIBR.COM",
+    "path": "disks/shelf/hitech/LIBR.COM"
+   },
+   {
+    "name": "LIMITS.H",
+    "path": "disks/shelf/hitech/LIMITS.H"
+   },
+   {
+    "name": "LINQ.COM",
+    "path": "disks/shelf/hitech/LINQ.COM"
+   },
+   {
+    "name": "MATH.H",
+    "path": "disks/shelf/hitech/MATH.H"
+   },
+   {
+    "name": "NRTCPM.OBJ",
+    "path": "disks/shelf/hitech/NRTCPM.OBJ"
+   },
+   {
+    "name": "OBJTOHEX.COM",
+    "path": "disks/shelf/hitech/OBJTOHEX.COM"
+   },
+   {
+    "name": "OPTIM.COM",
+    "path": "disks/shelf/hitech/OPTIM.COM"
+   },
+   {
+    "name": "OPTIONS",
+    "path": "disks/shelf/hitech/OPTIONS"
+   },
+   {
+    "name": "OVERLAY.H",
+    "path": "disks/shelf/hitech/OVERLAY.H"
+   },
+   {
+    "name": "P1.COM",
+    "path": "disks/shelf/hitech/P1.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/hitech/README.TXT"
+   },
+   {
+    "name": "RRTCPM.OBJ",
+    "path": "disks/shelf/hitech/RRTCPM.OBJ"
+   },
+   {
+    "name": "SETJMP.H",
+    "path": "disks/shelf/hitech/SETJMP.H"
+   },
+   {
+    "name": "SIGNAL.H",
+    "path": "disks/shelf/hitech/SIGNAL.H"
+   },
+   {
+    "name": "STAT.H",
+    "path": "disks/shelf/hitech/STAT.H"
+   },
+   {
+    "name": "STDARG.H",
+    "path": "disks/shelf/hitech/STDARG.H"
+   },
+   {
+    "name": "STDDEF.H",
+    "path": "disks/shelf/hitech/STDDEF.H"
+   },
+   {
+    "name": "STDINT.H",
+    "path": "disks/shelf/hitech/STDINT.H"
+   },
+   {
+    "name": "STDIO.H",
+    "path": "disks/shelf/hitech/STDIO.H"
+   },
+   {
+    "name": "STDLIB.H",
+    "path": "disks/shelf/hitech/STDLIB.H"
+   },
+   {
+    "name": "STRING.H",
+    "path": "disks/shelf/hitech/STRING.H"
+   },
+   {
+    "name": "SYMTOAS.COM",
+    "path": "disks/shelf/hitech/SYMTOAS.COM"
+   },
+   {
+    "name": "SYS.H",
+    "path": "disks/shelf/hitech/SYS.H"
+   },
+   {
+    "name": "TIME.H",
+    "path": "disks/shelf/hitech/TIME.H"
+   },
+   {
+    "name": "UNIXIO.H",
+    "path": "disks/shelf/hitech/UNIXIO.H"
+   },
+   {
+    "name": "ZAS.COM",
+    "path": "disks/shelf/hitech/ZAS.COM"
+   }
+  ],
+  "size": 772244,
+  "free": 3317760
+ },
+ {
+  "id": "zork2",
+  "name": "Zork II",
+  "format": "sssd8",
+  "description": "Zork II: The Wizard of Frobozz. Type VEZZA ZORK2.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "MIT; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/zork2/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/zork2/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/zork2/VEZZA.LIC"
+   },
+   {
+    "name": "ZORK2.LIC",
+    "path": "disks/shelf/zork2/ZORK2.LIC"
+   },
+   {
+    "name": "ZORK2.Z3",
+    "path": "disks/shelf/zork2/ZORK2.Z3"
+   }
+  ],
+  "size": 126572,
+  "free": 117760
+ },
+ {
+  "id": "zork3",
+  "name": "Zork III",
+  "format": "sssd8",
+  "description": "Zork III: The Dungeon Master. Type VEZZA ZORK3.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "MIT; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/zork3/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/zork3/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/zork3/VEZZA.LIC"
+   },
+   {
+    "name": "ZORK3.LIC",
+    "path": "disks/shelf/zork3/ZORK3.LIC"
+   },
+   {
+    "name": "ZORK3.Z3",
+    "path": "disks/shelf/zork3/ZORK3.Z3"
+   }
+  ],
+  "size": 122030,
+  "free": 122880
+ }
+]

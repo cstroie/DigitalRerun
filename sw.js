@@ -24,12 +24,14 @@ const SHELL = [
     'js/font9.js',
     'js/fx80.js',
     'js/storage.js',
+    'js/shelf.js',
     'js/sound.js',
     'js/snapshot.js',
     'js/pwa.js',
     'js/app.js',
     'disks/cpm22.dsk',
     'disks/zork1.dsk',
+    'disks/shelf.json',
     'manifest.webmanifest',
     'icons/icon-32.png',
     'icons/icon-180.png',
@@ -78,7 +80,12 @@ self.addEventListener('fetch', event => {
         return;
     }
     if (url.origin !== location.origin) return;
-    // The app: this version's copy, else the network (and nothing is stored outside the version).
+    // The app: this version's copy, else the network. Shelf disks' files are kept
+    // in this version's cache when first fetched, so an inserted disk works offline.
+    const keep = url.pathname.includes('/disks/shelf/');
     event.respondWith(caches.open(CACHE).then(cache =>
-        cache.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req))));
+        cache.match(req, { ignoreSearch: true }).then(hit => hit || fetch(req).then(res => {
+            if (keep && res.ok) cache.put(req, res.clone());
+            return res;
+        }))));
 });

@@ -7,7 +7,7 @@
     'use strict';
 
     const { Machine, Disk, CpmFs, Terminal, TerminalView, FX80, PaperView, Storage,
-        isTextName, toCpmText, fromCpmText } = window.DigitalRerun;
+        isTextFile, looksText, toCpmText, fromCpmText } = window.DigitalRerun;
 
     const $ = id => document.getElementById(id);
     const DRIVES = [0, 1, 2, 3, 8];                 // A: B: C: D: I:
@@ -271,7 +271,7 @@
             a.title = `${f.name}, user ${f.user}, ${f.records} records${f.system ? ', SYS' : ''}${f.readOnly ? ', R/O' : ''}: click to download`;
             a.addEventListener('click', () => {
                 const data = fsys.read(f.name, f.user);
-                if (isTextName(f.name)) download(f.name, fromCpmText(data), 'text/plain');
+                if (isTextFile(f.name, data)) download(f.name, fromCpmText(data), 'text/plain');
                 else download(f.name, data);
             });
             box.appendChild(a);
@@ -290,7 +290,7 @@
         for (const file of fileList) {
             try {
                 let data = new Uint8Array(await file.arrayBuffer());
-                if (isTextName(file.name)) data = toCpmText(data);
+                if (isTextFile(file.name, data)) data = toCpmText(data);
                 fsys.write(file.name, data);
                 n++;
             } catch (e) { note(e.message, false); }
@@ -316,6 +316,145 @@
         if (e.dataTransfer.files.length) putFiles([...e.dataTransfer.files]);
     });
 
+    /* ---------- the shelf: disk collections ---------- */
+
+    const { Shelf } = window.DigitalRerun;
+    let shelf = [];
+    const kindOf = format => (format === HARD ? '4 MB hard disk, goes into I:' : '8" disk');
+
+    async function fetchBytes(path) {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error(`${path}: ${res.status}`);
+        return new Uint8Array(await res.arrayBuffer());
+    }
+
+    /** Which drive a disk of this format goes into: I: for a hard disk, else the one chosen. */
+    const targetFor = format => (format === HARD ? 8 : Number($('shelfDrive').value));
+
+    async function insertDisk(make, label, format) {
+        const drive = targetFor(format);
+        const old = machine.fdc.drives[drive];
+        if (old && !confirm(`Replace "${old.name}" in ${LETTER(drive)}: with ${label}? Keep it on My disks first if you need it.`)) return;
+        note(`inserting ${label}…`);
+        try {
+            const disk = await make();
+            disk.name = label;
+            mount(drive, disk);
+            selected = drive;
+            renderDrives();
+            note(`${label} in ${LETTER(drive)}: press ^C`);
+            PWA.toast(`${label} is in ${LETTER(drive)}:. Press ^C at the prompt, then ${LETTER(drive)}: and DIR.`);
+        } catch (e) { note(e.message, false); }
+        focusScreen();
+    }
+
+    function card(box, { title, desc, meta, buttons }) {
+        const el = document.createElement('div');
+        el.className = 'disk-card';
+        el.innerHTML = '<span class="title"></span><span class="acts"></span><span class="desc"></span><span class="meta"></span>';
+        el.querySelector('.title').textContent = title;
+        el.querySelector('.desc').textContent = desc;
+        el.querySelector('.meta').textContent = meta;
+        for (const [label, tip, fn] of buttons) {
+            const b = document.createElement('button');
+            b.className = 'small';
+            b.textContent = label;
+            b.title = tip;
+            b.addEventListener('click', fn);
+            el.querySelector('.acts').appendChild(b);
+        }
+        box.appendChild(el);
+    }
+
+    function renderShelf() {
+        const box = $('shelf');
+        box.textContent = '';
+        const floppy = LETTER(Number($('shelfDrive').value));
+        for (const category of [...new Set(shelf.map(e => e.category))]) {
+            const h = document.createElement('h3');
+            h.textContent = category.toUpperCase();
+            box.appendChild(h);
+            for (const e of shelf.filter(x => x.category === category)) {
+                const where = e.format === HARD ? 'I' : floppy;
+                card(box, {
+                    title: e.name, desc: e.description, meta: `${kindOf(e.format)} · ${e.credit}`,
+                    buttons: [[`INSERT IN ${where}:`, `Put a fresh copy in ${where}:`,
+                        () => insertDisk(() => Shelf.buildDisk(e, fetchBytes), e.name, e.format)]]
+                });
+            }
+        }
+    }
+
+    async function renderMyDisks() {
+        const box = $('mydisks');
+        box.textContent = '';
+        let list = [];
+        try { list = await Storage.listMyDisks(); } catch (e) { /* no storage */ }
+        if (!list.length) {
+            const p = document.createElement('p');
+            p.className = 'hint';
+            p.textContent = 'None yet: KEEP A DISK puts a copy of a drive\'s disk here.';
+            box.appendChild(p);
+        }
+        const floppy = LETTER(Number($('shelfDrive').value));
+        for (const d of list) {
+            const where = d.format === HARD ? 'I' : floppy;
+            card(box, {
+                title: d.name, desc: `Kept ${when(d.time)}`, meta: kindOf(d.format),
+                buttons: [
+                    [`INSERT IN ${where}:`, `Put a copy in ${where}:`, () => insertDisk(async () => {
+                        const rec = await Storage.getMyDisk(d.id);
+                        return new Disk(rec.format, rec.data.slice(), { name: rec.name });
+                    }, d.name, d.format)],
+                    ['SAVE', 'Download the disk image', async () => {
+                        const rec = await Storage.getMyDisk(d.id);
+                        download(`${rec.name.replace(/[^\w.-]+/g, '_')}.dsk`, rec.data);
+                    }],
+                    ['✕', 'Remove it from My disks', () => {
+                        if (confirm(`Remove "${d.name}" from My disks?`)) Storage.deleteMyDisk(d.id).then(renderMyDisks);
+                    }]
+                ]
+            });
+        }
+    }
+
+    async function keepDisk(disk, name) {
+        await Storage.saveMyDisk({ id: 'd' + Date.now(), name, format: disk.format, time: Date.now(), data: disk.data.slice() });
+        renderMyDisks();
+        PWA.toast(`"${name}" is on My disks.`);
+    }
+
+    $('keepDiskBtn').addEventListener('click', () => {
+        const full = DRIVES.filter(d => machine.fdc.drives[d]);
+        if (!full.length) { note('no disk in any drive', false); return; }
+        const answer = prompt(`Keep the disk of which drive? (${full.map(LETTER).join(', ')})`, LETTER(full.includes(selected) ? selected : full[0]));
+        if (answer === null) return;
+        const drive = answer.trim().toUpperCase().charCodeAt(0) - 65;
+        const disk = machine.fdc.drives[drive];
+        if (!disk) { note(`no disk in ${answer.trim().toUpperCase()}:`, false); return; }
+        const name = prompt('A name for it on My disks:', disk.name || LETTER(drive));
+        if (name === null) return;
+        keepDisk(disk, name.trim().slice(0, 40) || disk.name).catch(e => note(e.message, false));
+    });
+    $('importDiskBtn').addEventListener('click', async () => {
+        const [file] = await pickFile($('fileInput'), '.dsk,.img,.bin');
+        if (!file) return;
+        try {
+            const disk = Disk.fromImage(new Uint8Array(await file.arrayBuffer()), { name: file.name.replace(/\.[^.]*$/, '') });
+            await keepDisk(disk, disk.name);
+        } catch (e) { note(e.message, false); }
+    });
+    $('shelfDrive').addEventListener('change', () => { renderShelf(); renderMyDisks(); });
+
+    async function loadShelf() {
+        try {
+            const res = await fetch('disks/shelf.json');
+            shelf = await res.json();
+            renderShelf();
+        } catch (e) { $('shelf-note').textContent = 'not available offline yet'; }
+        renderMyDisks();
+    }
+
     /* ---------- paper tape ---------- */
 
     function renderTape() {
@@ -331,7 +470,7 @@
         if (!file) return;
         let bytes = new Uint8Array(await file.arrayBuffer());
         // Text gets CP/M line ends and ^Z; anything else is read as it is, then ^Z.
-        if (isTextName(file.name) || file.type.startsWith('text/')) bytes = toCpmText(bytes);
+        if (isTextFile(file.name, bytes) || (file.type.startsWith('text/') && looksText(bytes))) bytes = toCpmText(bytes);
         else { const t = new Uint8Array(bytes.length + 1); t.set(bytes); t[bytes.length] = 0x1A; bytes = t; }
         machine.reader.load(bytes, file.name);
         renderTape();
@@ -574,10 +713,10 @@
                 const until = performance.now() + 12;
                 while (performance.now() < until && machine.state === 'running') {
                     machine.run(200000);
-                    if (machine.console.idlePolls > 64) break;
+                    if (machine.idle) break;
                 }
             }
-            leds.busy = machine.console.idlePolls <= 64;
+            leds.busy = !machine.idle;
             rate.cycles += machine.cycles - before;
         }
         if (now - rate.t > 500) {
@@ -749,6 +888,7 @@
         }
         renderDrives();
         renderSnapshots();
+        loadShelf();
         let resumed = null;
         if (settings.resume) {
             try { resumed = await Storage.getSnapshot('auto') ? await restoreSnapshot('auto', { quiet: true }) : null; } catch (e) { resumed = null; }

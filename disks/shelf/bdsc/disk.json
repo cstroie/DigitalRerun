@@ -1,0 +1,2 @@
+{ "name": "BDS C 1.60", "format": "sssd8", "description": "Leor Zolman's BD Software C compiler, the first C for CP/M. Type CC HELLO, CLINK HELLO, HELLO.",
+  "credit": "Leor Zolman, BD Software; public domain since 2002.", "licence": "public domain", "category": "Languages" }

@@ -24,7 +24,7 @@ function computer() {
     pc.settle = () => {
         for (let i = 0; i < 3000; i++) {
             machine.run(200000);
-            if (machine.console.idlePolls > 64 || machine.state !== 'running') return;
+            if (machine.waiting || machine.state !== 'running') return;
         }
     };
     pc.type = line => {

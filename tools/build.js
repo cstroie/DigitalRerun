@@ -82,10 +82,79 @@ function main() {
     }
     fs.writeFileSync(path.join(ROOT, 'disks/zork1.dsk'), zork.data);
 
+    buildShelf();
+
     const hex = v => v.toString(16).toUpperCase().padStart(4, '0') + 'h';
     console.log(`CCP ${hex(CCP)}, BDOS ${hex(BDOS)}, BIOS ${hex(BIOS)}-${hex(bios.result.high)} (${biosLoaded} of ${room} bytes on disk)`);
     console.log(`disks/cpm22.dsk: ${fsys.list().length} files, ${fsys.freeBytes() >> 10}K free`);
     console.log(`disks/zork1.dsk: ${zfs.list().map(f => f.name).join(' ')}, ${zfs.freeBytes() >> 10}K free`);
+}
+
+/* ---------- the shelf (disk collection) ---------- */
+
+const SHIPPED = [
+    { id: 'cpm22', name: 'CP/M 2.2', format: 'sssd8', image: 'disks/cpm22.dsk', category: 'System',
+      description: 'The system disk: the CP/M 2.2 tools, SYSGEN, PRTDEMO and the sources of this machine\'s BIOS.',
+      credit: 'Digital Research; free under the DRDOS, Inc. licence.', licence: 'DRDOS, Inc. grant' },
+    { id: 'zork1', name: 'Zork I', format: 'sssd8', image: 'disks/zork1.dsk', category: 'Games',
+      description: 'Zork I: The Great Underground Empire. Type VEZZA ZORK1.Z3.',
+      credit: 'Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.', licence: 'MIT; GPL-2.0-or-later' }
+];
+
+/** Type each NAME.BAS into BBC BASIC on the emulated machine and SAVE it as NAME.BBC. */
+function tokenizeBbc(dir) {
+    const { Machine } = require('../js/machine.js');
+    const bas = fs.readdirSync(dir).filter(f => /\.BAS$/.test(f)).sort();
+    if (!bas.length) return;
+    const m = new Machine();
+    let out = '';
+    m.console.output = b => { out += String.fromCharCode(b); };
+    m.fdc.mount(0, Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(ROOT, 'disks/cpm22.dsk')))));
+    const work = new Disk('sssd8');
+    const wfs = new CpmFs(work);
+    wfs.write('BBCBASIC.COM', fs.readFileSync(path.join(dir, 'BBCBASIC.COM')));
+    m.fdc.mount(1, work);
+    m.reset();
+    const settle = () => { for (let i = 0; i < 20000; i++) { m.run(200000); if (m.idle) return; } };
+    const type = text => { m.console.paste(text); settle(); };
+    settle();
+    type('B:\rBBCBASIC\r');
+    for (const f of bas) {
+        const listing = fs.readFileSync(path.join(dir, f), 'latin1').replace(/\r?\n/g, '\r');
+        type('NEW\r' + listing + `SAVE "${f.replace(/\.BAS$/, '')}"\r`);
+    }
+    type('*BYE\r');
+    if (/Mistake|Syntax error|Bad /.test(out)) throw new Error('BBC BASIC did not take an example:\n' + out);
+    for (const f of bas) {
+        const name = f.replace(/\.BAS$/, '.BBC');
+        fs.writeFileSync(path.join(dir, name), new CpmFs(work).read(name).subarray(0, new CpmFs(work).find(name).size));
+    }
+}
+
+function buildShelf() {
+    const { isText } = require('../js/shelf.js');
+    const shelfDir = path.join(ROOT, 'disks/shelf');
+    const entries = SHIPPED.map(e => ({ ...e, size: fs.statSync(path.join(ROOT, e.image)).size }));
+    for (const id of fs.readdirSync(shelfDir).sort()) {
+        const dir = path.join(shelfDir, id);
+        const meta = JSON.parse(fs.readFileSync(path.join(dir, 'disk.json'), 'utf8'));
+        if (meta.bbcbasic) tokenizeBbc(dir);
+        const names = fs.readdirSync(dir).filter(f => f !== 'disk.json').sort();
+        const entry = { id, ...meta, files: names.map(n => ({ name: n, path: `disks/shelf/${id}/${n}` })) };
+        delete entry.bbcbasic;
+        // It must fit: build it as the page will.
+        const disk = new Disk(entry.format);
+        const fsys = new CpmFs(disk);
+        for (const n of names) {
+            const data = fs.readFileSync(path.join(dir, n));
+            fsys.write(n, isText(entry, n, data) ? toCpmText(data) : data);
+        }
+        entry.size = names.reduce((t, n) => t + fs.statSync(path.join(dir, n)).size, 0);
+        entry.free = fsys.freeBytes();
+        entries.push(entry);
+        console.log(`shelf: ${entry.name}: ${names.length} files, ${entry.free >> 10}K free`);
+    }
+    fs.writeFileSync(path.join(ROOT, 'disks/shelf.json'), JSON.stringify(entries, null, 1) + '\n');
 }
 
 main();

@@ -1,0 +1,2 @@
+{ "name": "BBC BASIC (Z80)", "format": "sssd8", "description": "R.T. Russell's BBC BASIC for CP/M, with example programs. Type BBCBASIC, then LOAD \"MANDEL\" and RUN.",
+  "credit": "R.T. Russell, zlib licence.", "licence": "zlib", "category": "Languages", "bbcbasic": true }

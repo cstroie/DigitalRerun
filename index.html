@@ -73,6 +73,7 @@
         <aside>
             <nav class="tabs" id="tabs" role="tablist" aria-label="Panels">
                 <button role="tab" data-for="drives">DRIVES</button>
+                <button role="tab" data-for="shelf">SHELF</button>
                 <button role="tab" data-for="printer">PRINTER</button>
                 <button role="tab" data-for="paper">PAPER <span class="badge" id="paper-badge" hidden></span></button>
                 <button role="tab" data-for="setup">SETUP</button>
@@ -92,6 +93,26 @@
                 </div>
                 <p class="hint">Reader: <span id="tape-reader">no tape</span>. Punch: <span id="tape-punch">nothing yet</span>. <code>PIP FILE.TXT=RDR:</code> reads the tape, <code>PIP PUN:=FILE.TXT</code> punches a file.</p>
                 <p class="hint">ADD FILES (or drop files here) copies them to the selected drive; then press <kbd>^C</kbd> at the prompt. Tap a file to download it.</p>
+            </section>
+
+            <section class="panel" id="shelf-panel" data-tab="shelf">
+                <h2>SHELF <span id="shelf-note"></span></h2>
+                <label class="field">Floppies go into
+                    <select id="shelfDrive">
+                        <option value="0">A:</option>
+                        <option value="1">B:</option>
+                        <option value="2" selected>C:</option>
+                        <option value="3">D:</option>
+                    </select>
+                </label>
+                <div id="shelf" class="shelf"></div>
+                <h2 class="sub">MY DISKS</h2>
+                <div class="tools">
+                    <button id="keepDiskBtn" title="Put a copy of a drive's disk on My disks">KEEP A DISK</button>
+                    <button id="importDiskBtn" title="Add a .dsk image from this device to My disks">IMPORT .DSK</button>
+                </div>
+                <div id="mydisks" class="shelf"></div>
+                <p class="hint">My disks are kept in this browser only: your own software (WordStar, MBASIC …) stays on your devices. After inserting a disk, press <kbd>^C</kbd> at the prompt.</p>
             </section>
 
             <section class="panel" data-tab="printer">
@@ -167,6 +188,7 @@
     <script src="js/font9.js"></script>
     <script src="js/fx80.js"></script>
     <script src="js/storage.js"></script>
+    <script src="js/shelf.js"></script>
     <script src="js/sound.js"></script>
     <script src="js/snapshot.js"></script>
     <script src="js/pwa.js"></script>

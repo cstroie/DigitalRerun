@@ -16,6 +16,8 @@
     const { FDC, Disk } = node ? require('./devices/fdc.js') : root.DigitalRerun;
     const { Console, PrinterPort, TapeReader, TapePunch } = node ? require('./devices/serial.js') : root.DigitalRerun;
 
+    const IDLE_GAP = 20000;
+
     class Machine {
         constructor() {
             this.memory = new Uint8Array(65536);
@@ -25,6 +27,9 @@
             this.punch = new TapePunch();
             this.fdc = new FDC(this.memory);
             this.cycles = 0;
+            /** After run(): was the program waiting for a key? (see run) */
+            this.idle = false;
+            this.waiting = false;
             /** 'stopped' | 'running' | 'halted' */
             this.state = 'stopped';
             const mem = this.memory;
@@ -37,6 +42,7 @@
         }
 
         input(port) {
+            if (port !== 0) this.console.idlePolls = 0;      // any other I/O is work, not waiting
             switch (port) {
                 case 0: return this.console.status();
                 case 1: return this.console.read();
@@ -48,6 +54,7 @@
         }
 
         output(port, value) {
+            this.console.idlePolls = 0;
             switch (port) {
                 case 1: this.console.write(value); break;
                 case 3: this.printer.write(value); break;
@@ -108,8 +115,15 @@
 
         /**
          * Run for about `budget` T-states. Returns the T-states used. Stops
-         * early when the program sits waiting for a key (so an idle machine
-         * costs nothing) or on HALT.
+         * early when the program sits in a tight loop waiting for a key (so
+         * an idle machine costs nothing) or on HALT. Afterwards:
+         *   waiting  it asked for a key more than 64 times with nothing
+         *            typed, printed or read in between: a tight wait loop
+         *            (the CCP, most programs at a prompt)
+         *   idle     waiting, or asking at least every IDLE_GAP T-states
+         *            between other work (BBC BASIC asks every ~7700). A
+         *            compiler checking for ^C looks idle too: good enough
+         *            for the RUN light, not to know a command has finished.
          */
         run(budget) {
             if (this.state !== 'running') return 0;
@@ -122,6 +136,9 @@
                 if (con.idlePolls > 64) break;
             }
             this.cycles += used;
+            const polls = con.idlePolls;
+            this.waiting = polls > 64;
+            this.idle = this.waiting || (polls >= 4 && used / polls < IDLE_GAP);
             if (this.halted) this.state = 'halted';
             return used;
         }

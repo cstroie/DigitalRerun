@@ -1,0 +1,3 @@
+{ "name": "HI-TECH C 3.09", "format": "hd4mb", "description": "The HI-TECH Z80 C compiler (ANSI C), with Tony Nicholson's updates, on a 4 MB hard disk for I:. Type I:, then C -V HELLO.C and HELLO.",
+  "credit": "HI-TECH Software, free for any use; updates by Tony Nicholson.", "licence": "free for any use (HI-TECH Software)", "category": "Languages",
+  "text": ["OPTIONS"] }

@@ -29,7 +29,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 ## Why you'll like it
 
 - **The real thing.** The original CP/M 2.2 system, assembled from source by the project's own assembler into exactly the binaries on the 1979 distribution disk. A test checks every byte.
-- **Zork I comes with it.** The great underground empire is on drive D:, ready to play.
+- **A shelf of software.** Zork I, II and III, BBC BASIC with example programs, and two C compilers (BDS C and HI-TECH C), every one free to share and ready to insert into a drive. Your own disks (WordStar, MBASIC …) go on *My disks* and stay in your browser.
 - **A printer you can watch.** PRTDEMO shows off pica, elite, condensed, bold, italic, underlined, enlarged, super- and subscript text and bit-image graphics. Save the pages as PNG or PDF.
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
 - **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
@@ -95,6 +95,20 @@ The I/O ports follow z80pack for the disk controller:
 | 15, 16 | | DMA address (low, high) |
 | 13 | | command: 0 read, 1 write |
 | 14 | status of the last command (0 = ok) | |
+
+### The shelf
+
+The SHELF tab is the disk collection. INSERT puts a fresh copy into a drive: floppies into the one you choose, hard disks into I:. Then press `^C` so CP/M sees it.
+
+| Disk | What it is | Try |
+|---|---|---|
+| CP/M 2.2 | the system disk | `DIR` |
+| Zork I, II, III | the Infocom trilogy (MIT licence) and the Vezza interpreter | `VEZZA ZORK2.Z3` |
+| BBC BASIC (Z80) | R.T. Russell's BASIC (zlib licence), with MANDEL, PRIMES, GUESS and BANNER | `BBCBASIC`, `LOAD "PRIMES"`, `RUN` |
+| BDS C 1.60 | the first C compiler for CP/M (public domain) | `CC HELLO`, `CLINK HELLO`, `HELLO` |
+| HI-TECH C 3.09 | an ANSI C compiler, on a 4 MB hard disk for I: (free for any use) | `C -V HELLO.C`, `HELLO` |
+
+Only software that may be shared is on the shipped shelf. **My disks** holds your own: KEEP A DISK copies a drive's disk there, and IMPORT .DSK adds an image from your device. They are kept in this browser only, so software you own but may not share (WordStar, MBASIC, Turbo Pascal) never leaves your devices. Each shelf disk is built from its files when you insert it (`disks/shelf/`, listed in `disks/shelf.json` by `tools/build.js`), and the app keeps the files for offline use.
 
 ### The panels
 
@@ -241,6 +255,11 @@ DigitalRerun stands on the work of many people, with thanks to all of them.
 - *Zork I: The Great Underground Empire* is by **Marc Blank** and **Dave Lebling** at **Infocom, Inc.**, from the original MIT *Zork* by **Tim Anderson, Marc Blank, Bruce Daniels and Dave Lebling**.
 - In 2025 **Microsoft**'s Open Source Programs Office, **Team Xbox** and **Activision**, working with **Jason Scott** of the Internet Archive, released it under the MIT licence ([historicalsource/zork1](https://github.com/historicalsource/zork1)). `disks/zork1/ZORK1.Z3` is that repository's compiled story file.
 - **Shawn Sijnstra** wrote [Vezza](https://gitlab.com/sijnstra1/vezza), the Z-machine interpreter for CP/M that plays it (GPL-2.0-or-later). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
+
+**The shelf**
+- **R.T. Russell** wrote [BBC BASIC (Z80)](https://github.com/rtrussell/BBCZ80) and shares it under the zlib licence. The example programs were written for DigitalRerun.
+- **Leor Zolman** (BD Software) wrote [BDS C](https://www.bdsoft.com/resources/bdsc.html) and placed it in the public domain in 2002.
+- **HI-TECH Software** made its Z80 C compiler free for any use; **Tony Nicholson** keeps it updated at [agn453/HI-TECH-Z80-C](https://github.com/agn453/HI-TECH-Z80-C).
 
 **Fonts**
 - [VT323](https://fonts.google.com/specimen/VT323) by **Peter Hull**, and [IBM Plex Sans Condensed](https://github.com/IBM/plex) by **Mike Abbink** and **Bold Monday**, both under the SIL Open Font License.
