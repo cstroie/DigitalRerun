@@ -36,6 +36,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
 - **It sounds right.** The bell, the clunk of an 8" drive loading its head, the clicks of the head stepping across tracks, and the rasp of the print head. All are synthesized, and a SETUP switch turns them off.
 - **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
+- **A debugger.** Registers and flags, a Z80 disassembly that follows the program, breakpoints, step and step over, and a memory view.
 - **Phone friendly.** A key row adds what phone keyboards lack (CTRL, ESC, TAB, arrows, ^C), ADD FILES replaces drag and drop, the printed paper gets its own tab, and the 80 columns stay readable.
 - **Paste a whole listing.** PASTE types at a careful typist's pace, waiting for the program to ask for each key, so nothing is lost, not even in programs that read the keyboard ahead.
 
@@ -129,6 +130,18 @@ SETUP chooses the terminal: **VT100** (the default) or **ADM-3A**. Install your 
   - `ESC G n` and `ESC B n` / `ESC C n` attributes.
 
 The arrow keys send WordStar's `^E ^X ^S ^D`, VT100's `ESC [ A …` or ADM-3A's `^K ^J ^H ^L`. Terminal arrow keys follow the terminal when you switch.
+
+### The debugger
+
+The DEBUG tab shows the registers and flags, a disassembly from the program counter (or any address you type), and memory as hex and ASCII.
+
+- **Breakpoints:** click a line of code to set or clear one. The machine pauses when it gets there.
+- **Controls:**
+  - PAUSE stops the CPU anywhere, and CONTINUE lets it go on;
+  - STEP runs one instruction;
+  - OVER runs a CALL or RST through to the instruction after it.
+
+The disassembler ([`js/disz80.js`](js/disz80.js)) knows every Z80 opcode, the undocumented ones included, in Zilog mnemonics. While the machine runs, the panel follows it four times a second.
 
 ### Drives and files
 
@@ -224,6 +237,7 @@ js/terminal.js                    VT100 terminal and its view
 js/fx80.js, js/font9.js           printer, paper view, dot matrix font
 js/cpmfs.js                       CP/M file system on a disk image, from outside the machine
 js/asm8080.js                     8080 assembler
+js/disz80.js                      Z80 disassembler (the debugger's)
 js/storage.js                     disks, settings and snapshots in IndexedDB
 js/snapshot.js                    take and restore a snapshot
 js/sound.js                       bell, drive and printer sounds (Web Audio, synthesized)

@@ -27,10 +27,14 @@
             this.punch = new TapePunch();
             this.fdc = new FDC(this.memory);
             this.cycles = 0;
+            /** Addresses the debugger stops at; empty: the run loop never looks. */
+            this.breakpoints = new Set();
+            /** Called with the address when a breakpoint stops the machine. */
+            this.onBreak = null;
             /** After run(): was the program waiting for a key? (see run) */
             this.idle = false;
             this.waiting = false;
-            /** 'stopped' | 'running' | 'halted' */
+            /** 'stopped' | 'running' | 'paused' (the debugger) | 'halted' */
             this.state = 'stopped';
             const mem = this.memory;
             this.cpu = new Z80({
@@ -109,6 +113,23 @@
             this.console.idlePolls = 0;
         }
 
+        /* --- the debugger's controls --- */
+
+        get pc() { return this.cpu.get_pc(); }
+
+        pause() { if (this.state === 'running') this.state = 'paused'; }
+
+        resume() { if (this.state === 'paused') this.state = 'running'; }
+
+        /** One instruction, while paused. Returns its T-states. */
+        step() {
+            if (this.state !== 'paused') return 0;
+            const t = this.cpu.run_instruction();
+            this.cycles += t;
+            if (this.halted) this.state = 'halted';
+            return t;
+        }
+
         get halted() {
             return this.cpu.getState().halted;
         }
@@ -131,9 +152,21 @@
             const con = this.console;
             let used = 0;
             con.idlePolls = 0;
-            while (used < budget) {
-                used += cpu.run_instruction();
-                if (con.idlePolls > 64) break;
+            if (this.breakpoints.size) {
+                const bp = this.breakpoints;
+                let first = true;                 // leaving a breakpoint: do not stop on it again
+                while (used < budget) {
+                    const pc = cpu.get_pc();
+                    if (!first && bp.has(pc)) { this.pause(); if (this.onBreak) this.onBreak(pc); break; }
+                    first = false;
+                    used += cpu.run_instruction();
+                    if (con.idlePolls > 64) break;
+                }
+            } else {
+                while (used < budget) {
+                    used += cpu.run_instruction();
+                    if (con.idlePolls > 64) break;
+                }
             }
             this.cycles += used;
             const polls = con.idlePolls;

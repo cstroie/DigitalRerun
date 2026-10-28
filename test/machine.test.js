@@ -186,3 +186,25 @@ test('paper tape: PIP reads a file from RDR: and punches one to PUN:', () => {
     assert.match(punched, /cold-start loader/);
     assert.match(punched, /\x1a/);                              // PIP ends a text with ^Z
 });
+
+test('debugger: a breakpoint stops the machine, step runs one instruction, resume goes on', () => {
+    const m = boot();
+    const BDOS = 0xEC06;                                      // the BDOS entry: every DIR passes here
+    let hit = null;
+    m.onBreak = pc => { hit = pc; };
+    m.breakpoints.add(BDOS);
+    m.console.paste('DIR\r');
+    for (let i = 0; i < 200 && m.state === 'running'; i++) m.run(200000);
+    assert.equal(m.state, 'paused');
+    assert.equal(hit, BDOS);
+    assert.equal(m.pc, BDOS);
+    const before = m.cycles;
+    assert.ok(m.step() > 0);
+    assert.notEqual(m.pc, BDOS);
+    assert.ok(m.cycles > before);
+    m.breakpoints.clear();
+    m.resume();
+    m.out = '';
+    for (let i = 0; i < 200 && !m.waiting; i++) m.run(200000);
+    assert.match(m.out, /PIP {6}COM/);                         // DIR finished
+});

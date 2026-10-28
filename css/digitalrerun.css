@@ -282,6 +282,29 @@ kbd, code {
 .disk-card .desc { color: var(--text); font-size: 12px; line-height: 1.35; }
 .disk-card .meta { color: var(--text-dim); font-size: 11px; }
 
+.dbg {
+    font-family: 'VT323', ui-monospace, monospace;
+    font-size: 16px;
+    line-height: 1.15;
+    color: var(--fg-dim);
+    background: #050805;
+    border: 1px solid var(--edge);
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 6px 0 8px;
+    white-space: pre;
+    overflow-x: auto;
+    font-variant-ligatures: none;
+}
+.dbg b { color: var(--fg); font-weight: normal; }
+.dbg i { color: var(--fg-faint); font-style: normal; }
+.dbg .on { color: var(--accent); }
+.dbg.code div { cursor: pointer; }
+.dbg.code div:hover { background: #121a10; }
+.dbg.code .pc { color: var(--fg); background: #15230f; }
+.dbg.code .bp { color: #ff8a7a; }
+.hexin { width: 6em; font: inherit; font-family: 'VT323', monospace; font-size: 16px; text-transform: uppercase; color: var(--fg); background: #050805; border: 1px solid var(--edge); border-radius: 5px; padding: 2px 6px; }
+
 /* ---- banners and toasts (pwa.js) ---- */
 #banners {
     position: fixed;

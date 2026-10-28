@@ -24,6 +24,7 @@ const SHELL = [
     'js/font9.js',
     'js/fx80.js',
     'js/storage.js',
+    'js/disz80.js',
     'js/shelf.js',
     'js/sound.js',
     'js/snapshot.js',

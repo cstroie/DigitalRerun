@@ -2,7 +2,9 @@
  * Vendored for DigitalRerun from https://github.com/DrGoldfire/Z80.js
  * (archived 2020), MIT licence: copyright Molly Howell and contributors,
  * full text below. Changes for DigitalRerun: the `window` check works outside a
- * browser, and the constructor is exported for Node and the browser.
+ * browser, the constructor is exported for Node and the browser, and
+ * get_pc() reads the program counter (for breakpoints) without building
+ * the whole state.
  *
  * MIT License
  *
@@ -3409,6 +3411,7 @@ let cycle_counts_dd = [
       setState,
       reset,
       run_instruction,
+      get_pc: () => pc,
       interrupt
    };
 }

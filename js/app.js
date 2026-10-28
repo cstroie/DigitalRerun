@@ -462,6 +462,88 @@
         renderMyDisks();
     }
 
+    /* ---------- debugger ---------- */
+
+    const { Disz80 } = window.DigitalRerun;
+    const h4 = v => v.toString(16).toUpperCase().padStart(4, '0');
+    const h2 = v => v.toString(16).toUpperCase().padStart(2, '0');
+    const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const readMem = a => machine.memory[a & 0xFFFF];
+    const debugOpen = () => settings.tab === 'debug';
+    const hexOf = id => { const v = parseInt($(id).value, 16); return Number.isNaN(v) ? null : v & 0xFFFF; };
+
+    function renderDebug() {
+        if (!debugOpen()) return;
+        const s = machine.cpu.getState();
+        const flag = (on, ch) => (on ? `<span class="on">${ch}</span>` : `<i>${ch}</i>`);
+        const f = s.flags, fp = s.flags_prime;
+        const F = o => (o.S << 7) | (o.Z << 6) | (o.Y << 5) | (o.H << 4) | (o.X << 3) | (o.P << 2) | (o.N << 1) | o.C;
+        const pair = (hi, lo) => h4((hi << 8) | lo);
+        $('dbg-regs').innerHTML =
+            `PC <b>${h4(s.pc)}</b>  SP <b>${h4(s.sp)}</b>  IX ${h4(s.ix)}  IY ${h4(s.iy)}\n` +
+            `AF <b>${pair(s.a, F(f))}</b>  BC <b>${pair(s.b, s.c)}</b>  DE <b>${pair(s.d, s.e)}</b>  HL <b>${pair(s.h, s.l)}</b>\n` +
+            `AF'${pair(s.a_prime, F(fp))}  BC'${pair(s.b_prime, s.c_prime)}  DE'${pair(s.d_prime, s.e_prime)}  HL'${pair(s.h_prime, s.l_prime)}\n` +
+            `${flag(f.S, 'S')}${flag(f.Z, 'Z')}${flag(f.Y, '5')}${flag(f.H, 'H')}${flag(f.X, '3')}${flag(f.P, 'P')}${flag(f.N, 'N')}${flag(f.C, 'C')}` +
+            `  I ${h2(s.i)}  R ${h2(s.r)}  IM ${s.imode}  IFF ${s.iff1 ? 1 : 0}${s.halted ? '  HALT' : ''}`;
+        let a = hexOf('dbg-at') ?? s.pc;
+        const lines = [];
+        for (let k = 0; k < 14; k++) {
+            const ins = Disz80.disassemble(readMem, a);
+            const bp = machine.breakpoints.has(a), here = a === s.pc;
+            const bytes = ins.bytes.map(h2).join(' ').padEnd(12);
+            lines.push(`<div data-addr="${a}" class="${here ? 'pc' : ''}${bp ? ' bp' : ''}">${bp ? '●' : ' '}${here ? '▶' : ' '}${h4(a)}  ${bytes}${esc(ins.text)}</div>`);
+            a = (a + ins.length) & 0xFFFF;
+        }
+        $('dbg-code').innerHTML = lines.join('');
+        const m0 = hexOf('dbg-mem') ?? 0x100;
+        const rows = [];
+        for (let r = 0; r < 12; r++) {
+            const at = (m0 + r * 8) & 0xFFFF;
+            const b = [...Array(8)].map((_, k) => readMem(at + k));
+            rows.push(`${h4(at)}  ${b.map(h2).join(' ')}  <b>${esc(b.map(c => (c >= 32 && c < 127 ? String.fromCharCode(c) : '.')).join(''))}</b>`);
+        }
+        $('dbg-memv').innerHTML = rows.join('\n');
+        const st = machine.state;
+        $('dbg-state').textContent = st === 'paused' ? `PAUSED AT ${h4(s.pc)}` : st.toUpperCase();
+        $('dbgPause').textContent = st === 'paused' ? 'CONTINUE' : 'PAUSE';
+        $('dbgStep').disabled = $('dbgOver').disabled = st !== 'paused';
+    }
+
+    machine.onBreak = pc => { showTab('debug'); renderDebug(); PWA.toast(`Breakpoint at ${h4(pc)}.`); };
+    $('dbgPause').addEventListener('click', () => {
+        if (machine.state === 'paused') machine.resume(); else machine.pause();
+        renderDebug();
+    });
+    $('dbgStep').addEventListener('click', () => { machine.step(); view.render(); renderDebug(); });
+    $('dbgOver').addEventListener('click', () => {
+        const pc = machine.pc;
+        if (Disz80.isCall(readMem, pc)) {
+            // run until the instruction after the call: a breakpoint there, kept only for this
+            const next = (pc + Disz80.disassemble(readMem, pc).length) & 0xFFFF;
+            const had = machine.breakpoints.has(next);
+            machine.breakpoints.add(next);
+            const done = machine.onBreak;
+            machine.onBreak = at => {
+                machine.onBreak = done;
+                if (!had) machine.breakpoints.delete(next);
+                if (at !== next) done(at); else renderDebug();
+            };
+            machine.resume();
+        } else machine.step();
+        view.render();
+        renderDebug();
+    });
+    $('dbgClear').addEventListener('click', () => { machine.breakpoints.clear(); renderDebug(); });
+    $('dbg-code').addEventListener('click', e => {
+        const line = e.target.closest('[data-addr]');
+        if (!line) return;
+        const a = Number(line.dataset.addr);
+        if (machine.breakpoints.has(a)) machine.breakpoints.delete(a); else machine.breakpoints.add(a);
+        renderDebug();
+    });
+    for (const id of ['dbg-at', 'dbg-mem']) $(id).addEventListener('input', renderDebug);
+    let debugTick = 0;
+
     /* ---------- paper tape ---------- */
 
     function renderTape() {
@@ -728,12 +810,13 @@
         }
         if (now - rate.t > 500) {
             const mhz = rate.cycles / ((now - rate.t) * 1000);
-            $('mhz').textContent = machine.state === 'halted' ? 'HALT' : leds.busy ? `${mhz.toFixed(1)} MHz` : 'idle';
+            $('mhz').textContent = machine.state === 'halted' ? 'HALT' : machine.state === 'paused' ? 'PAUSE' : leds.busy ? `${mhz.toFixed(1)} MHz` : 'idle';
             rate = { t: now, cycles: 0 };
         }
         view.render();
         updateLeds(now);
         if (tapeDirty) { tapeDirty = false; renderTape(); }
+        if (debugOpen() && now - debugTick > 250) { debugTick = now; renderDebug(); }
         raf = requestAnimationFrame(frame);
     }
 
