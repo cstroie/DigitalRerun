@@ -8,7 +8,7 @@
 (function (root) {
     'use strict';
 
-    const DB = 'jscpm';             // the app's first name: kept, so saved disks stay
+    const DB = 'DigitalRerun';
     const VERSION = 1;
 
     function open() {
