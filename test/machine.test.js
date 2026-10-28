@@ -174,3 +174,15 @@ test('a pasted batch of commands runs one after another at the CCP', () => {
     settle(m);
     assert.match(m.out, /^DIR B:[\s\S]*NO FILE[\s\S]*A>STAT B:[\s\S]*Bytes Remaining On B: 241k[\s\S]*A>TYPE NOFILE\.TXT/);
 });
+
+test('paper tape: PIP reads a file from RDR: and punches one to PUN:', () => {
+    const m = boot();
+    m.reader.load(Uint8Array.from(Buffer.from('first line\r\nsecond line\r\n\x1a')), 'notes.txt');
+    command(m, 'PIP B:NOTES.TXT=RDR:');
+    const got = Buffer.from(fromCpmText(new CpmFs(m.fdc.drives[1]).read('NOTES.TXT'))).toString();
+    assert.equal(got, 'first line\r\nsecond line\r\n'.replace(/\r\n/g, '\n'));
+    command(m, 'PIP PUN:=BOOT.ASM');
+    const punched = Buffer.from(m.punch.bytes).toString('latin1');
+    assert.match(punched, /cold-start loader/);
+    assert.match(punched, /\x1a/);                              // PIP ends a text with ^Z
+});

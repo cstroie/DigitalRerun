@@ -23,6 +23,8 @@ cons	equ	0		;console status: 0FFh when a key waits
 cond	equ	1		;console data
 prts	equ	2		;printer status: 0FFh when ready
 prtd	equ	3		;printer data
+rdrd	equ	4		;paper tape reader: next byte, 1Ah at the end
+pund	equ	5		;paper tape punch
 fdcd	equ	10		;drive; IN: 0FFh when it holds a disk
 fdct	equ	11		;track
 fdcs	equ	12		;sector, low byte
@@ -192,10 +194,12 @@ list:	in	prts		;wait while off line
 listst:	in	prts
 	ret
 
-;	no paper tape
-punch:	ret
+;	paper tape: the host's files, through the PAPER TAPE panel
+punch:	mov	a,c
+	out	pund
+	ret
 
-reader:	mvi	a,1ah		;end of file
+reader:	in	rdrd		;1Ah when the tape has run out
 	ret
 
 ;	disks

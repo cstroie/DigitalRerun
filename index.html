@@ -84,6 +84,13 @@
                 <div class="tools files-tools">
                     <button id="addFilesBtn" title="Copy files from this device to the selected drive">ADD FILES</button>
                 </div>
+                <h2 class="sub">PAPER TAPE</h2>
+                <div class="tools">
+                    <button id="tapeLoadBtn" title="Put a file from this device in the tape reader (RDR:)">LOAD TAPE</button>
+                    <button id="tapeSaveBtn" title="Download what was punched (PUN:)">SAVE TAPE</button>
+                    <button id="tapeClearBtn" title="Throw away what was punched">CLEAR</button>
+                </div>
+                <p class="hint">Reader: <span id="tape-reader">no tape</span>. Punch: <span id="tape-punch">nothing yet</span>. <code>PIP FILE.TXT=RDR:</code> reads the tape, <code>PIP PUN:=FILE.TXT</code> punches a file.</p>
                 <p class="hint">ADD FILES (or drop files here) copies them to the selected drive; then press <kbd>^C</kbd> at the prompt. Tap a file to download it.</p>
             </section>
 

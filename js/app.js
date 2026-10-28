@@ -316,6 +316,40 @@
         if (e.dataTransfer.files.length) putFiles([...e.dataTransfer.files]);
     });
 
+    /* ---------- paper tape ---------- */
+
+    function renderTape() {
+        const r = machine.reader, p = machine.punch.bytes.length;
+        $('tape-reader').textContent = r.tape.length ? `${r.name}, ${r.left} of ${r.tape.length} bytes left` : 'no tape';
+        $('tape-punch').textContent = p ? `${p} bytes punched` : 'nothing yet';
+    }
+    let tapeDirty = false;
+    machine.reader.onRead = machine.punch.onWrite = () => { tapeDirty = true; };
+
+    $('tapeLoadBtn').addEventListener('click', async () => {
+        const [file] = await pickFile($('fileInput'));
+        if (!file) return;
+        let bytes = new Uint8Array(await file.arrayBuffer());
+        // Text gets CP/M line ends and ^Z; anything else is read as it is, then ^Z.
+        if (isTextName(file.name) || file.type.startsWith('text/')) bytes = toCpmText(bytes);
+        else { const t = new Uint8Array(bytes.length + 1); t.set(bytes); t[bytes.length] = 0x1A; bytes = t; }
+        machine.reader.load(bytes, file.name);
+        renderTape();
+        focusScreen();
+    });
+    $('tapeSaveBtn').addEventListener('click', () => {
+        let bytes = Uint8Array.from(machine.punch.bytes);
+        let a = 0, b = bytes.length;
+        while (a < b && bytes[a] === 0) a++;                  // PIP's leader and trailer of nulls
+        while (b > a && bytes[b - 1] === 0) b--;
+        bytes = bytes.subarray(a, b);
+        if (!bytes.length) { note('nothing punched yet', false); return; }
+        const text = bytes.includes(0x1A) && bytes.subarray(0, bytes.indexOf(0x1A)).every(c => c >= 0x20 || c === 9 || c === 10 || c === 13 || c === 12);
+        if (text) download('punched.txt', fromCpmText(bytes), 'text/plain');
+        else download('punched.bin', bytes);
+    });
+    $('tapeClearBtn').addEventListener('click', () => { machine.punch.clear(); renderTape(); focusScreen(); });
+
     /* ---------- keyboard ---------- */
 
     const kbd = $('kbd');
@@ -553,6 +587,7 @@
         }
         view.render();
         updateLeds(now);
+        if (tapeDirty) { tapeDirty = false; renderTape(); }
         raf = requestAnimationFrame(frame);
     }
 

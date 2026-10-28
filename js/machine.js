@@ -14,13 +14,15 @@
     const node = typeof module !== 'undefined' && module.exports;
     const Z80 = node ? require('./z80.js') : root.DigitalRerun.Z80;
     const { FDC, Disk } = node ? require('./devices/fdc.js') : root.DigitalRerun;
-    const { Console, PrinterPort } = node ? require('./devices/serial.js') : root.DigitalRerun;
+    const { Console, PrinterPort, TapeReader, TapePunch } = node ? require('./devices/serial.js') : root.DigitalRerun;
 
     class Machine {
         constructor() {
             this.memory = new Uint8Array(65536);
             this.console = new Console();
             this.printer = new PrinterPort();
+            this.reader = new TapeReader();
+            this.punch = new TapePunch();
             this.fdc = new FDC(this.memory);
             this.cycles = 0;
             /** 'stopped' | 'running' | 'halted' */
@@ -39,6 +41,7 @@
                 case 0: return this.console.status();
                 case 1: return this.console.read();
                 case 2: return this.printer.status();
+                case 4: return this.reader.read();
                 case 10: case 14: return this.fdc.in(port);
                 default: return 0xFF;
             }
@@ -48,6 +51,7 @@
             switch (port) {
                 case 1: this.console.write(value); break;
                 case 3: this.printer.write(value); break;
+                case 5: this.punch.write(value); break;
                 case 10: case 11: case 12: case 13: case 15: case 16: case 17:
                     this.fdc.out(port, value);
                     break;

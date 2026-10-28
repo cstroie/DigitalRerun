@@ -6,6 +6,8 @@
  *   OUT 1   console data: a character to the terminal
  *   IN  2   printer status: 0FFh when ready, 0 when off line
  *   OUT 3   printer data: a byte to the printer
+ *   IN  4   paper tape reader: the next byte of the tape, 1Ah when it has run out
+ *   OUT 5   paper tape punch: a byte to the punch
  */
 (function (root) {
     'use strict';
@@ -81,7 +83,25 @@
         }
     }
 
-    const api = { Console, PrinterPort };
+    /** The paper tape reader: the bytes of a loaded tape, then ^Z for ever. */
+    class TapeReader {
+        constructor() { this.load(new Uint8Array(0), ''); }
+        load(bytes, name) { this.tape = bytes; this.pos = 0; this.name = name; }
+        get left() { return this.tape.length - this.pos; }
+        read() {
+            if (this.pos < this.tape.length) { const b = this.tape[this.pos++]; if (this.onRead) this.onRead(); return b; }
+            return 0x1A;
+        }
+    }
+
+    /** The paper tape punch: keeps what is punched until it is saved or cleared. */
+    class TapePunch {
+        constructor() { this.clear(); }
+        clear() { this.bytes = []; }
+        write(b) { this.bytes.push(b & 0xFF); if (this.onWrite) this.onWrite(); }
+    }
+
+    const api = { Console, PrinterPort, TapeReader, TapePunch };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     else Object.assign(root.DigitalRerun = root.DigitalRerun || {}, api);
 })(typeof window !== 'undefined' ? window : globalThis);

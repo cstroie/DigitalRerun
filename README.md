@@ -88,6 +88,8 @@ The I/O ports follow z80pack for the disk controller:
 | 1 | console data | console data |
 | 2 | printer status: `0FFh` when on line | |
 | 3 | | printer data |
+| 4 | paper tape reader: the next byte, `1Ah` when the tape has run out | |
+| 5 | | paper tape punch |
 | 10 | `0FFh` when the drive holds a disk | drive |
 | 11, 12, 17 | | track; sector (low, high) |
 | 15, 16 | | DMA address (low, high) |
@@ -123,6 +125,7 @@ The arrow keys send WordStar's `^E ^X ^S ^D`, VT100's `ESC [ A …` or ADM-3A's 
   - **NEW** asks for a label and inserts a blank, bootable disk;
   - **SYS** writes a system tracks image onto a disk.
 - Disks are kept in the browser (IndexedDB), and they are still there tomorrow.
+- **Paper tape.** LOAD TAPE puts a file from your device in the reader, and `PIP FILE.TXT=RDR:` reads it in. `PIP PUN:=FILE.TXT` punches a file, and SAVE TAPE downloads it, with PIP's leader nulls and closing `^Z` trimmed. Text gets CP/M's line ends on the way in and yours on the way out.
 
 ### Changing the system, the 1980 way
 
