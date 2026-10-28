@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSCPM: CP/M 2.2 on a Z80</title>
+    <meta name="theme-color" content="#0d0f0c">
+    <meta name="description" content="A CP/M 2.2 computer in the browser: Z80, 64K, the original CCP and BDOS, 8-inch drives and an Epson FX-80 printer.">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+    <link rel="apple-touch-icon" href="icons/icon-180.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Sans+Condensed:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/jscpm.css">
+</head>
+<body>
+    <header>
+        <h1>JSCPM</h1>
+        <p>CP/M 2.2 on a Z80 with 64K, in your browser</p>
+        <a href="https://github.com/cstroie/jscpm">source</a>
+    </header>
+
+    <div class="layout">
+        <main>
+            <div class="crt" id="crt" tabindex="0" aria-label="CP/M console: click and type">
+                <div id="screen" class="screen"></div>
+                <textarea id="kbd" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" aria-label="keyboard"></textarea>
+            </div>
+
+            <div class="front">
+                <div class="leds">
+                    <span class="led power on" id="led-power"><i></i>POWER</span>
+                    <span class="led run" id="led-run"><i></i>RUN</span>
+                    <span class="led disk" id="led-0"><i></i>A</span>
+                    <span class="led disk" id="led-1"><i></i>B</span>
+                    <span class="led disk" id="led-2"><i></i>C</span>
+                    <span class="led disk" id="led-3"><i></i>D</span>
+                    <span class="led disk" id="led-8"><i></i>I</span>
+                    <span class="led prn" id="led-prn"><i></i>PRN</span>
+                </div>
+                <div class="controls">
+                    <select id="speed" title="CPU clock">
+                        <option value="2">2 MHz</option>
+                        <option value="4" selected>4 MHz</option>
+                        <option value="8">8 MHz</option>
+                        <option value="0">max</option>
+                    </select>
+                    <span id="mhz" class="mhz"></span>
+                    <button id="pasteBtn" title="Type the clipboard into CP/M">PASTE</button>
+                    <button id="resetBtn" title="Cold start: boot again from A:">RESET</button>
+                </div>
+            </div>
+        </main>
+
+        <aside>
+            <section class="panel" id="drives-panel">
+                <h2>DRIVES <span id="drive-note"></span></h2>
+                <div id="drives"></div>
+                <div class="files" id="files" aria-live="polite"></div>
+                <p class="hint">Drop files here to copy them to the selected drive, then press <kbd>^C</kbd> at the prompt. Click a file to download it.</p>
+            </section>
+
+            <section class="panel">
+                <h2>PRINTER <span>EPSON FX-80</span></h2>
+                <div class="tools">
+                    <button id="onlineBtn" class="toggle on" title="On line / off line">ON LINE</button>
+                    <button id="ffBtn" title="Form feed">FF</button>
+                    <button id="tearBtn" title="Tear off the printed sheets">TEAR OFF</button>
+                    <button id="pngBtn" title="Download the printed sheets as PNG">PNG</button>
+                    <button id="printBtn" title="Print or save as PDF">PRINT</button>
+                </div>
+                <p class="hint">CP/M prints to <code>LST:</code>: <kbd>^P</kbd> echoes the console, <code>PIP LST:=FILE.TXT</code> prints a file.</p>
+            </section>
+
+            <section class="panel">
+                <h2>KEYBOARD</h2>
+                <label class="field">Arrow keys
+                    <select id="arrows">
+                        <option value="wordstar">WordStar (^E ^X ^S ^D)</option>
+                        <option value="vt100">VT100 (ESC [ A …)</option>
+                    </select>
+                </label>
+                <label class="field">Screen
+                    <select id="phosphor">
+                        <option value="green">green</option>
+                        <option value="amber">amber</option>
+                        <option value="white">white</option>
+                    </select>
+                </label>
+                <p class="hint">The console is a VT100. <kbd>^C</kbd> warm start, <kbd>^S</kbd> pause, <kbd>^P</kbd> printer echo, <kbd>^X</kbd> cancel line.</p>
+            </section>
+        </aside>
+    </div>
+
+    <section class="paper-tray" id="tray" hidden>
+        <h2>PAPER</h2>
+        <div id="paper" class="paper"></div>
+    </section>
+
+    <input type="file" id="fileInput" hidden>
+    <input type="file" id="filesInput" multiple hidden>
+
+    <script src="js/z80.js"></script>
+    <script src="js/devices/fdc.js"></script>
+    <script src="js/devices/serial.js"></script>
+    <script src="js/machine.js"></script>
+    <script src="js/cpmfs.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/font9.js"></script>
+    <script src="js/fx80.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

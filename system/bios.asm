@@ -1,0 +1,282 @@
+;	jscpm BIOS for CP/M 2.2, 64K
+;
+;	A small BIOS for the jscpm machine: console, printer and disk
+;	controller on I/O ports (the disk ports are z80pack's). Drives
+;	A: to D: are 8" IBM 3740 single density disks, I: a 4 MB hard
+;	disk. 8080 code in the syntax of DRI's ASM.COM, so it can be
+;	changed and assembled inside CP/M as well as by tools/build.js.
+;
+;	Copyright (c) 2026 Costin Stroie, MIT licence.
+
+msize	equ	64		;memory size in Kbytes
+ccp	equ	(msize-7)*1024	;base of CCP: 0E400h for 64K
+bdos	equ	ccp+806h	;BDOS entry
+bios	equ	ccp+1600h	;base of this BIOS
+nsects	equ	44		;CCP + BDOS: 16 + 28 sectors
+
+iobyte	equ	0003h		;Intel I/O byte
+cdisk	equ	0004h		;current user (high nibble) and disk
+buff	equ	0080h		;default DMA buffer
+
+;	I/O ports
+cons	equ	0		;console status: 0FFh when a key waits
+cond	equ	1		;console data
+prts	equ	2		;printer status: 0FFh when ready
+prtd	equ	3		;printer data
+fdcd	equ	10		;drive; IN: 0FFh when it holds a disk
+fdct	equ	11		;track
+fdcs	equ	12		;sector, low byte
+fdcsh	equ	17		;sector, high byte
+fdcop	equ	13		;command: 0 read, 1 write
+fdcst	equ	14		;status: 0 ok
+dmal	equ	15		;DMA address, low byte
+dmah	equ	16		;DMA address, high byte
+
+	org	bios
+
+;	jump vector
+	jmp	boot		;cold start
+wboote:	jmp	wboot		;warm start
+	jmp	const		;console status
+	jmp	conin		;console character in
+	jmp	conout		;console character out
+	jmp	list		;list character out
+	jmp	punch		;punch character out
+	jmp	reader		;reader character in
+	jmp	home		;move head to home position
+	jmp	seldsk		;select disk
+	jmp	settrk		;set track number
+	jmp	setsec		;set sector number
+	jmp	setdma		;set DMA address
+	jmp	read		;read disk
+	jmp	write		;write disk
+	jmp	listst		;list status
+	jmp	sectran		;sector translate
+
+;	disk parameter headers: A: to D:, then I:
+dpbase:	dw	trans,0,0,0,dirbuf,dpb8,csv0,alv0
+	dw	trans,0,0,0,dirbuf,dpb8,csv1,alv1
+	dw	trans,0,0,0,dirbuf,dpb8,csv2,alv2
+	dw	trans,0,0,0,dirbuf,dpb8,csv3,alv3
+dphi:	dw	0,0,0,0,dirbuf,dpbhd,0,alvi
+
+;	8" IBM 3740 SSSD: 77 tracks of 26 sectors, 1K blocks, 2 system tracks
+dpb8:	dw	26		;sectors per track
+	db	3		;block shift: 1K blocks
+	db	7		;block mask
+	db	0		;extent mask
+	dw	242		;highest block number
+	dw	63		;highest directory entry
+	db	0c0h,0		;directory blocks
+	dw	16		;directory check size
+	dw	2		;system tracks
+
+;	4 MB hard disk: 255 tracks of 128 sectors, 2K blocks
+dpbhd:	dw	128		;sectors per track
+	db	4		;block shift: 2K blocks
+	db	15		;block mask
+	db	0		;extent mask
+	dw	2039		;highest block number
+	dw	1023		;highest directory entry
+	db	0ffh,0ffh	;directory blocks
+	dw	0		;fixed disk: no check
+	dw	0		;no system tracks
+
+;	sector skew 6, the standard for 8" disks
+trans:	db	1,7,13,19,25,5,11,17,23,3,9,15,21
+	db	2,8,14,20,26,6,12,18,24,4,10,16,22
+
+signon:	db	13,10,'jscpm 64K CP/M 2.2',13,10,0
+
+;	cold start
+boot:	lxi	sp,buff
+	lxi	h,signon
+	call	prmsg
+	xra	a
+	sta	iobyte
+	sta	cdisk
+	jmp	gocpm
+
+;	warm start: load CCP and BDOS again from the system tracks of A:
+wboot:	lxi	sp,buff
+	xra	a
+	out	fdcd
+	out	fdcsh
+	mov	e,a		;track 0
+	lxi	h,ccp
+	mvi	b,2		;first sector
+	mvi	c,nsects
+wbloop:	mov	a,e
+	out	fdct
+	mov	a,b
+	out	fdcs
+	mov	a,l
+	out	dmal
+	mov	a,h
+	out	dmah
+	xra	a
+	out	fdcop
+	in	fdcst
+	ora	a
+	jnz	wboot		;retry until it reads
+	push	d
+	lxi	d,128
+	dad	d
+	pop	d
+	dcr	c
+	jz	gocpm
+	inr	b
+	mov	a,b
+	cpi	27
+	jc	wbloop
+	mvi	b,1
+	inr	e
+	jmp	wbloop
+
+;	set up page zero and enter the CCP
+gocpm:	mvi	a,0c3h		;JMP
+	sta	0
+	lxi	h,wboote
+	shld	1
+	sta	5
+	lxi	h,bdos
+	shld	6
+	lxi	b,buff
+	call	setdma
+	lda	cdisk		;drive still there?
+	ani	0fh
+	mov	c,a
+	call	seldsk
+	mov	a,h
+	ora	l
+	jnz	gocpm1
+	lda	cdisk		;no: back to A:, same user
+	ani	0f0h
+	sta	cdisk
+gocpm1:	lda	cdisk
+	mov	c,a
+	jmp	ccp
+
+;	print the zero-terminated string at HL
+prmsg:	mov	a,m
+	ora	a
+	rz
+	mov	c,a
+	call	conout
+	inx	h
+	jmp	prmsg
+
+;	console
+const:	in	cons		;0FFh when a key waits, else 0
+	ret
+
+conin:	in	cons
+	ora	a
+	jz	conin
+	in	cond
+	ani	7fh
+	ret
+
+conout:	mov	a,c
+	out	cond
+	ret
+
+;	printer
+list:	in	prts		;wait while off line
+	ora	a
+	jz	list
+	mov	a,c
+	out	prtd
+	ret
+
+listst:	in	prts
+	ret
+
+;	no paper tape
+punch:	ret
+
+reader:	mvi	a,1ah		;end of file
+	ret
+
+;	disks
+home:	mvi	c,0
+settrk:	mov	a,c
+	out	fdct
+	ret
+
+seldsk:	lxi	h,0		;HL = 0: no such drive
+	mov	a,c
+	cpi	8
+	jz	seli
+	cpi	4
+	rnc
+	out	fdcd
+	in	fdcd		;a disk in it?
+	ora	a
+	rz
+	mov	l,c		;HL = dpbase + 16 * drive
+	dad	h
+	dad	h
+	dad	h
+	dad	h
+	lxi	d,dpbase
+	dad	d
+	ret
+seli:	out	fdcd
+	in	fdcd
+	ora	a
+	rz
+	lxi	h,dphi
+	ret
+
+setsec:	mov	a,c
+	out	fdcs
+	mov	a,b
+	out	fdcsh
+	ret
+
+setdma:	mov	a,c
+	out	dmal
+	mov	a,b
+	out	dmah
+	ret
+
+read:	xra	a
+	jmp	rwop
+write:	mvi	a,1
+rwop:	out	fdcop
+	in	fdcst
+	ora	a
+	rz			;A = 0: done
+	mvi	a,1		;A = 1: error
+	ret
+
+;	translate sector BC through the table at DE (none: just add 1)
+sectran:
+	mov	a,d
+	ora	e
+	jz	notran
+	xchg
+	dad	b
+	mov	l,m
+	mvi	h,0
+	ret
+notran:	mov	h,b
+	mov	l,c
+	inx	h
+	ret
+
+biosend	equ	$		;the loader reads up to ccp+1980h
+
+;	scratch areas: not on the disk, the BDOS fills them
+dirbuf:	ds	128
+alv0:	ds	31
+csv0:	ds	16
+alv1:	ds	31
+csv1:	ds	16
+alv2:	ds	31
+csv2:	ds	16
+alv3:	ds	31
+csv3:	ds	16
+alvi:	ds	255
+	end

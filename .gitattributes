@@ -1,0 +1,5 @@
+*.dsk binary
+*.bin binary
+*.COM binary
+*.png binary
+disks/cpm22/** -text

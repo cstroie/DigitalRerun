@@ -1,0 +1,45 @@
+CP/M 2.2: Digital Research
+==========================
+
+The CP/M 2.2 CCP and BDOS sources (system/dri/), the CP/M 2.2 utilities and
+sources in disks/cpm22/, and the copies of them on disks/cpm22.dsk are
+Digital Research's. They are redistributed under the permission DRDOS, Inc.
+gave on 7 July 2022, as published on The Unofficial CP/M Web Site,
+http://www.cpm.z80.de/license.html, and quoted below.
+
+system/dri/ccp.asm and bdos.asm are Eric Smith's 2018 reformatting of the
+DRI sources for cross-assembly (https://github.com/brouhaha/cpm22); see
+system/dri/README-brouhaha.md and system/dri/LICENSE.txt. The utilities come
+from the CP/M 2.2 distribution disk (cpm22-b.zip on the same site).
+
+-------------------------------------------------------------------------------
+
+The license to CP/M and its derivatives was made more free on 2022-07-07.
+The relevant email from Bryan Sparks, below, is quoted from the Unofficial
+CP/M Web Site:
+	http://www.cpm.z80.de/license.html
+
+
+From: Bryan Sparks <*****@drycanyon.com>    Thu, Jul 7, 8:04 AM
+To: Scott Chapman <******@mischko.com>
+
+Hmmm. Well, what you describe wasn't my intent but I get that this was unclear. 
+It was also some time ago.
+
+Not sure how to "officially" clear this up except to modify the original email content 
+removing the constraint to the website/group that was mentioned. So, perhaps, this 
+will suffice:
+
+"Let this paragraph represent a right to use, distribute, modify, enhance, and otherwise 
+make available in a nonexclusive manner CP/M and its derivatives. This right comes from 
+the company, DRDOS, Inc.'s purchase of Digital Research, the company and all assets, 
+dating back to the mid-1990's. DRDOS, Inc. and I, Bryan Sparks, President of DRDOS, 
+Inc. as its representative, is the owner of CP/M and the successor in interest of 
+Digital Research assets."
+
+It's a bit clumsy but this may get the intent cleared and authority upon which it is 
+granted.
+
+Thanks for the email.
+
+Bryan
