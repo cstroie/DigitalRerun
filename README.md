@@ -26,7 +26,7 @@ The A: disk holds the DRI 2.2 tools: PIP, STAT, ED, ASM, LOAD, DDT, SUBMIT, XSUB
 
 `^C` warm-starts the system, `^S` pauses output and `^P` echoes the console to the printer.
 
-- **Drives.** Drop files on the DRIVES panel to copy them to the selected drive, then press `^C` so CP/M logs the disk in again. Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way. `LOAD` inserts a `.dsk` image, `SAVE` downloads one, and `NEW` inserts a blank, bootable disk. Disks are kept in the browser (IndexedDB) and are still there after a reload.
+- **Drives.** ADD FILES (or dropping files on the DRIVES panel) copies them to the selected drive, then press `^C` so CP/M logs the disk in again. Click a file to download it. Text files (`.ASM`, `.TXT`, `.SUB` …) are converted between LF and CP/M's CR LF on the way. `LOAD` inserts a `.dsk` image, `SAVE` downloads one, and `NEW` inserts a blank, bootable disk. Disks are kept in the browser (IndexedDB) and are still there after a reload.
 - **Speed.** The CPU runs at 2, 4 (the default) or 8 MHz, or as fast as the browser allows. It costs nothing while CP/M waits for a key.
 - **Lights.** POWER, RUN (bright while working, dim while waiting for a key), one light per drive, and PRN.
 

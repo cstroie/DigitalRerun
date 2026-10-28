@@ -250,7 +250,7 @@
         }
         const free = document.createElement('div');
         free.className = 'free';
-        free.textContent = `${files.length} files, ${fsys.freeBytes() >> 10}K free on ${LETTER(selected)}:`;
+        free.textContent = `${files.length} file${files.length === 1 ? "" : "s"}, ${fsys.freeBytes() >> 10}K free on ${LETTER(selected)}:`;
         box.appendChild(free);
     }
 
@@ -273,6 +273,11 @@
             note(`${n} file${n > 1 ? 's' : ''} on ${LETTER(selected)}: press ^C`);
         }
     }
+
+    $('addFilesBtn').addEventListener('click', async () => {
+        const files = await pickFile($('filesInput'));
+        if (files.length) putFiles(files);
+    });
 
     const panel = $('drives-panel');
     panel.addEventListener('dragover', e => { e.preventDefault(); panel.classList.add('drop'); });

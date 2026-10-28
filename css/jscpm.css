@@ -226,6 +226,7 @@ kbd, code {
     columns: 2;
     column-gap: 10px;
 }
+.files-tools { margin-top: 8px; }
 .files a { display: flex; justify-content: space-between; color: var(--fg-dim); text-decoration: none; cursor: pointer; }
 .files a:hover { color: var(--fg); }
 .files a small { color: var(--fg-faint); font-size: 15px; }

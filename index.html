@@ -64,7 +64,10 @@
                 <h2>DRIVES <span id="drive-note"></span></h2>
                 <div id="drives"></div>
                 <div class="files" id="files" aria-live="polite"></div>
-                <p class="hint">Drop files here to copy them to the selected drive, then press <kbd>^C</kbd> at the prompt. Click a file to download it.</p>
+                <div class="tools files-tools">
+                    <button id="addFilesBtn" title="Copy files from this device to the selected drive">ADD FILES</button>
+                </div>
+                <p class="hint">ADD FILES (or drop files here) copies them to the selected drive; then press <kbd>^C</kbd> at the prompt. Tap a file to download it.</p>
             </section>
 
             <section class="panel" data-tab="printer">
