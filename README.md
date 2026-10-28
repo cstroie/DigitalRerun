@@ -32,7 +32,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **A shelf of software.** Zork I, II and III, BBC BASIC with example programs, and two C compilers (BDS C and HI-TECH C), every one free to share and ready to insert into a drive. Your own disks (WordStar, MBASIC …) go on *My disks* and stay in your browser.
 - **A printer you can watch.** PRTDEMO shows off pica, elite, condensed, bold, italic, underlined, enlarged, super- and subscript text and bit-image graphics. Save the pages as PNG or PDF.
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
-- **Bring your own software.** Drop `.COM` files or whole `.dsk` images onto a drive. Disks use the standard 8" format of cpmtools and z80pack.
+- **Bring your own software.** Drop files onto the DRIVES panel to copy them to the selected drive, or LOAD a whole `.dsk` image into a drive. Disks use the standard 8" format of cpmtools and z80pack, plus the 5¼" ones below.
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
 - **It sounds right.** The bell, the clunk of an 8" drive loading its head, the clicks of the head stepping across tracks, and the rasp of the print head. All are synthesized, and a SETUP switch turns them off.
 - **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
@@ -223,7 +223,7 @@ DigitalRerun is a progressive web app:
 git clone https://github.com/cstroie/DigitalRerun.git
 cd DigitalRerun
 python3 -m http.server 8000         # any static server; then open http://localhost:8000
-node --test                         # 38 tests: assembler, file system, terminal, printer, CP/M, snapshots, PWA
+node --test                         # 68 tests: assembler, file system, Altair images, terminal, printer, CP/M, snapshots, PWA
 ZEX=1 node --test test/zex.test.js  # ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL, CI runs both)
 ```
 
@@ -243,6 +243,7 @@ js/devices/fdc.js, serial.js      disk controller, console and printer ports
 js/terminal.js                    VT100 terminal and its view
 js/fx80.js, js/font9.js           printer, paper view, dot matrix font
 js/cpmfs.js                       CP/M file system on a disk image, from outside the machine
+js/altair.js                      the files of an AltairZ80 disk image (LOAD copies them onto a disk)
 js/asm8080.js                     8080 assembler
 js/disz80.js                      Z80 disassembler (the debugger's)
 js/storage.js                     disks, settings and snapshots in IndexedDB
