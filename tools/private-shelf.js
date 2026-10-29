@@ -75,11 +75,16 @@ async function build(sources, out, { category = 'Private', vezza = path.join(ROO
     const used = new Set();
     const entries = [];
     const disksDir = path.join(sources, 'disks');
+    const seen = new Set();
     for (const file of walk(sources, disksDir)) {
         if (!STORY.test(file)) continue;
+        if (path.relative(sources, file).split(path.sep).some(d => /^saves?$/i.test(d))) continue;   // saved games
         const bytes = fs.readFileSync(file);
         const head = storyHeader(bytes);
         if (!head) continue;
+        const sum = require('crypto').createHash('sha1').update(bytes).digest('hex');
+        if (seen.has(sum)) continue;                                                              // the same story twice
+        seen.add(sum);
         const base = path.basename(file);
         const stem = path.basename(file, path.extname(file)).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8) || 'GAME';
         let id = stem;
