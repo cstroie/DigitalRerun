@@ -13,6 +13,7 @@
  * and disks/cpm22.dsk is made: an 8" disk with those system tracks and
  * every file of disks/cpm22/ (plus the system sources) on it.
  * disks/zork1/ becomes disks/zork1.dsk, the game disk for D:.
+ * A shelf disk whose disk.json has "play": "CMD" gets a PLAY.COM that runs CMD (system/play.asm).
  * Only needed after changing a source: the app loads the results.
  */
 'use strict';
@@ -80,6 +81,7 @@ function main() {
         const name = f.startsWith('LICENSE-') ? f.slice(8) + '.LIC' : f;       // LICENSE-VEZZA -> VEZZA.LIC
         zfs.write(name, /\.(TXT|LIC)$/i.test(name) ? toCpmText(data) : data);
     }
+    zfs.write('PLAY.COM', playCom('VEZZA ZORK1.Z3'));
     fs.writeFileSync(path.join(ROOT, 'disks/zork1.dsk'), zork.data);
 
     buildShelf();
@@ -131,6 +133,16 @@ function tokenizeBbc(dir) {
     }
 }
 
+/** PLAY.COM for a disk: types `command` at the CCP (system/play.asm). */
+function playCom(command) {
+    const src = fs.readFileSync(path.join(ROOT, 'system/play.asm'), 'latin1').replace('@CMD@', command.toUpperCase());
+    const r = assemble(src, {});
+    return r.image(0x100, r.high);
+}
+function writePlay(dir, command) {
+    fs.writeFileSync(path.join(dir, 'PLAY.COM'), playCom(command));
+}
+
 function buildShelf() {
     const { isText } = require('../js/shelf.js');
     const shelfDir = path.join(ROOT, 'disks/shelf');
@@ -139,9 +151,11 @@ function buildShelf() {
         const dir = path.join(shelfDir, id);
         const meta = JSON.parse(fs.readFileSync(path.join(dir, 'disk.json'), 'utf8'));
         if (meta.bbcbasic) tokenizeBbc(dir);
+        if (meta.play) writePlay(dir, meta.play);
         const names = fs.readdirSync(dir).filter(f => f !== 'disk.json').sort();
         const entry = { id, ...meta, files: names.map(n => ({ name: n, path: `disks/shelf/${id}/${n}` })) };
         delete entry.bbcbasic;
+        delete entry.play;
         // It must fit: build it as the page will.
         const disk = new Disk(entry.format);
         const fsys = new CpmFs(disk);

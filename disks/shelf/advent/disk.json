@@ -1,0 +1,9 @@
+{
+ "name": "Colossal Cave Adventure",
+ "format": "sssd8",
+ "description": "Adventure, the original 350 point Colossal Cave. Type PLAY, or VEZZA ADVENT.Z3.",
+ "credit": "Will Crowther and Don Woods; ported to ZIL by Tara McGrew; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+ "licence": "freeware; GPL-2.0-or-later",
+ "category": "Games",
+ "play": "VEZZA ADVENT.Z3"
+}

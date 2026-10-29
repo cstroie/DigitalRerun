@@ -1,2 +1,2 @@
-{ "name": "Zork III", "format": "sssd8", "description": "Zork III: The Dungeon Master. Type VEZZA ZORK3.Z3.",
-  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.", "licence": "MIT; GPL-2.0-or-later", "category": "Games" }
+{ "name": "Zork III", "format": "sssd8", "description": "Zork III: The Dungeon Master. Type PLAY, or VEZZA ZORK3.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.", "licence": "MIT; GPL-2.0-or-later", "category": "Games", "play": "VEZZA ZORK3.Z3" }

@@ -30,11 +30,11 @@ async function withDisk(id, drive, loose = false) {
 test('every shelf entry is listed with what the page needs, and its files exist', () => {
     for (const e of shelf) {
         assert.ok(e.id && e.name && e.description && e.credit && e.licence && e.category, e.id);
-        assert.ok(['sssd8', 'hd4mb'].includes(e.format), e.id);
+        assert.ok(['sssd8', 'dsdd5', 'hd4mb'].includes(e.format), e.id);
         if (e.image) assert.ok(fs.existsSync(path.join(ROOT, e.image)), e.image);
         else for (const f of e.files) assert.ok(fs.existsSync(path.join(ROOT, f.path)), f.path);
     }
-    assert.deepEqual(shelf.map(e => e.id).sort(), ['bbcbasic', 'bdsc', 'cpm22', 'forth83', 'hitech', 'z3games', 'zork1', 'zork2', 'zork3']);
+    assert.deepEqual(shelf.map(e => e.id).sort(), ['advent', 'bbcbasic', 'bdsc', 'catseye', 'cpm22', 'fantasy', 'forth83', 'hitech', 'moonglow', 'subsab', 'zork1', 'zork2', 'zork3']);
 });
 
 test('each shelf disk builds as the page builds it, every file on it', async () => {
@@ -77,7 +77,7 @@ test('Zork II starts from its shelf disk', async () => {
 test('F83 runs Forth, and its source blocks are on the disk byte for byte', async () => {
     const m = await withDisk('forth83', 1, true);
     const fsys = new CpmFs(await buildDisk(entry('forth83'), read));
-    for (const n of ['UTILITY.BLK', 'EXTEND80.BLK', 'CLOCK.BLK', 'F83.COM']) {
+    for (const n of ['KERNEL80.BLK', 'UTILITY.BLK', 'EXTEND80.BLK', 'F83.COM']) {
         const want = fs.readFileSync(path.join(ROOT, 'disks/shelf/forth83', n));
         assert.deepEqual(Buffer.from(fsys.read(n)).subarray(0, want.length), want, n);
     }
@@ -87,10 +87,28 @@ test('F83 runs Forth, and its source blocks are on the disk byte for byte', asyn
     assert.match(m.cmd('BYE'), /B>/);
 });
 
-test('the free Z3 games start from their shelf disk', async () => {
-    for (const [file, title] of [['MOONGLOW.Z3', /Moonglow/i], ['CATSEYE.Z3', /Cat'?s Eye|Catseye/i], ['FANTASY.Z3', /small airlock/i], ['SUBSAB.Z3', /Submarine Sabotage/i]]) {
-        const m = await withDisk('z3games', 2);
+test('PLAY starts the game of each Z3 disk, as typing the command would', async () => {
+    const games = [['advent', /Colossal Cave|Adventure/i], ['catseye', /Cat'?s Eye|Catseye/i], ['fantasy', /small airlock/i],
+        ['moonglow', /Moonglow/i], ['subsab', /Submarine Sabotage/i], ['zork2', /ZORK II/i], ['zork3', /ZORK III/i]];
+    for (const [id, title] of games) {
+        const m = await withDisk(id, 2);
         m.cmd('C:');
-        assert.match(m.cmd('VEZZA ' + file), title, file);
+        const out = m.cmd('PLAY');
+        assert.match(out, /Vezza - Release/, id);
+        assert.match(out, title, id);
     }
+});
+
+test('PLAY on the Zork I disk', async () => {
+    const m = new Machine();
+    m.out = '';
+    m.console.output = b => { m.out += String.fromCharCode(b); };
+    m.fdc.mount(0, Disk.fromImage(await read('disks/cpm22.dsk')));
+    m.fdc.mount(3, Disk.fromImage(await read('disks/zork1.dsk')));
+    m.reset();
+    const settle = () => { for (let i = 0; i < 40000; i++) { m.run(200000); if (m.waiting) return; } };
+    settle();
+    const cmd = text => { m.out = ''; m.console.paste(text + '\r'); settle(); return m.out; };
+    cmd('D:');
+    assert.match(cmd('PLAY'), /ZORK I/i);
 });

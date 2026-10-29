@@ -1,0 +1,9 @@
+{
+ "name": "Moonglow",
+ "format": "sssd8",
+ "description": "Moonglow, Miniventure #1: a mysterious orb has crash-landed in your field. Type PLAY, or VEZZA MOONGLOW.Z3.",
+ "credit": "Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+ "licence": "freeware; GPL-2.0-or-later",
+ "category": "Games",
+ "play": "VEZZA MOONGLOW.Z3"
+}

@@ -1,3 +1,14 @@
-{ "name": "Forth-83 (F83)", "format": "sssd8", "description": "Laxen and Perry's F83, a public domain Forth-83 for CP/M, with its extension and utility sources. Type F83, then 2 3 + . or VIEW DUP.",
-  "credit": "Henry Laxen and Michael Perry; public domain.", "licence": "public domain", "category": "Languages",
-  "text": ["README.80", "F83FIXS.TXT", "F83.LIC", "README.TXT"] }
+{
+ "name": "Forth-83 (F83)",
+ "format": "dsdd5",
+ "description": "Laxen and Perry's F83, a public domain Forth-83 for CP/M, with the kernel, extension and utility sources, on a 400K disk. Type F83, then 2 3 + . or VIEW DUP.",
+ "credit": "Henry Laxen and Michael Perry; public domain.",
+ "licence": "public domain",
+ "category": "Languages",
+ "text": [
+  "README.80",
+  "F83FIXS.TXT",
+  "F83.LIC",
+  "README.TXT"
+ ]
+}

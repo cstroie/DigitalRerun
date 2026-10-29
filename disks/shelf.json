@@ -22,6 +22,39 @@
   "size": 256256
  },
  {
+  "id": "advent",
+  "name": "Colossal Cave Adventure",
+  "format": "sssd8",
+  "description": "Adventure, the original 350 point Colossal Cave. Type PLAY, or VEZZA ADVENT.Z3.",
+  "credit": "Will Crowther and Don Woods; ported to ZIL by Tara McGrew; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "ADVENT.Z3",
+    "path": "disks/shelf/advent/ADVENT.Z3"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/advent/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/advent/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/advent/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/advent/VEZZA.LIC"
+   }
+  ],
+  "size": 99597,
+  "free": 145408
+ },
+ {
   "id": "bbcbasic",
   "name": "BBC BASIC (Z80)",
   "format": "sssd8",
@@ -156,10 +189,76 @@
   "free": 104448
  },
  {
+  "id": "catseye",
+  "name": "Cat's Eye",
+  "format": "sssd8",
+  "description": "Cat's Eye, Miniventure #2: your uncle asks you for a favour, and his house is strange. Type PLAY, or VEZZA CATSEYE.Z3.",
+  "credit": "Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "CATSEYE.Z3",
+    "path": "disks/shelf/catseye/CATSEYE.Z3"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/catseye/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/catseye/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/catseye/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/catseye/VEZZA.LIC"
+   }
+  ],
+  "size": 43359,
+  "free": 201728
+ },
+ {
+  "id": "fantasy",
+  "name": "The Fantasy Dimension",
+  "format": "sssd8",
+  "description": "The Fantasy Dimension, a PunyJam 3 adventure. Type PLAY, or VEZZA FANTASY.Z3.",
+  "credit": "Johan Berntsson; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "FANTASY.Z3",
+    "path": "disks/shelf/fantasy/FANTASY.Z3"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/fantasy/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/fantasy/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/fantasy/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/fantasy/VEZZA.LIC"
+   }
+  ],
+  "size": 93560,
+  "free": 151552
+ },
+ {
   "id": "forth83",
   "name": "Forth-83 (F83)",
-  "format": "sssd8",
-  "description": "Laxen and Perry's F83, a public domain Forth-83 for CP/M, with its extension and utility sources. Type F83, then 2 3 + . or VIEW DUP.",
+  "format": "dsdd5",
+  "description": "Laxen and Perry's F83, a public domain Forth-83 for CP/M, with the kernel, extension and utility sources, on a 400K disk. Type F83, then 2 3 + . or VIEW DUP.",
   "credit": "Henry Laxen and Michael Perry; public domain.",
   "licence": "public domain",
   "category": "Languages",
@@ -170,10 +269,6 @@
    "README.TXT"
   ],
   "files": [
-   {
-    "name": "CLOCK.BLK",
-    "path": "disks/shelf/forth83/CLOCK.BLK"
-   },
    {
     "name": "EXTEND80.BLK",
     "path": "disks/shelf/forth83/EXTEND80.BLK"
@@ -191,6 +286,10 @@
     "path": "disks/shelf/forth83/F83FIXS.TXT"
    },
    {
+    "name": "KERNEL80.BLK",
+    "path": "disks/shelf/forth83/KERNEL80.BLK"
+   },
+   {
     "name": "README.80",
     "path": "disks/shelf/forth83/README.80"
    },
@@ -203,8 +302,8 @@
     "path": "disks/shelf/forth83/UTILITY.BLK"
    }
   ],
-  "size": 205365,
-  "free": 38912
+  "size": 383624,
+  "free": 12288
  },
  {
   "id": "hitech",
@@ -415,55 +514,84 @@
   "free": 3317760
  },
  {
-  "id": "z3games",
-  "name": "Free Z3 games",
+  "id": "moonglow",
+  "name": "Moonglow",
   "format": "sssd8",
-  "description": "Four freeware adventures for the Vezza interpreter: FANTASY, SUBSAB, MOONGLOW and CATSEYE. Type VEZZA MOONGLOW.Z3.",
-  "credit": "Johan Berntsson, Garry Francis, Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "description": "Moonglow, Miniventure #1: a mysterious orb has crash-landed in your field. Type PLAY, or VEZZA MOONGLOW.Z3.",
+  "credit": "Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
   "licence": "freeware; GPL-2.0-or-later",
   "category": "Games",
   "files": [
    {
-    "name": "CATSEYE.Z3",
-    "path": "disks/shelf/z3games/CATSEYE.Z3"
-   },
-   {
-    "name": "FANTASY.Z3",
-    "path": "disks/shelf/z3games/FANTASY.Z3"
-   },
-   {
     "name": "MOONGLOW.Z3",
-    "path": "disks/shelf/z3games/MOONGLOW.Z3"
+    "path": "disks/shelf/moonglow/MOONGLOW.Z3"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/moonglow/PLAY.COM"
    },
    {
     "name": "README.TXT",
-    "path": "disks/shelf/z3games/README.TXT"
-   },
-   {
-    "name": "SUBSAB.Z3",
-    "path": "disks/shelf/z3games/SUBSAB.Z3"
+    "path": "disks/shelf/moonglow/README.TXT"
    },
    {
     "name": "VEZZA.COM",
-    "path": "disks/shelf/z3games/VEZZA.COM"
+    "path": "disks/shelf/moonglow/VEZZA.COM"
    },
    {
     "name": "VEZZA.LIC",
-    "path": "disks/shelf/z3games/VEZZA.LIC"
+    "path": "disks/shelf/moonglow/VEZZA.LIC"
    }
   ],
-  "size": 179763,
-  "free": 65536
+  "size": 43360,
+  "free": 201728
+ },
+ {
+  "id": "subsab",
+  "name": "Submarine Sabotage",
+  "format": "sssd8",
+  "description": "Submarine Sabotage, an adventure. Type PLAY, or VEZZA SUBSAB.Z3.",
+  "credit": "Garry Francis; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/subsab/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/subsab/README.TXT"
+   },
+   {
+    "name": "SUBSAB.Z3",
+    "path": "disks/shelf/subsab/SUBSAB.Z3"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/subsab/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/subsab/VEZZA.LIC"
+   }
+  ],
+  "size": 98670,
+  "free": 146432
  },
  {
   "id": "zork2",
   "name": "Zork II",
   "format": "sssd8",
-  "description": "Zork II: The Wizard of Frobozz. Type VEZZA ZORK2.Z3.",
+  "description": "Zork II: The Wizard of Frobozz. Type PLAY, or VEZZA ZORK2.Z3.",
   "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
   "licence": "MIT; GPL-2.0-or-later",
   "category": "Games",
   "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/zork2/PLAY.COM"
+   },
    {
     "name": "README.TXT",
     "path": "disks/shelf/zork2/README.TXT"
@@ -485,18 +613,22 @@
     "path": "disks/shelf/zork2/ZORK2.Z3"
    }
   ],
-  "size": 126572,
-  "free": 117760
+  "size": 126781,
+  "free": 116736
  },
  {
   "id": "zork3",
   "name": "Zork III",
   "format": "sssd8",
-  "description": "Zork III: The Dungeon Master. Type VEZZA ZORK3.Z3.",
+  "description": "Zork III: The Dungeon Master. Type PLAY, or VEZZA ZORK3.Z3.",
   "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
   "licence": "MIT; GPL-2.0-or-later",
   "category": "Games",
   "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/zork3/PLAY.COM"
+   },
    {
     "name": "README.TXT",
     "path": "disks/shelf/zork3/README.TXT"
@@ -518,7 +650,7 @@
     "path": "disks/shelf/zork3/ZORK3.Z3"
    }
   ],
-  "size": 122030,
-  "free": 122880
+  "size": 122239,
+  "free": 121856
  }
 ]

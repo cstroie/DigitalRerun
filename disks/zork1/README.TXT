@@ -2,7 +2,8 @@ ZORK I: The Great Underground Empire
 ====================================
 
 Play it:      D:
-              VEZZA ZORK1.Z3
+              PLAY      (types VEZZA ZORK1.Z3 for you)
+              or VEZZA ZORK1.Z3
 
 Save and restore inside the game with SAVE and RESTORE (give a file
 name such as ZORK1.SAV). QUIT leaves the game.
@@ -17,3 +18,4 @@ VEZZA.COM  Vezza, a Z-machine interpreter for CP/M by Shawn Sijnstra,
            gitlab.com/sijnstra1/vezza (commit 8bb76168, 2026-04-19).
            GPL-2.0-or-later: see VEZZA.LIC. Its author publishes
            the builds there and plans to publish the source.
+PLAY.COM   types the line above at the CP/M prompt, so you need not.

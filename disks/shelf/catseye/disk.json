@@ -1,0 +1,9 @@
+{
+ "name": "Cat's Eye",
+ "format": "sssd8",
+ "description": "Cat's Eye, Miniventure #2: your uncle asks you for a favour, and his house is strange. Type PLAY, or VEZZA CATSEYE.Z3.",
+ "credit": "Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+ "licence": "freeware; GPL-2.0-or-later",
+ "category": "Games",
+ "play": "VEZZA CATSEYE.Z3"
+}

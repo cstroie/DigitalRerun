@@ -1,0 +1,9 @@
+{
+ "name": "The Fantasy Dimension",
+ "format": "sssd8",
+ "description": "The Fantasy Dimension, a PunyJam 3 adventure. Type PLAY, or VEZZA FANTASY.Z3.",
+ "credit": "Johan Berntsson; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+ "licence": "freeware; GPL-2.0-or-later",
+ "category": "Games",
+ "play": "VEZZA FANTASY.Z3"
+}
