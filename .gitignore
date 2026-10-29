@@ -2,4 +2,4 @@ test/.cache/
 node_modules/
 .DS_Store
 system/*.lst
-_dist__private_/
+_private_/
