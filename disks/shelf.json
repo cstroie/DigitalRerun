@@ -156,6 +156,57 @@
   "free": 104448
  },
  {
+  "id": "forth83",
+  "name": "Forth-83 (F83)",
+  "format": "sssd8",
+  "description": "Laxen and Perry's F83, a public domain Forth-83 for CP/M, with its extension and utility sources. Type F83, then 2 3 + . or VIEW DUP.",
+  "credit": "Henry Laxen and Michael Perry; public domain.",
+  "licence": "public domain",
+  "category": "Languages",
+  "text": [
+   "README.80",
+   "F83FIXS.TXT",
+   "F83.LIC",
+   "README.TXT"
+  ],
+  "files": [
+   {
+    "name": "CLOCK.BLK",
+    "path": "disks/shelf/forth83/CLOCK.BLK"
+   },
+   {
+    "name": "EXTEND80.BLK",
+    "path": "disks/shelf/forth83/EXTEND80.BLK"
+   },
+   {
+    "name": "F83.COM",
+    "path": "disks/shelf/forth83/F83.COM"
+   },
+   {
+    "name": "F83.LIC",
+    "path": "disks/shelf/forth83/F83.LIC"
+   },
+   {
+    "name": "F83FIXS.TXT",
+    "path": "disks/shelf/forth83/F83FIXS.TXT"
+   },
+   {
+    "name": "README.80",
+    "path": "disks/shelf/forth83/README.80"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/forth83/README.TXT"
+   },
+   {
+    "name": "UTILITY.BLK",
+    "path": "disks/shelf/forth83/UTILITY.BLK"
+   }
+  ],
+  "size": 205365,
+  "free": 38912
+ },
+ {
   "id": "hitech",
   "name": "HI-TECH C 3.09",
   "format": "hd4mb",
@@ -362,6 +413,47 @@
   ],
   "size": 772244,
   "free": 3317760
+ },
+ {
+  "id": "z3games",
+  "name": "Free Z3 games",
+  "format": "sssd8",
+  "description": "Four freeware adventures for the Vezza interpreter: FANTASY, SUBSAB, MOONGLOW and CATSEYE. Type VEZZA MOONGLOW.Z3.",
+  "credit": "Johan Berntsson, Garry Francis, Dave Bernazzani; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "CATSEYE.Z3",
+    "path": "disks/shelf/z3games/CATSEYE.Z3"
+   },
+   {
+    "name": "FANTASY.Z3",
+    "path": "disks/shelf/z3games/FANTASY.Z3"
+   },
+   {
+    "name": "MOONGLOW.Z3",
+    "path": "disks/shelf/z3games/MOONGLOW.Z3"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/z3games/README.TXT"
+   },
+   {
+    "name": "SUBSAB.Z3",
+    "path": "disks/shelf/z3games/SUBSAB.Z3"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/z3games/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/z3games/VEZZA.LIC"
+   }
+  ],
+  "size": 179763,
+  "free": 65536
  },
  {
   "id": "zork2",

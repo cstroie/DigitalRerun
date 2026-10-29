@@ -34,7 +34,7 @@ test('every shelf entry is listed with what the page needs, and its files exist'
         if (e.image) assert.ok(fs.existsSync(path.join(ROOT, e.image)), e.image);
         else for (const f of e.files) assert.ok(fs.existsSync(path.join(ROOT, f.path)), f.path);
     }
-    assert.deepEqual(shelf.map(e => e.id).sort(), ['bbcbasic', 'bdsc', 'cpm22', 'hitech', 'zork1', 'zork2', 'zork3']);
+    assert.deepEqual(shelf.map(e => e.id).sort(), ['bbcbasic', 'bdsc', 'cpm22', 'forth83', 'hitech', 'z3games', 'zork1', 'zork2', 'zork3']);
 });
 
 test('each shelf disk builds as the page builds it, every file on it', async () => {
@@ -72,4 +72,25 @@ test('Zork II starts from its shelf disk', async () => {
     const m = await withDisk('zork2', 2);
     m.cmd('C:');
     assert.match(m.cmd('VEZZA ZORK2.Z3'), /ZORK II/i);
+});
+
+test('F83 runs Forth, and its source blocks are on the disk byte for byte', async () => {
+    const m = await withDisk('forth83', 1, true);
+    const fsys = new CpmFs(await buildDisk(entry('forth83'), read));
+    for (const n of ['UTILITY.BLK', 'EXTEND80.BLK', 'CLOCK.BLK', 'F83.COM']) {
+        const want = fs.readFileSync(path.join(ROOT, 'disks/shelf/forth83', n));
+        assert.deepEqual(Buffer.from(fsys.read(n)).subarray(0, want.length), want, n);
+    }
+    m.cmd('B:');
+    assert.match(m.cmd('F83'), /FORTH/i);
+    assert.match(m.cmd('2 3 + .'), /5/);
+    assert.match(m.cmd('BYE'), /B>/);
+});
+
+test('the free Z3 games start from their shelf disk', async () => {
+    for (const [file, title] of [['MOONGLOW.Z3', /Moonglow/i], ['CATSEYE.Z3', /Cat'?s Eye|Catseye/i], ['FANTASY.Z3', /small airlock/i], ['SUBSAB.Z3', /Submarine Sabotage/i]]) {
+        const m = await withDisk('z3games', 2);
+        m.cmd('C:');
+        assert.match(m.cmd('VEZZA ' + file), title, file);
+    }
 });

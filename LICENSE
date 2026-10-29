@@ -32,6 +32,9 @@ Not covered by this licence (see LICENSE-DRI and the file headers):
                        (disks/zork1/LICENSE-VEZZA, gitlab.com/sijnstra1/vezza)
   disks/zork1.dsk      holds the above
   disks/shelf/zork2/, zork3/   Zork II and III (MIT, Microsoft) and Vezza (GPL-2.0-or-later)
+  disks/shelf/z3games/         four freeware Z3 games (their authors' rights; shared as the IF Archive
+                               shares them, unchanged) and Vezza (GPL-2.0-or-later)
+  disks/shelf/forth83/         F83, Henry Laxen and Michael Perry, public domain (README.80, F83.LIC)
   disks/shelf/bbcbasic/        BBC BASIC (Z80), R.T. Russell, zlib licence (BBCBASIC.LIC);
                                the .BAS/.BBC examples are this project's (MIT)
   disks/shelf/bdsc/            BDS C 1.60, Leor Zolman, public domain (HELLO.C is this project's)
