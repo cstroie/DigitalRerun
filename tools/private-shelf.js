@@ -11,10 +11,17 @@
  * in the shelf's format. Put <out> on your own web server (docs/private-shelf.md)
  * and give the app its address: nothing of it is kept in the repository.
  *
- * <sources>/titles.json (optional) names the games:
- *   { "zork1.dat": { "name": "Zork I", "description": "…", "category": "…" } }
- * keyed by the story's file name, lower case. Without it a name is made
- * from the file name. Nothing is read from the story's text.
+ * Every folder inside <sources>/disks/ becomes one disk of its files, as the
+ * app's FROM FOLDER does (js/folderdisk.js): the files in it go to user 0,
+ * subfolders named 1 to 15 to those user areas, names are made 8.3, and the
+ * smallest disk format that holds it is used. For software that is no story
+ * (WordStar, a compiler …). Story files inside disks/ stay on that disk.
+ *
+ * <sources>/titles.json (optional) names them:
+ *   { "zork1.dat": { "name": "Zork I", "description": "…", "category": "…" },
+ *     "wordstar":  { "name": "WordStar 4", "credit": "…" } }
+ * keyed by the story's file name, or the folder's name, lower case. Without
+ * it a name is made from the file name. Nothing is read from the story's text.
  */
 'use strict';
 const fs = require('fs');
@@ -22,6 +29,7 @@ const path = require('path');
 const { Disk } = require('../js/devices/fdc.js');
 const { CpmFs, toCpmText } = require('../js/cpmfs.js');
 const { playCom } = require('./play.js');
+const { fromFolder } = require('../js/folderdisk.js');
 
 const ROOT = path.join(__dirname, '..');
 const STORY = /\.(z[1-8]|dat)$/i;
@@ -36,10 +44,11 @@ function storyHeader(b) {
     return { version: b[0], release: w(2), serial: Buffer.from(b.subarray(18, 24)).toString('latin1') };
 }
 
-function* walk(dir) {
+function* walk(dir, skip) {
     for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
         const p = path.join(dir, e.name);
-        if (e.isDirectory()) yield* walk(p);
+        if (p === skip) continue;
+        if (e.isDirectory()) yield* walk(p, skip);
         else if (e.isFile()) yield p;
     }
 }
@@ -52,7 +61,12 @@ function formatFor(bytes) {
 
 const humanize = s => s.toLowerCase().replace(/\.[^.]*$/, '').replace(/[_-]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-function build(sources, out, { category = 'Private', vezza = path.join(ROOT, 'disks/shelf/zork2/VEZZA.COM'), vezzaLic = path.join(ROOT, 'disks/shelf/zork2/VEZZA.LIC') } = {}) {
+/** Every file under `dir`, for fromFolder: paths relative to it, with `/`. */
+function folderItems(dir) {
+    return [...walk(dir)].map(file => ({ path: path.relative(dir, file).split(path.sep).join('/'), read: async () => fs.readFileSync(file) }));
+}
+
+async function build(sources, out, { category = 'Private', vezza = path.join(ROOT, 'disks/shelf/zork2/VEZZA.COM'), vezzaLic = path.join(ROOT, 'disks/shelf/zork2/VEZZA.LIC') } = {}) {
     const titlesFile = path.join(sources, 'titles.json');
     const titles = fs.existsSync(titlesFile) ? JSON.parse(fs.readFileSync(titlesFile, 'utf8')) : {};
     fs.mkdirSync(out, { recursive: true });
@@ -60,7 +74,8 @@ function build(sources, out, { category = 'Private', vezza = path.join(ROOT, 'di
     const lic = fs.existsSync(vezzaLic) ? toCpmText(fs.readFileSync(vezzaLic)) : null;
     const used = new Set();
     const entries = [];
-    for (const file of walk(sources)) {
+    const disksDir = path.join(sources, 'disks');
+    for (const file of walk(sources, disksDir)) {
         if (!STORY.test(file)) continue;
         const bytes = fs.readFileSync(file);
         const head = storyHeader(bytes);
@@ -96,8 +111,33 @@ function build(sources, out, { category = 'Private', vezza = path.join(ROOT, 'di
             credit: meta.credit || '', licence: 'private', size: disk.data.length
         });
     }
-    entries.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
-    fs.writeFileSync(path.join(out, 'shelf.json'), JSON.stringify(entries, null, 1) + '\n');
+    return buildFolders(disksDir, out, entries, titles, used, category).then(all => {
+        all.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+        fs.writeFileSync(path.join(out, 'shelf.json'), JSON.stringify(all, null, 1) + '\n');
+        return all;
+    });
+}
+
+/** The folders of <sources>/disks/, one disk each, added to `entries`. */
+async function buildFolders(disksDir, out, entries, titles, used, category) {
+    if (!fs.existsSync(disksDir)) return entries;
+    for (const dir of fs.readdirSync(disksDir, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+        const meta = titles[dir.name.toLowerCase()] || {};
+        const name = meta.name || humanize(dir.name);
+        const r = await fromFolder(folderItems(path.join(disksDir, dir.name)), name);
+        let id = dir.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'disk';
+        for (let n = 2; used.has(id.toUpperCase()); n++) id = `${id.replace(/-\d+$/, '')}-${n}`;
+        used.add(id.toUpperCase());
+        const image = `${id}.dsk`;
+        fs.writeFileSync(path.join(out, image), r.disk.data);
+        entries.push({
+            id, name, format: r.format, image, category: meta.category || category,
+            description: meta.description || `${r.files} file${r.files === 1 ? '' : 's'} from a folder.`,
+            credit: meta.credit || '', licence: 'private', size: r.disk.data.length
+        });
+        if (r.renamed.length) console.log(`  ${dir.name}: ${r.renamed.length} name${r.renamed.length === 1 ? '' : 's'} made 8.3`);
+        for (const [file, why] of r.skipped) console.log(`  ${dir.name}: ${file} left out (${why})`);
+    }
     return entries;
 }
 
@@ -110,9 +150,10 @@ if (require.main === module) {
         process.exit(2);
     }
     console.log(`private shelf: reading ${sources}, writing ${out}`);
-    const entries = build(sources, out, { category: opt('category'), vezza: opt('vezza') });
-    for (const e of entries) console.log(`  ${e.id}: ${e.name} (${e.format}, ${e.size >> 10}K)`);
-    console.log(`${entries.length} disk${entries.length === 1 ? '' : 's'} and shelf.json written`);
+    build(sources, out, { category: opt('category'), vezza: opt('vezza') }).then(entries => {
+        for (const e of entries) console.log(`  ${e.id}: ${e.name} (${e.format}, ${e.size >> 10}K)`);
+        console.log(`${entries.length} disk${entries.length === 1 ? '' : 's'} and shelf.json written`);
+    }, e => { console.error(e.message); process.exit(1); });
 }
 
 module.exports = { build, storyHeader, formatFor };

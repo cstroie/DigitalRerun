@@ -21,6 +21,13 @@ Names come from the file names; an optional `<folder>/titles.json` names them:
 { "zork1.dat": { "name": "Zork I", "description": "…", "category": "Infocom" } }
 ```
 
+Software that is no story (WordStar, a compiler …) goes in `<folder>/disks/`: each
+folder there becomes one disk of its files, as the app's FROM FOLDER makes it. The files
+in it go to user 0, subfolders named `1` to `15` to those user areas, names CP/M cannot
+hold are made 8.3 (the tool says which), text files get CP/M line ends, and the smallest
+of the 8", 400K 5¼" and hard disk formats that holds it is used. `titles.json` names such
+a disk by its folder's name, lower case: `"wordstar": { "name": "WordStar 4" }`.
+
 Vezza plays Z-machine versions 1 to 8 as far as a text console goes: the graphical
 versions (6) will not run on this machine.
 

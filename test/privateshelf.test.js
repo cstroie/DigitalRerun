@@ -59,10 +59,17 @@ test('the tool builds a catalog; its disks play, served with a token', async () 
     fs.writeFileSync(path.join(src, 'DISC', 'GAME3.DAT'), story(3, 20000));
     fs.writeFileSync(path.join(src, 'DISC', 'BIGGAME.DAT'), story(4, 250000));
     fs.writeFileSync(path.join(src, 'DISC', 'NOTES.DAT'), Buffer.alloc(5000));          // not a story
-    fs.writeFileSync(path.join(src, 'titles.json'), JSON.stringify({ 'game3.dat': { name: 'Game Three', category: 'Test' } }));
-    const entries = build(src, out);
+    fs.mkdirSync(path.join(src, 'disks', 'WordStar', '2'), { recursive: true });
+    fs.writeFileSync(path.join(src, 'disks', 'WordStar', 'WS.COM'), Buffer.alloc(900, 5));
+    fs.writeFileSync(path.join(src, 'disks', 'WordStar', 'My Doc.txt'), 'a\nb\n');
+    fs.writeFileSync(path.join(src, 'disks', 'WordStar', '2', 'HELP.TXT'), 'help\n');
+    fs.writeFileSync(path.join(src, 'disks', 'WordStar', 'INSIDE.DAT'), story(3, 20000));      // a story in a folder disk stays on it
+    fs.writeFileSync(path.join(src, 'titles.json'), JSON.stringify({ 'game3.dat': { name: 'Game Three', category: 'Test' }, wordstar: { name: 'WordStar 4', category: 'Writing' } }));
+    const entries = await build(src, out);
     assert.deepEqual(entries.map(e => [e.id, e.name, e.format, e.category]), [
-        ['biggame', 'Biggame', 'dsdd5', 'Private'], ['game3', 'Game Three', 'sssd8', 'Test']]);
+        ['biggame', 'Biggame', 'dsdd5', 'Private'], ['game3', 'Game Three', 'sssd8', 'Test'], ['wordstar', 'WordStar 4', 'sssd8', 'Writing']]);
+    const ws = new CpmFs(Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(out, 'wordstar.dsk')))));
+    assert.deepEqual(ws.list().map(f => `${f.user}:${f.name}`).sort(), ['0:INSIDE.DAT', '0:MYDOC.TXT', '0:WS.COM', '2:HELP.TXT']);
     const files = new CpmFs(Disk.fromImage(new Uint8Array(fs.readFileSync(path.join(out, 'biggame.dsk')))));
     assert.ok(files.find('BIGGAME.Z4') && files.find('PLAY.COM') && files.find('VEZZA.COM'));
 
