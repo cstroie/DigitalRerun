@@ -242,14 +242,16 @@ kbd, code {
     padding-top: 6px;
     font-family: 'VT323', monospace;
     font-size: 17px;
-    columns: 2;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 10px;
+    overflow-x: hidden;
 }
 .files-tools { margin-top: 8px; }
-.files a { display: flex; justify-content: space-between; color: var(--fg-dim); text-decoration: none; cursor: pointer; }
+.files a { display: flex; justify-content: space-between; min-width: 0; color: var(--fg-dim); text-decoration: none; cursor: pointer; }
 .files a:hover { color: var(--fg); }
 .files a small { color: var(--fg-faint); font-size: 15px; }
-.files .free { column-span: all; color: var(--text-dim); font-family: 'IBM Plex Sans Condensed', sans-serif; font-size: 12px; margin-top: 4px; }
+.files .free { grid-column: 1 / -1; color: var(--text-dim); font-family: 'IBM Plex Sans Condensed', sans-serif; font-size: 12px; margin-top: 4px; }
 #drives-panel.drop { border-color: var(--accent); }
 
 .panel h2.sub { margin-top: 14px; }
