@@ -1,0 +1,2 @@
+{ "name": "Zork I", "format": "sssd8", "description": "Zork I: The Great Underground Empire. Type PLAY, or VEZZA ZORK1.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.", "licence": "MIT; GPL-2.0-or-later", "category": "Games", "play": "VEZZA ZORK1.Z3" }

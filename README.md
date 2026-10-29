@@ -267,7 +267,7 @@ js/snapshot.js                    take and restore a snapshot
 js/sound.js                       bell, drive and printer sounds (Web Audio, synthesized)
 js/version.js, js/pwa.js, sw.js   version and build stamp; install, updates, offline
 system/                           loader, BIOS, SYSGEN, PRTDEMO, PLAY; cpm22/: the original CCP and BDOS sources
-disks/cpm22/, disks/zork1/        the files of the boot disk and the game disk, and their images
+disks/cpm22/, disks/shelf/zork1/       the files of the boot disk and the game disk, and their images
 disks/shelf/, disks/shelf.json    the other shelf disks, as files, and their list
 tools/build.js                    assemble the system, make the disks
 tools/play.js                     PLAY.COM for a disk (system/play.asm with its command)
@@ -298,8 +298,8 @@ DigitalRerun stands on the work of many people, with thanks to all of them.
 
 **Zork I**
 - *Zork I: The Great Underground Empire* is by **Marc Blank** and **Dave Lebling** at **Infocom, Inc.**, from the original MIT *Zork* by **Tim Anderson, Marc Blank, Bruce Daniels and Dave Lebling**.
-- In 2025 **Microsoft**'s Open Source Programs Office, **Team Xbox** and **Activision**, working with **Jason Scott** of the Internet Archive, released it under the MIT licence ([historicalsource/zork1](https://github.com/historicalsource/zork1)). `disks/zork1/ZORK1.Z3` is that repository's compiled story file.
-- **Shawn Sijnstra** wrote [Vezza](https://gitlab.com/sijnstra1/vezza), the Z-machine interpreter for CP/M that plays it (GPL-2.0-or-later). `disks/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
+- In 2025 **Microsoft**'s Open Source Programs Office, **Team Xbox** and **Activision**, working with **Jason Scott** of the Internet Archive, released it under the MIT licence ([historicalsource/zork1](https://github.com/historicalsource/zork1)). `disks/shelf/zork1/ZORK1.Z3` is that repository's compiled story file.
+- **Shawn Sijnstra** wrote [Vezza](https://gitlab.com/sijnstra1/vezza), the Z-machine interpreter for CP/M that plays it (GPL-2.0-or-later). `disks/shelf/zork1/VEZZA.COM` is its `vezza-C2` build, unchanged.
 
 **The shelf**
 - **Dave Bernazzani** (Moonglow, Cat's Eye), **Johan Berntsson** (The Fantasy Dimension) and **Garry Francis** (Submarine Sabotage) wrote the Z3 games on their own disks. **Will Crowther** and **Don Woods** wrote Colossal Cave Adventure; **Tara McGrew** ported it to ZIL (Graham Nelson and Dave Baggett's earlier work, with elements of the Fortran original restored). They are freeware in the [IF Database](https://ifdb.org) and come unchanged from the [IF Archive](https://ifarchive.org/if-archive/games/zcode/); their authors keep their rights, so they may be shared, not sold.
@@ -317,7 +317,7 @@ DigitalRerun's own code is under the [MIT licence](LICENSE). The parts that come
 - CP/M under the DRDOS, Inc. grant ([LICENSE-DRI](LICENSE-DRI));
 - Z80.js under MIT;
 - Zork I under MIT;
-- Vezza under GPL-2.0-or-later (its licence is in `disks/zork1/`);
+- Vezza under GPL-2.0-or-later (its licence is in `disks/shelf/zork1/`);
 - F83 in the public domain, and five Z3 games as freeware (`disks/shelf/forth83/`, `advent/`, `catseye/`, `fantasy/`, `moonglow/`, `subsab/` under `disks/shelf/`).
 
 **Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. Kaypro and Osborne are the names of their makers. VT100 was a terminal by Digital Equipment Corporation, and ADM-3A one by Lear Siegler, Inc. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.

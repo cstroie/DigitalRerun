@@ -11,17 +11,6 @@
   "size": 256256
  },
  {
-  "id": "zork1",
-  "name": "Zork I",
-  "format": "sssd8",
-  "image": "disks/zork1.dsk",
-  "category": "Games",
-  "description": "Zork I: The Great Underground Empire. Type VEZZA ZORK1.Z3.",
-  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
-  "licence": "MIT; GPL-2.0-or-later",
-  "size": 256256
- },
- {
   "id": "advent",
   "name": "Colossal Cave Adventure",
   "format": "sssd8",
@@ -578,6 +567,43 @@
   ],
   "size": 98670,
   "free": 146432
+ },
+ {
+  "id": "zork1",
+  "name": "Zork I",
+  "format": "sssd8",
+  "description": "Zork I: The Great Underground Empire. Type PLAY, or VEZZA ZORK1.Z3.",
+  "credit": "Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "MIT; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/zork1/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/zork1/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/zork1/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/zork1/VEZZA.LIC"
+   },
+   {
+    "name": "ZORK1.LIC",
+    "path": "disks/shelf/zork1/ZORK1.LIC"
+   },
+   {
+    "name": "ZORK1.Z3",
+    "path": "disks/shelf/zork1/ZORK1.Z3"
+   }
+  ],
+  "size": 121284,
+  "free": 122880
  },
  {
   "id": "zork2",

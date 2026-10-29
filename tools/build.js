@@ -12,7 +12,7 @@
  * system/sysgen.asm and prtdemo.asm become SYSGEN.COM and PRTDEMO.COM on the disk.
  * and disks/cpm22.dsk is made: an 8" disk with those system tracks and
  * every file of disks/cpm22/ (plus the system sources) on it.
- * disks/zork1/ becomes disks/zork1.dsk, the game disk for D:.
+ * disks/shelf/zork1/ also becomes disks/zork1.dsk, the game disk for D:.
  * A shelf disk whose disk.json has "play": "CMD" gets a PLAY.COM that runs CMD (system/play.asm).
  * Only needed after changing a source: the app loads the results.
  */
@@ -76,10 +76,11 @@ function main() {
     // The Zork I game disk: an 8" data disk (no system), text files with CP/M line ends.
     const zork = new Disk('sssd8');
     const zfs = new CpmFs(zork);
-    const zdir = path.join(ROOT, 'disks/zork1');
+    const zdir = path.join(ROOT, 'disks/shelf/zork1');
     for (const f of fs.readdirSync(zdir).sort()) {
+        if (f === 'disk.json' || f === 'PLAY.COM') continue;
         const data = fs.readFileSync(path.join(zdir, f));
-        const name = f.startsWith('LICENSE-') ? f.slice(8) + '.LIC' : f;       // LICENSE-VEZZA -> VEZZA.LIC
+        const name = f;
         zfs.write(name, /\.(TXT|LIC)$/i.test(name) ? toCpmText(data) : data);
     }
     zfs.write('PLAY.COM', playCom('VEZZA ZORK1.Z3'));
@@ -98,10 +99,7 @@ function main() {
 const SHIPPED = [
     { id: 'cpm22', name: 'CP/M 2.2', format: 'sssd8', image: 'disks/cpm22.dsk', category: 'System',
       description: 'The system disk: the CP/M 2.2 tools, SYSGEN, PRTDEMO and the sources of this machine\'s BIOS.',
-      credit: 'Digital Research; free under the DRDOS, Inc. licence.', licence: 'DRDOS, Inc. grant' },
-    { id: 'zork1', name: 'Zork I', format: 'sssd8', image: 'disks/zork1.dsk', category: 'Games',
-      description: 'Zork I: The Great Underground Empire. Type VEZZA ZORK1.Z3.',
-      credit: 'Infocom; MIT licence (Microsoft, 2025). Vezza by Shawn Sijnstra, GPL-2.0-or-later.', licence: 'MIT; GPL-2.0-or-later' }
+      credit: 'Digital Research; free under the DRDOS, Inc. licence.', licence: 'DRDOS, Inc. grant' }
 ];
 
 /** Type each NAME.BAS into BBC BASIC on the emulated machine and SAVE it as NAME.BBC. */
