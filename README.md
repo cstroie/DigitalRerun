@@ -32,7 +32,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 - **A shelf of software.** Zork I, II and III, five more free text adventures, BBC BASIC with example programs, a public domain Forth-83 and two C compilers (BDS C and HI-TECH C), every one free to share and ready to insert into a drive. Your own disks (WordStar, MBASIC …) go on *My disks* and stay in your browser.
 - **A printer you can watch.** PRTDEMO shows off pica, elite, condensed, bold, italic, underlined, enlarged, super- and subscript text and bit-image graphics. Save the pages as PNG or PDF.
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
-- **Bring your own software.** Drop files onto the DRIVES panel to copy them to the selected drive, or LOAD a whole `.dsk` image into a drive. Disks use the standard 8" format of cpmtools and z80pack, plus the 5¼" ones below.
+- **Bring your own software.** Drop files onto the DRIVES panel to copy them to the selected drive, or LOAD a whole `.dsk` image into a drive. Make a disk from a folder on your device (FROM FOLDER), or point the SHELF tab at a private catalog on your own server: software you may not share stays on your machines. Disks use the standard 8" format of cpmtools and z80pack, plus the 5¼" ones below.
 - **Hackable to the bone.** The BIOS, the boot loader and SYSGEN are short, commented 8080 sources on the boot disk. Change them with `ED`, assemble them with `ASM`, install them with `SYSGEN`.
 - **It sounds right.** The bell, the clunk of an 8" drive loading its head, the clicks of the head stepping across tracks, and the rasp of the print head. All are synthesized, and a SETUP switch turns them off.
 - **Screenshots.** SHOT saves the screen as a PNG, phosphor glow and scan lines included.
@@ -112,7 +112,16 @@ The SHELF tab is the disk collection. INSERT puts a fresh copy into a drive: flo
 | BDS C 1.60 | the first C compiler for CP/M (public domain) | `CC HELLO`, `CLINK HELLO`, `HELLO` |
 | HI-TECH C 3.09 | an ANSI C compiler, on a 4 MB hard disk for I: (free for any use) | `C -V HELLO.C`, `HELLO` |
 
-Every game disk has a `PLAY` command that types the `VEZZA game.Z3` line for you. (CP/M 2.2 has no `.CMD` programs; `PLAY.COM` puts the command in the CCP's buffer and lets it run, as if you had typed it.) Only software that may be shared is on the shipped shelf. Software you may not share can sit in a **private shelf**: a catalog on your own web server (built from your story files by `node tools/private-shelf.js`), which the SHELF tab's *Private shelf* section points at; its disks are fetched when you insert them and are never part of the app ([docs/private-shelf.md](docs/private-shelf.md)). **My disks** holds your own: KEEP A DISK copies a drive's disk there, IMPORT .DSK adds an image from your device, and FROM FOLDER makes a disk from a folder on it (the files in the folder go to user 0, subfolders named 1 to 15 to those user areas; names CP/M cannot hold are shortened, text files get CP/M line ends, and the smallest of the 8", 400K 5¼" and hard disk formats that holds it is used). They are kept in this browser only, so software you own but may not share (WordStar, MBASIC, Turbo Pascal) never leaves your devices. Each shelf disk is built from its files when you insert it (`disks/shelf/`, listed in `disks/shelf.json` by `tools/build.js`), and the app keeps the files for offline use.
+Every game disk has a `PLAY` command that types the `VEZZA game.Z3` line for you. (CP/M 2.2 has no `.CMD` programs; `PLAY.COM` puts the command in the CCP's buffer and lets it run, as if you had typed it.) Each shelf disk is built from its files when you insert it (`disks/shelf/`, listed in `disks/shelf.json` by `tools/build.js`), and the app keeps the files for offline use.
+
+Only software that may be shared is on the shipped shelf. For your own, there are three ways, none of which puts it in the app:
+
+- **My disks** (in the SHELF tab) holds your own disks, kept in this browser only, so software you own but may not share (WordStar, MBASIC, Turbo Pascal) never leaves your devices:
+  - **KEEP A DISK** copies a drive's disk there;
+  - **IMPORT .DSK** adds an image from your device;
+  - **FROM FOLDER** makes a disk from a folder on your device. The files in the folder go to user 0 and subfolders named `1` to `15` to those user areas; names CP/M cannot hold are shortened, text files get CP/M line ends, and the smallest of the 8", 400K 5¼" and hard disk formats that holds it is used. (A desktop browser is needed: phones mostly lack the folder picker.)
+- **Private shelf** (also in the SHELF tab) is a catalog on your own web server, for a collection too big for one browser or shared by several devices. Its disks are fetched when you insert them and are never kept by the app. Build the catalog from your files with `node tools/private-shelf.js`: Z-machine story files (Z1 to Z8 and the DOS `.DAT` files) become game disks with Vezza and `PLAY`, and every folder under `disks/` becomes a disk as FROM FOLDER makes it. See [docs/private-shelf.md](docs/private-shelf.md) for the catalog format, serving it over https and CORS, and the optional token.
+- **Drives**: ADD FILES, LOAD and drag and drop work on any disk, as before.
 
 ### The panels
 
@@ -226,14 +235,16 @@ DigitalRerun is a progressive web app:
 git clone https://github.com/cstroie/DigitalRerun.git
 cd DigitalRerun
 python3 -m http.server 8000         # any static server; then open http://localhost:8000
-node --test                         # 68 tests: assembler, file system, Altair images, terminal, printer, CP/M, snapshots, PWA
+node --test                         # 80 tests: assembler, file system, Altair images, terminal, printer, CP/M, shelf disks, folder and private shelf, snapshots, PWA
 ZEX=1 node --test test/zex.test.js  # ZEXDOC on the Z80 core (a few minutes; ZEX=all adds ZEXALL, CI runs both)
 ```
 
 The machine tests boot the real disk and type at the CCP. They cover:
 - `DIR`, `STAT`, `PIP`, `ASM`, printing and `SYSGEN`;
 - the whole change-the-BIOS recipe above;
-- Zork;
+- every shelf disk: Zork, the Z3 games and `PLAY`, F83, the C compilers, BBC BASIC;
+- the private shelf: a catalog built by the tool and served with a token, and a disk of it played;
+- disks made from a folder;
 - restoring snapshots.
 
 Releasing a change: raise `VERSION` in [`js/version.js`](js/version.js) and run `node tools/stamp.js`. The build stamp is a hash of every file the app keeps offline, and a test fails when it is stale.
@@ -247,17 +258,24 @@ js/terminal.js                    VT100 terminal and its view
 js/fx80.js, js/font9.js           printer, paper view, dot matrix font
 js/cpmfs.js                       CP/M file system on a disk image, from outside the machine
 js/altair.js                      the files of an AltairZ80 disk image (LOAD copies them onto a disk)
+js/shelf.js                       the shelf: a disk made from an entry, private catalog addresses
+js/folderdisk.js                  a disk made from a folder (FROM FOLDER, and the catalog tool)
 js/asm8080.js                     8080 assembler
 js/disz80.js                      Z80 disassembler (the debugger's)
 js/storage.js                     disks, settings and snapshots in IndexedDB
 js/snapshot.js                    take and restore a snapshot
 js/sound.js                       bell, drive and printer sounds (Web Audio, synthesized)
 js/version.js, js/pwa.js, sw.js   version and build stamp; install, updates, offline
-system/                           loader, BIOS, SYSGEN, PRTDEMO; cpm22/: the original CCP and BDOS sources
+system/                           loader, BIOS, SYSGEN, PRTDEMO, PLAY; cpm22/: the original CCP and BDOS sources
 disks/cpm22/, disks/zork1/        the files of the boot disk and the game disk, and their images
+disks/shelf/, disks/shelf.json    the other shelf disks, as files, and their list
 tools/build.js                    assemble the system, make the disks
+tools/play.js                     PLAY.COM for a disk (system/play.asm with its command)
+tools/private-shelf.js            build a private catalog from story files and folders
+tools/private-serve.js            serve a private catalog for a trial (CORS, token)
 tools/stamp.js                    write the build stamp
 tools/font9.txt, font9.js         the printer font as dot pictures, and its generator
+docs/private-shelf.md             the private shelf: catalog, serving, connecting
 ```
 
 ## Credits

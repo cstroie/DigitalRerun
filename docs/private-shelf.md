@@ -28,8 +28,11 @@ hold are made 8.3 (the tool says which), text files get CP/M line ends, and the 
 of the 8", 400K 5¼" and hard disk formats that holds it is used. `titles.json` names such
 a disk by its folder's name, lower case: `"wordstar": { "name": "WordStar 4" }`.
 
-Vezza plays Z-machine versions 1 to 8 as far as a text console goes: the graphical
-versions (6) will not run on this machine.
+Vezza reads Z-machine versions 1 to 8, so Z4 and Z5 stories are taken as well as Z3,
+but only as far as a text console goes: the graphical version (6) will not run on
+this machine. A large story (Trinity, A Mind Forever Voyaging) may need the 400K disk,
+which the tool then chooses by itself. Only Z3 was tried here; if a Z4 or Z5 story
+misbehaves, that is worth knowing.
 
 `shelf.json` has the same shape as the shipped `disks/shelf.json`, with `image` (and
 `format`) per disk, so a disk image you made yourself can be added by hand.
