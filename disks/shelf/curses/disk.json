@@ -1,0 +1,9 @@
+{
+ "name": "Curses",
+ "format": "dsdd5",
+ "description": "Graham Nelson's Curses, the 1993 Inform classic: a rainy day, an attic and a family's past. Type PLAY, or VEZZA CURSES.Z5.",
+ "credit": "Graham Nelson; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+ "licence": "freeware; GPL-2.0-or-later",
+ "category": "Games",
+ "play": "VEZZA CURSES.Z5"
+}

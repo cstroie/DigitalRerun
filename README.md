@@ -29,7 +29,7 @@ It is a single web page with no dependencies, no build step and no server. It in
 ## Why you'll like it
 
 - **The real thing.** The original CP/M 2.2 system, assembled from source by the project's own assembler into exactly the binaries on the 1979 distribution disk. A test checks every byte.
-- **A shelf of software.** Zork I, II and III, five more free text adventures, BBC BASIC with example programs, a public domain Forth-83 and two C compilers (BDS C and HI-TECH C), every one free to share and ready to insert into a drive. Your own disks (WordStar, MBASIC …) go on *My disks* and stay in your browser.
+- **A shelf of software.** Zork I, II and III, twelve more free text adventures, BBC BASIC with example programs, a public domain Forth-83 and two C compilers (BDS C and HI-TECH C), every one free to share and ready to insert into a drive. Your own disks (WordStar, MBASIC …) go on *My disks* and stay in your browser.
 - **A printer you can watch.** PRTDEMO shows off pica, elite, condensed, bold, italic, underlined, enlarged, super- and subscript text and bit-image graphics. Save the pages as PNG or PDF.
 - **Snapshots.** Freeze the whole machine (CPU, memory, screen and disks) and come back to that exact moment later, even mid-game. Leave the page and it resumes where you were.
 - **Bring your own software.** Drop files onto the DRIVES panel to copy them to the selected drive, or LOAD a whole `.dsk` image into a drive. Make a disk from a folder on your device (FROM FOLDER), or point the SHELF tab at a private catalog on your own server: software you may not share stays on your machines. Disks use the standard 8" format of cpmtools and z80pack, plus the 5¼" ones below.
@@ -107,6 +107,7 @@ The SHELF tab is the disk collection. INSERT puts a fresh copy into a drive: flo
 | CP/M 2.2 | the system disk | `DIR` |
 | Zork I, II, III | the Infocom trilogy (MIT licence) and the Vezza interpreter | `PLAY` (or `VEZZA ZORK2.Z3`) |
 | Colossal Cave, Moonglow, Cat's Eye, The Fantasy Dimension, Submarine Sabotage | five freeware Z3 adventures, one disk each | `PLAY` |
+| Curses, Aisle, 9:05, Photopia, Shade, Spider and Web, Suveh Nux | seven freeware Z5 games from the IF Archive, one disk each | `PLAY` |
 | Forth-83 (F83) | Laxen and Perry's Forth-83 (public domain), on a 400K disk with the kernel, extension and utility sources | `F83`, then `2 3 + .` |
 | BBC BASIC (Z80) | R.T. Russell's BASIC (zlib licence), with MANDEL, PRIMES, GUESS and BANNER | `BBCBASIC`, `LOAD "PRIMES"`, `RUN` |
 | BDS C 1.60 | the first C compiler for CP/M (public domain) | `CC HELLO`, `CLINK HELLO`, `HELLO` |
@@ -303,6 +304,7 @@ DigitalRerun stands on the work of many people, with thanks to all of them.
 
 **The shelf**
 - **Dave Bernazzani** (Moonglow, Cat's Eye), **Johan Berntsson** (The Fantasy Dimension) and **Garry Francis** (Submarine Sabotage) wrote the Z3 games on their own disks. **Will Crowther** and **Don Woods** wrote Colossal Cave Adventure; **Tara McGrew** ported it to ZIL (Graham Nelson and Dave Baggett's earlier work, with elements of the Fortran original restored). They are freeware in the [IF Database](https://ifdb.org) and come unchanged from the [IF Archive](https://ifarchive.org/if-archive/games/zcode/); their authors keep their rights, so they may be shared, not sold.
+- **Graham Nelson** (Curses), **Sam Barlow** (Aisle), **Adam Cadre** (9:05, Photopia), **Andrew Plotkin** (Shade, Spider and Web) and **David Fisher** (Suveh Nux) wrote the Z5 games on their own disks. They are freeware in the [IF Database](https://ifdb.org) and come unchanged from the [IF Archive](https://ifarchive.org/if-archive/games/zcode/); their authors keep their rights, so they may be shared, not sold. The story file of Spider and Web is the archive's `Tangle.z5`.
 - **Henry Laxen** and **Michael Perry** wrote F83 and placed it in the public domain; the copy is the [Forth Interest Group](http://www.forth.org/eforth.html)'s F83V2-80 archive, as mirrored at [janaite/forth83-80](https://github.com/janaite/forth83-80).
 - **R.T. Russell** wrote [BBC BASIC (Z80)](https://github.com/rtrussell/BBCZ80) and shares it under the zlib licence. The example programs were written for DigitalRerun.
 - **Leor Zolman** (BD Software) wrote [BDS C](https://www.bdsoft.com/resources/bdsc.html) and placed it in the public domain in 2002.
@@ -318,6 +320,6 @@ DigitalRerun's own code is under the [MIT licence](LICENSE). The parts that come
 - Z80.js under MIT;
 - Zork I under MIT;
 - Vezza under GPL-2.0-or-later (its licence is in `disks/shelf/zork1/`);
-- F83 in the public domain, and five Z3 games as freeware (`disks/shelf/forth83/`, `advent/`, `catseye/`, `fantasy/`, `moonglow/`, `subsab/` under `disks/shelf/`).
+- F83 in the public domain, and twelve Z-machine games as freeware (`disks/shelf/forth83/`, `advent/`, `catseye/`, `fantasy/`, `moonglow/`, `subsab/`, `curses/`, `aisle/`, `905/`, `photopia/`, `shade/`, `spiderweb/`, `suvehnux/` under `disks/shelf/`).
 
 **Trademarks.** CP/M was created by Gary Kildall at Digital Research, Inc.; the rights now belong to DRDOS, Inc. Epson and FX-80 are trademarks of Seiko Epson Corporation. Z80 is a trademark of Zilog, Inc. IBM and IBM Plex are trademarks of International Business Machines Corporation. Kaypro and Osborne are the names of their makers. VT100 was a terminal by Digital Equipment Corporation, and ADM-3A one by Lear Siegler, Inc. ZORK is a trademark of its owner. Names are used only to say what DigitalRerun emulates or contains. DigitalRerun is not affiliated with, or endorsed by, any of these companies.

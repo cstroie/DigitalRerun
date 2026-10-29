@@ -11,6 +11,39 @@
   "size": 256256
  },
  {
+  "id": "905",
+  "name": "9:05",
+  "format": "sssd8",
+  "description": "9:05 by Adam Cadre: an ordinary morning at home. Short, so play it once with care. Type PLAY, or VEZZA 905.Z5.",
+  "credit": "Adam Cadre; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "905.Z5",
+    "path": "disks/shelf/905/905.Z5"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/905/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/905/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/905/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/905/VEZZA.LIC"
+   }
+  ],
+  "size": 120184,
+  "free": 124928
+ },
+ {
   "id": "advent",
   "name": "Colossal Cave Adventure",
   "format": "sssd8",
@@ -42,6 +75,39 @@
   ],
   "size": 99597,
   "free": 145408
+ },
+ {
+  "id": "aisle",
+  "name": "Aisle",
+  "format": "sssd8",
+  "description": "Aisle, an instant in the life of a man, by Sam Barlow: one moment, a great many things to do in it. Type PLAY, or VEZZA AISLE.Z5.",
+  "credit": "Sam Barlow; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "AISLE.Z5",
+    "path": "disks/shelf/aisle/AISLE.Z5"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/aisle/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/aisle/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/aisle/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/aisle/VEZZA.LIC"
+   }
+  ],
+  "size": 155518,
+  "free": 89088
  },
  {
   "id": "bbcbasic",
@@ -209,6 +275,39 @@
   ],
   "size": 43359,
   "free": 201728
+ },
+ {
+  "id": "curses",
+  "name": "Curses",
+  "format": "dsdd5",
+  "description": "Graham Nelson's Curses, the 1993 Inform classic: a rainy day, an attic and a family's past. Type PLAY, or VEZZA CURSES.Z5.",
+  "credit": "Graham Nelson; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "CURSES.Z5",
+    "path": "disks/shelf/curses/CURSES.Z5"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/curses/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/curses/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/curses/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/curses/VEZZA.LIC"
+   }
+  ],
+  "size": 292230,
+  "free": 104448
  },
  {
   "id": "fantasy",
@@ -536,6 +635,105 @@
   "free": 201728
  },
  {
+  "id": "photopia",
+  "name": "Photopia",
+  "format": "dsdd5",
+  "description": "Photopia by Adam Cadre: a story told in scenes. Winner of the 1998 IF Competition. Type PLAY, or VEZZA PHOTOPIA.Z5.",
+  "credit": "Adam Cadre (as Opal O'Donnell); freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PHOTOPIA.Z5",
+    "path": "disks/shelf/photopia/PHOTOPIA.Z5"
+   },
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/photopia/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/photopia/README.TXT"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/photopia/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/photopia/VEZZA.LIC"
+   }
+  ],
+  "size": 272799,
+  "free": 124928
+ },
+ {
+  "id": "shade",
+  "name": "Shade",
+  "format": "sssd8",
+  "description": "Shade, a brief story by Andrew Plotkin: a small, strange apartment and a lot of sand. Type PLAY, or VEZZA SHADE.Z5.",
+  "credit": "Andrew Plotkin; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/shade/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/shade/README.TXT"
+   },
+   {
+    "name": "SHADE.Z5",
+    "path": "disks/shelf/shade/SHADE.Z5"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/shade/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/shade/VEZZA.LIC"
+   }
+  ],
+  "size": 141698,
+  "free": 103424
+ },
+ {
+  "id": "spiderweb",
+  "name": "Spider and Web",
+  "format": "dsdd5",
+  "description": "Spider and Web by Andrew Plotkin: an interrogation, and a story that does not quite add up. The file is called TANGLE.Z5. Type PLAY, or VEZZA TANGLE.Z5.",
+  "credit": "Andrew Plotkin; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/spiderweb/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/spiderweb/README.TXT"
+   },
+   {
+    "name": "TANGLE.Z5",
+    "path": "disks/shelf/spiderweb/TANGLE.Z5"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/spiderweb/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/spiderweb/VEZZA.LIC"
+   }
+  ],
+  "size": 254358,
+  "free": 143360
+ },
+ {
   "id": "subsab",
   "name": "Submarine Sabotage",
   "format": "sssd8",
@@ -567,6 +765,39 @@
   ],
   "size": 98670,
   "free": 146432
+ },
+ {
+  "id": "suvehnux",
+  "name": "Suveh Nux",
+  "format": "dsdd5",
+  "description": "Suveh Nux by David Fisher: a game of magical experimentation in a single room. Winner of the 2007 One Room Game Competition. Type PLAY, or VEZZA SUVEHNUX.Z5.",
+  "credit": "David Fisher; freeware. Vezza by Shawn Sijnstra, GPL-2.0-or-later.",
+  "licence": "freeware; GPL-2.0-or-later",
+  "category": "Games",
+  "files": [
+   {
+    "name": "PLAY.COM",
+    "path": "disks/shelf/suvehnux/PLAY.COM"
+   },
+   {
+    "name": "README.TXT",
+    "path": "disks/shelf/suvehnux/README.TXT"
+   },
+   {
+    "name": "SUVEHNUX.Z5",
+    "path": "disks/shelf/suvehnux/SUVEHNUX.Z5"
+   },
+   {
+    "name": "VEZZA.COM",
+    "path": "disks/shelf/suvehnux/VEZZA.COM"
+   },
+   {
+    "name": "VEZZA.LIC",
+    "path": "disks/shelf/suvehnux/VEZZA.LIC"
+   }
+  ],
+  "size": 281487,
+  "free": 114688
  },
  {
   "id": "zork1",
