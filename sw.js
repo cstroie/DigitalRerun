@@ -68,7 +68,7 @@ self.addEventListener('message', event => {
 
 self.addEventListener('fetch', event => {
     const req = event.request;
-    if (req.method !== 'GET') return;
+    if (req.method !== 'GET' || req.cache === 'no-store') return;     // (a private shelf is fetched no-store: never kept)
     const url = new URL(req.url);
     if (FONT_HOSTS.includes(url.hostname)) {
         // Fonts: cached once, kept across versions.

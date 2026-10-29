@@ -22,6 +22,7 @@ const path = require('path');
 const { assemble, formatListing } = require('../js/asm8080.js');
 const { Disk } = require('../js/devices/fdc.js');
 const { CpmFs, toCpmText } = require('../js/cpmfs.js');
+const { playCom } = require('./play.js');
 
 const ROOT = path.join(__dirname, '..');
 const MSIZE = 64;
@@ -134,11 +135,6 @@ function tokenizeBbc(dir) {
 }
 
 /** PLAY.COM for a disk: types `command` at the CCP (system/play.asm). */
-function playCom(command) {
-    const src = fs.readFileSync(path.join(ROOT, 'system/play.asm'), 'latin1').replace('@CMD@', command.toUpperCase());
-    const r = assemble(src, {});
-    return r.image(0x100, r.high);
-}
 function writePlay(dir, command) {
     fs.writeFileSync(path.join(dir, 'PLAY.COM'), playCom(command));
 }

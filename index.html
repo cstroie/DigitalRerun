@@ -114,6 +114,15 @@
                     </select>
                 </label>
                 <div id="shelf" class="shelf"></div>
+                <h2 class="sub">PRIVATE SHELF <span id="private-note"></span></h2>
+                <label class="field">Catalog <input id="privateUrl" class="wide" placeholder="https://host/games/" spellcheck="false" autocomplete="off"></label>
+                <label class="field">Token <input id="privateToken" class="wide" type="password" placeholder="none" spellcheck="false" autocomplete="off"></label>
+                <div class="tools">
+                    <button id="privateConnectBtn" title="Fetch the catalog and list its disks">CONNECT</button>
+                    <button id="privateForgetBtn" title="Forget the address and the token on this device">FORGET</button>
+                </div>
+                <div id="privshelf" class="shelf"></div>
+                <p class="hint">A private shelf is your own catalog on your own web server: disks you may not share are fetched from there when you insert them, and are never part of this app. The address and token stay in this browser.</p>
                 <h2 class="sub">MY DISKS</h2>
                 <div class="tools">
                     <button id="keepDiskBtn" title="Put a copy of a drive's disk on My disks">KEEP A DISK</button>

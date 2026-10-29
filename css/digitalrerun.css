@@ -311,6 +311,7 @@ kbd, code {
 .dbg.code div:hover { background: #121a10; }
 .dbg.code .pc { color: var(--fg); background: #15230f; }
 .dbg.code .bp { color: #ff8a7a; }
+.wide { flex: 1; min-width: 0; max-width: 16em; font: inherit; font-size: 12px; color: var(--text); background: #050805; border: 1px solid var(--edge); border-radius: 5px; padding: 3px 6px; }
 .hexin { width: 6em; font: inherit; font-family: 'VT323', monospace; font-size: 16px; text-transform: uppercase; color: var(--fg); background: #050805; border: 1px solid var(--edge); border-radius: 5px; padding: 2px 6px; }
 
 /* ---- banners and toasts (pwa.js) ---- */

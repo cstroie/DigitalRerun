@@ -417,6 +417,67 @@
         return new Uint8Array(await res.arrayBuffer());
     }
 
+    /* The private shelf: a catalog on the owner's own server. Its address and
+       token are kept in this browser; its disks are fetched when inserted. */
+    const PRIVATE_KEY = 'digitalrerun.private';
+    let privateShelf = [];
+    const privateConf = () => { try { return JSON.parse(localStorage.getItem(PRIVATE_KEY)) || {}; } catch (e) { return {}; } };
+    const privateNote = (text, ok = true) => { const el = $('private-note'); el.textContent = text; el.style.color = ok ? '' : 'var(--err)'; };
+
+    /** A fetch of the private server: no-store (neither the browser nor the service worker keeps it), the token as a bearer. */
+    async function fetchPrivate(path, token) {
+        const res = await fetch(path, { cache: 'no-store', headers: token ? { Authorization: 'Bearer ' + token } : {} });
+        if (res.status === 401 || res.status === 403) throw new Error('the server wants a token, or refused this one');
+        if (!res.ok) throw new Error(`${res.status} from the server`);
+        return res;
+    }
+
+    async function connectPrivate(url, token) {
+        privateNote('connecting…');
+        try {
+            const at = Shelf.catalogUrl(url, location.href);
+            privateShelf = Shelf.resolveCatalog(await (await fetchPrivate(at, token)).json(), at);
+            localStorage.setItem(PRIVATE_KEY, JSON.stringify({ url, token }));
+            privateNote(`${privateShelf.length} disk${privateShelf.length === 1 ? '' : 's'}`);
+        } catch (e) {
+            privateShelf = [];
+            // a network failure says nothing useful by itself: name the usual causes
+            privateNote(e instanceof TypeError ? 'not reachable (address, https certificate or CORS)' : e.message, false);
+        }
+        renderPrivate();
+    }
+
+    function renderPrivate() {
+        const box = $('privshelf');
+        box.textContent = '';
+        const { token } = privateConf();
+        const floppy = LETTER(Number($('shelfDrive').value));
+        for (const category of [...new Set(privateShelf.map(e => e.category))]) {
+            const h = document.createElement('h3');
+            h.textContent = category.toUpperCase();
+            box.appendChild(h);
+            for (const e of privateShelf.filter(x => x.category === category)) {
+                const where = e.format === HARD ? 'I' : floppy;
+                card(box, {
+                    title: e.name, desc: e.description, meta: `${kindOf(e.format)}${e.credit ? ' · ' + e.credit : ''}`,
+                    buttons: [[`INSERT IN ${where}:`, `Put a fresh copy in ${where}:`,
+                        () => insertDisk(() => Shelf.buildDisk(e, async p => new Uint8Array(await (await fetchPrivate(p, token)).arrayBuffer())), e.name, e.format)]]
+                });
+            }
+        }
+    }
+
+    $('privateConnectBtn').addEventListener('click', () => connectPrivate($('privateUrl').value, $('privateToken').value.trim()));
+    $('privateUrl').addEventListener('keydown', e => { if (e.key === 'Enter') $('privateConnectBtn').click(); });
+    $('privateToken').addEventListener('keydown', e => { if (e.key === 'Enter') $('privateConnectBtn').click(); });
+    $('privateForgetBtn').addEventListener('click', () => {
+        localStorage.removeItem(PRIVATE_KEY);
+        $('privateUrl').value = $('privateToken').value = '';
+        privateShelf = [];
+        privateNote('');
+        renderPrivate();
+    });
+
     /** Which drive a disk of this format goes into: I: for a hard disk, else the one chosen. */
     const targetFor = format => (format === HARD ? 8 : Number($('shelfDrive').value));
 
@@ -533,7 +594,7 @@
             await keepDisk(disk, disk.name);
         } catch (e) { note(e.message, false); }
     });
-    $('shelfDrive').addEventListener('change', () => { renderShelf(); renderMyDisks(); });
+    $('shelfDrive').addEventListener('change', () => { renderShelf(); renderPrivate(); renderMyDisks(); });
 
     async function loadShelf() {
         try {
@@ -542,6 +603,12 @@
             renderShelf();
         } catch (e) { $('shelf-note').textContent = 'not available offline yet'; }
         renderMyDisks();
+        const conf = privateConf();
+        if (conf.url) {            // a catalog connected before: ask again, quietly (it may be unreachable from here)
+            $('privateUrl').value = conf.url;
+            $('privateToken').value = conf.token || '';
+            connectPrivate(conf.url, conf.token || '');
+        }
     }
 
     /* ---------- debugger ---------- */
