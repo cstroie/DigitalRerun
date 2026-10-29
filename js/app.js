@@ -594,6 +594,18 @@
             await keepDisk(disk, disk.name);
         } catch (e) { note(e.message, false); }
     });
+    $('folderDiskBtn').addEventListener('click', async () => {
+        const files = await pickFile($('folderInput'));
+        if (!files.length) return;
+        const folder = files[0].webkitRelativePath.split('/')[0] || 'Folder';
+        try {
+            const items = files.map(f => ({ path: f.webkitRelativePath.split('/').slice(1).join('/') || f.name, read: () => f.arrayBuffer() }));
+            const r = await window.DigitalRerun.FolderDisk.fromFolder(items, folder);
+            await keepDisk(r.disk, folder);
+            const more = [r.renamed.length && `${r.renamed.length} renamed to fit CP/M`, r.skipped.length && `${r.skipped.length} left out (not in a user area folder)`].filter(Boolean);
+            PWA.toast(`${r.files} file${r.files === 1 ? '' : 's'} on "${folder}" (${kindOf(r.format)})${more.length ? ': ' + more.join(', ') : ''}.`);
+        } catch (e) { note(e.message, false); }
+    });
     $('shelfDrive').addEventListener('change', () => { renderShelf(); renderPrivate(); renderMyDisks(); });
 
     async function loadShelf() {

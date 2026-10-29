@@ -27,6 +27,7 @@ const SHELL = [
     'js/storage.js',
     'js/disz80.js',
     'js/shelf.js',
+    'js/folderdisk.js',
     'js/sound.js',
     'js/snapshot.js',
     'js/pwa.js',

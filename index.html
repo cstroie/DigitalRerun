@@ -127,6 +127,7 @@
                 <div class="tools">
                     <button id="keepDiskBtn" title="Put a copy of a drive's disk on My disks">KEEP A DISK</button>
                     <button id="importDiskBtn" title="Add a .dsk image from this device to My disks">IMPORT .DSK</button>
+                    <button id="folderDiskBtn" title="Make a disk from a folder on this device (subfolders 1 to 15 become user areas)">FROM FOLDER</button>
                 </div>
                 <div id="mydisks" class="shelf"></div>
                 <p class="hint">My disks are kept in this browser only: your own software (WordStar, MBASIC …) stays on your devices. After inserting a disk, press <kbd>^C</kbd> at the prompt.</p>
@@ -220,6 +221,7 @@
 
     <input type="file" id="fileInput" hidden>
     <input type="file" id="filesInput" multiple hidden>
+    <input type="file" id="folderInput" webkitdirectory multiple hidden>
 
     <script src="js/version.js"></script>
     <script src="js/z80.js"></script>
@@ -234,6 +236,7 @@
     <script src="js/storage.js"></script>
     <script src="js/disz80.js"></script>
     <script src="js/shelf.js"></script>
+    <script src="js/folderdisk.js"></script>
     <script src="js/sound.js"></script>
     <script src="js/snapshot.js"></script>
     <script src="js/pwa.js"></script>
