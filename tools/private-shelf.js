@@ -11,7 +11,8 @@
  * in the shelf's format. Put <out> on your own web server (docs/private-shelf.md)
  * and give the app its address: nothing of it is kept in the repository.
  *
- * Every folder inside <sources>/disks/ becomes one disk of its files, as the
+ * Every folder inside <sources>/disks/, and every folder one level down in any
+ * other folder of <sources> (OFFICE/WS40) that holds no story and is named in titles.json, becomes one disk of its files, as the
  * app's FROM FOLDER does (js/folderdisk.js): the files in it go to user 0,
  * subfolders named 1 to 15 to those user areas, names are made 8.3, and the
  * smallest disk format that holds it is used. For software that is no story
@@ -19,7 +20,9 @@
  *
  * <sources>/titles.json (optional) names them:
  *   { "zork1.dat": { "name": "Zork I", "description": "…", "category": "…" },
- *     "wordstar":  { "name": "WordStar 4", "credit": "…" } }
+ *     "wordstar":  { "name": "WordStar 4", "credit": "…", "licence": "public domain" } }
+ * (name, description, category, credit and licence are all optional; the licence
+ * is "private" unless given.)
  * keyed by the story's file name, or the folder's name, lower case. Without
  * it a name is made from the file name. Nothing is read from the story's text.
  */
@@ -113,23 +116,45 @@ async function build(sources, out, { category = 'Private', vezza = path.join(ROO
         entries.push({
             id: id.toLowerCase(), name, format, image, category: meta.category || category,
             description: meta.description || `Z-machine version ${head.version}, release ${head.release}. Type PLAY, or VEZZA ${story}.`,
-            credit: meta.credit || '', licence: 'private', size: disk.data.length
+            credit: meta.credit || '', licence: meta.licence || 'private', size: disk.data.length
         });
     }
-    return buildFolders(disksDir, out, entries, titles, used, category).then(all => {
+    return buildFolders(sources, out, entries, titles, used, category).then(all => {
         all.sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
         fs.writeFileSync(path.join(out, 'shelf.json'), JSON.stringify(all, null, 1) + '\n');
         return all;
     });
 }
 
-/** The folders of <sources>/disks/, one disk each, added to `entries`. */
-async function buildFolders(disksDir, out, entries, titles, used, category) {
-    if (!fs.existsSync(disksDir)) return entries;
-    for (const dir of fs.readdirSync(disksDir, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name))) {
+const subdirs = dir => fs.readdirSync(dir, { withFileTypes: true }).filter(e => e.isDirectory()).sort((a, b) => a.name.localeCompare(b.name));
+
+/** True when a story file is somewhere under `dir`. */
+const hasStory = dir => [...walk(dir)].some(f => STORY.test(f) && storyHeader(fs.readFileSync(f)));
+
+/** The folders that make a disk each: those of <sources>/disks/, and those one
+ *  level down in any other folder of <sources> (OFFICE/WS40) that hold no story
+ *  and are named in titles.json. */
+function diskFolders(sources, titles) {
+    const found = [];
+    const disksDir = path.join(sources, 'disks');
+    if (fs.existsSync(disksDir)) for (const d of subdirs(disksDir)) found.push(path.join(disksDir, d.name));
+    for (const group of subdirs(sources)) {
+        if (group.name === 'disks' || /^saves?$/i.test(group.name)) continue;
+        for (const d of subdirs(path.join(sources, group.name))) {
+            const folder = path.join(sources, group.name, d.name);
+            if (titles[d.name.toLowerCase()] && !/^saves?$/i.test(d.name) && !hasStory(folder)) found.push(folder);
+        }
+    }
+    return found;
+}
+
+/** The folders of diskFolders(), one disk each, added to `entries`. */
+async function buildFolders(sources, out, entries, titles, used, category) {
+    for (const folder of diskFolders(sources, titles)) {
+        const dir = { name: path.basename(folder) };
         const meta = titles[dir.name.toLowerCase()] || {};
         const name = meta.name || humanize(dir.name);
-        const r = await fromFolder(folderItems(path.join(disksDir, dir.name)), name);
+        const r = await fromFolder(folderItems(folder), name);
         let id = dir.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'disk';
         for (let n = 2; used.has(id.toUpperCase()); n++) id = `${id.replace(/-\d+$/, '')}-${n}`;
         used.add(id.toUpperCase());
@@ -138,7 +163,7 @@ async function buildFolders(disksDir, out, entries, titles, used, category) {
         entries.push({
             id, name, format: r.format, image, category: meta.category || category,
             description: meta.description || `${r.files} file${r.files === 1 ? '' : 's'} from a folder.`,
-            credit: meta.credit || '', licence: 'private', size: r.disk.data.length
+            credit: meta.credit || '', licence: meta.licence || 'private', size: r.disk.data.length
         });
         if (r.renamed.length) console.log(`  ${dir.name}: ${r.renamed.length} name${r.renamed.length === 1 ? '' : 's'} made 8.3`);
         for (const [file, why] of r.skipped) console.log(`  ${dir.name}: ${file} left out (${why})`);

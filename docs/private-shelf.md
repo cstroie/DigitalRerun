@@ -21,7 +21,8 @@ Names come from the file names; an optional `<folder>/titles.json` names them:
 { "zork1.dat": { "name": "Zork I", "description": "…", "category": "Infocom" } }
 ```
 
-Software that is no story (WordStar, a compiler …) goes in `<folder>/disks/`: each
+Software that is no story (WordStar, a compiler …) goes in `<folder>/disks/`, or in a folder of any name one level down
+(`<folder>/OFFICE/WS40/`, as long as it holds no story and `titles.json` names it): each
 folder there becomes one disk of its files, as the app's FROM FOLDER makes it. The files
 in it go to user 0, subfolders named `1` to `15` to those user areas, names CP/M cannot
 hold are made 8.3 (the tool says which), text files get CP/M line ends, and the smallest

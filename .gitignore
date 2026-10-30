@@ -2,5 +2,6 @@ test/.cache/
 node_modules/
 .DS_Store
 system/*.lst
-_private_/
-_dist_/
+_private/
+_dist/
+_shots/
